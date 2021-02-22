@@ -6,17 +6,26 @@ using System.Collections;
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(SplineFollower))]
 [RequireComponent(typeof(PlayerAnimator))]
-public class PlayerMover : MonoBehaviour, IPausable
+[RequireComponent(typeof(CapsuleCollider))]
+[RequireComponent(typeof(Player))]
+public class PlayerMover : MonoBehaviour, IPausable, IBarrierAffected
 {
+    [SerializeField] private Player player;
+
     [Header("Move")]
     [SerializeField] private float defaultSpeed;
     [SerializeField] private float changeRoadTime;
     [SerializeField] private float changeRoadTreshold;
+    [SerializeField] private float accelerationSpeed;
+
+    private CapsuleCollider collider;
+    private float desiredSpeed;// Speed to accelerate to 
     private float startOffset;
     private float currentOffset;
     private float nextRoadOffset;
     private float changeRoadTimer;
     private Coroutine changeRoadCorutine;
+    private bool isAccelerating;
 
     [Header("Jump")]
     [SerializeField] private float jumpHeigh;
@@ -26,6 +35,8 @@ public class PlayerMover : MonoBehaviour, IPausable
 
     [Header("Slide")]
     [SerializeField] private float slideTime;
+    private float playerSlideOffset = 0.5f;
+    private bool isSliding;
 
 
     [Header("Level")]
@@ -46,6 +57,9 @@ public class PlayerMover : MonoBehaviour, IPausable
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        collider = GetComponent<CapsuleCollider>();
+        if (player == null)
+            player = GetComponent<Player>();
         if (follower == null)
             follower = GetComponent<SplineFollower>();
         if (levelHolder == null)
@@ -56,21 +70,39 @@ public class PlayerMover : MonoBehaviour, IPausable
     private void Start()
     {
         SwipeInput.OnPlayerSwiped += OnSwipe;
-        ChangeSpeed(defaultSpeed);
+        desiredSpeed = defaultSpeed;
+        ChangeSpeed(1);
         currenOffsetId = Random.Range(0, levelHolder.AviableRoadCount() - 1);
         currentOffset = levelHolder.GetOffsetById(currenOffsetId);
         animator.SetRotationTime(changeRoadTime);
+        SetPlayerMovementType(PlayerMovementType.Run);
         SetupOffset();
     }
 
     private void Update()
     {
         if (isPaused) return;
+        if (isAccelerating) Accelerate();
+    }
+
+    private void Accelerate()
+    {
+        actualSpeed += accelerationSpeed * Time.deltaTime;
+        if (actualSpeed >= desiredSpeed)
+        {
+            actualSpeed = desiredSpeed;
+            isAccelerating = false;
+        }
+        ChangeSpeed(actualSpeed);
     }
 
     private void ChangeSpeed(float newSpeed)
     {
         actualSpeed = newSpeed;
+        if(actualSpeed < defaultSpeed)
+        {
+            isAccelerating = true;
+        }
         follower.followSpeed = actualSpeed;
         animator.SetAnimatorSpeed(actualSpeed);
     }
@@ -108,18 +140,34 @@ public class PlayerMover : MonoBehaviour, IPausable
 
     private void StartSlide()
     {
-        if(!isJump)
+        if(!isJump && !isSliding)
         {
-
+            animator.SetSlideAnimation(true);
+            isSliding = true;
+            collider.direction = 2;
+            SetPlayerMovementType(PlayerMovementType.Slide);
+            StartCoroutine(Slide());
         }
+    }
+
+    private void StopSlide()
+    {
+        isSliding = false;
+        jumpY = 0;
+        collider.direction = 0;
+        SetupOffset();
+        SetPlayerMovementType(PlayerMovementType.Run);
+        animator.SetSlideAnimation(false);
     }
 
     private void StartJump()
     {
-        if (!isJump)
+        if (!isJump && !isSliding)
         {
             isJump = true;
             jumpY = 0;
+            animator.SetJumpAnimation(true);
+            SetPlayerMovementType(PlayerMovementType.Jump);
             StartCoroutine(HandleJump());
         }
     }
@@ -138,6 +186,28 @@ public class PlayerMover : MonoBehaviour, IPausable
         return false;
     }
     #region Enumarators
+    private IEnumerator Slide()
+    {
+        float timer = 0;
+        while(timer < slideTime)
+        {
+            jumpY = Mathf.Lerp(0, -playerSlideOffset, (timer) / slideTime);
+            timer += Time.deltaTime;
+            SetupOffset();
+            yield return null;
+        }
+        timer = 0;
+        while (timer < slideTime / 3)
+        {
+            jumpY = Mathf.Lerp(-playerSlideOffset, 0, (timer * 3) / slideTime);
+            timer += Time.deltaTime;
+            SetupOffset();
+            yield return null;
+        }
+        StopSlide();
+        yield return new WaitForSeconds(Time.deltaTime);
+    }
+
     private IEnumerator MoveNextRoad()
     {
         while(Mathf.Abs(nextRoadOffset - currentOffset) > changeRoadTreshold)
@@ -157,7 +227,7 @@ public class PlayerMover : MonoBehaviour, IPausable
     private IEnumerator HandleJump()
     {
         float upJumpTimer = 0;
-        while(upJumpTimer < upJumpTime)
+        while (upJumpTimer < upJumpTime)
         {
             SetupOffset();
             jumpY = Mathf.Lerp(0, jumpHeigh, upJumpTimer / upJumpTime);
@@ -166,11 +236,12 @@ public class PlayerMover : MonoBehaviour, IPausable
         }
 
         float inAirTimer = 0;
-        while(inAirTimer < inAirTime)
+        while (inAirTimer < inAirTime)
         {
             inAirTimer += Time.deltaTime;
             yield return null;
         }
+        animator.SetJumpAnimation(false);
 
         float downJumpTimer = 0;
         while (downJumpTimer < downJumpTime)
@@ -180,14 +251,27 @@ public class PlayerMover : MonoBehaviour, IPausable
             downJumpTimer += Time.deltaTime;
             yield return null;
         }
+        StopJump();
+        yield return new WaitForSeconds(Time.deltaTime);
+    }
+
+    private void StopJump()
+    {
         jumpY = 0;
         SetupOffset();
+        SetPlayerMovementType(PlayerMovementType.Run);
         isJump = false;
-        yield return new WaitForSeconds(Time.deltaTime);
     }
     #endregion
     private void SetupOffset()
     {
         follower.motion.offset = new Vector2(-jumpY, currentOffset);
     }
+
+    public void BarrierHited()
+    {
+        ChangeSpeed(0);
+    }
+
+    public void SetPlayerMovementType(PlayerMovementType newMovementType) => player.SetMovementType(newMovementType);
 }

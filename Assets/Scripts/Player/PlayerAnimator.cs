@@ -31,6 +31,10 @@ public class PlayerAnimator : MonoBehaviour
         animator.SetFloat("turnSpeed", speed);
     }
 
+    public void SetJumpAnimation(bool value)
+    {
+        animator.SetBool("jump", value);
+    }
 
     public void SetRotation(SwipeInput.SwipeType swipeType)
     {
@@ -42,6 +46,11 @@ public class PlayerAnimator : MonoBehaviour
         {
             StartCoroutine(SmoothRotation(1));
         }
+    }
+
+    public void SetSlideAnimation(bool value)
+    {
+        animator.SetBool("slide", value);
     }
 
     private IEnumerator SmoothRotation(int k)
@@ -56,7 +65,7 @@ public class PlayerAnimator : MonoBehaviour
         rotationTimer = 0;
         while (rotationTimer < rotationTime)
         {
-            SetAnimatorRotationSpeed(Mathf.Lerp(animatorRotationK,0,rotationTime/rotationTime));
+            SetAnimatorRotationSpeed(Mathf.Lerp(animatorRotationK*k,0,rotationTimer/rotationTime));
             rotationTimer += Time.deltaTime;
             yield return null;
         }

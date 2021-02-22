@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a7607aff5d153f4ab4d7d9ce70e7c2b, type: 3}
+  m_Name: GenerateObjectsData
+  m_EditorClassIdentifier: 
+  barriers:
+  - {fileID: 7306404836748552877, guid: f925a0e5bda958d49b191a430aa4effe, type: 3}
+  - {fileID: 6496730469869570415, guid: 9369eeb0e7901ef4493b926ff03435fd, type: 3}
+  - {fileID: 6274796881544006924, guid: cf86cec9051e7ce4d88f670584d50161, type: 3}
+  - {fileID: 2492322739381847366, guid: 70a97104b25abc3488897576883606a1, type: 3}
+  - {fileID: 6560319544390984304, guid: 6b45cd22d14710744a3f723a1876cbf3, type: 3}
+  enemys:
+  - {fileID: 7725209896655450081, guid: c5a9c3e96e9efd14b9942beec452bad7, type: 3}
+  - {fileID: 8885677929824835391, guid: ef9b8a45d8990a44bb844b3483209fc9, type: 3}
