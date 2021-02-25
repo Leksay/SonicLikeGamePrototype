@@ -7,6 +7,8 @@ public class SpawnedObjects : ScriptableObject
 {
     public List<GameObject> barriers;
     public List<GameObject> enemys;
+    public List<GameObject> boosters;
+    public List<GameObject> money;
 
     private void OnValidate()
     {
@@ -30,6 +32,30 @@ public class SpawnedObjects : ScriptableObject
                     if(e.GetComponent<Enemy>() == null && e.GetComponentInChildren<Enemy>() == null)
                     {
                         enemys.Remove(e);
+                    }
+            });
+        }
+        if (boosters != null && boosters.Count > 0)
+        {
+            boosters.ForEach(b =>
+            {
+
+                if (b != null)
+                    if (b.GetComponent<SpeedBoost>() == null && b.GetComponentInChildren<SpeedBoost>() == null)
+                    {
+                        boosters.Remove(b);
+                    }
+            });
+        }
+        if (money != null && money.Count > 0)
+        {
+            money.ForEach(m =>
+            {
+
+                if (m != null)
+                    if (m.GetComponent<GoldRingBonus>() == null && m.GetComponentInChildren<GoldRingBonus>() == null)
+                    {
+                        money.Remove(m);
                     }
             });
         }

@@ -22,4 +22,6 @@ public class DataHolder : MonoBehaviour
 
 
     public static List<GameObject> GetBarriersList() => instance.spawnedObjects.barriers;
+    public static List<GameObject> GetEnemiesList() => instance.spawnedObjects.enemys;
+    public static List<GameObject> GetMoneyList() => instance.spawnedObjects.money;
 }

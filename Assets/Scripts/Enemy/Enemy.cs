@@ -7,6 +7,12 @@ public class Enemy : MonoBehaviour, IPlayerAffected
     public EnemyType enemyType;
     [SerializeField] private GameObject dieEffect;
     [SerializeField] private float dieEffectTime;
+    private Transform effectPoint;
+
+    private void Awake()
+    {
+        effectPoint = transform.parent.GetComponentInChildren<EffectPoint>().transform;
+    }
 
     public void HitedByPlayer(PlayerMovementType movementType)
     {
@@ -21,7 +27,7 @@ public class Enemy : MonoBehaviour, IPlayerAffected
     {
         if(dieEffect != null)
         {
-            var effect = GameObject.Instantiate(dieEffect, transform.position, Quaternion.identity);
+            var effect = GameObject.Instantiate(dieEffect, effectPoint.position, Quaternion.identity);
             Destroy(effect, dieEffectTime);
         }
         if(transform.parent != null)

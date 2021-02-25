@@ -54,5 +54,6 @@ public class LevelHolder : MonoBehaviour
 
     public float GetOffsetById(int offsetId) => offsetId < pathOffsets.Count ? pathOffsets[offsetId] : -1;
     public int AviableRoadCount() => pathOffsets.Count;
+    public float[] GetPathsOffsets() => pathOffsets.ToArray();
 }
 
