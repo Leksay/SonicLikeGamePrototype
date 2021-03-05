@@ -56,11 +56,11 @@ GraphicsSettings:
       renderingPath: 1
       hdrMode: 2
       realtimeGICPUUsage: 25
-      useReflectionProbeBoxProjection: 0
+      useReflectionProbeBoxProjection: 1
       useReflectionProbeBlending: 0
       useHDR: 1
       useDetailNormalMap: 0
-      useCascadedShadowMaps: 0
+      useCascadedShadowMaps: 1
       prefer32BitShadowMaps: 0
       enableLPPV: 0
       useDitherMaskForAlphaBlendedShadows: 0

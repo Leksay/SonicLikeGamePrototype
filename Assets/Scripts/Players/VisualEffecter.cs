@@ -4,14 +4,13 @@ using UnityEngine;
 
 public class VisualEffecter : MonoBehaviour, IBarrierAffected, IBoostable
 {
-    [Header("Effects")]
-    [Space]
     [Header("Boost")]
     [SerializeField] private GameObject boostEffectPrefab;
     [SerializeField] private float boostEffectTime;
 
     [SerializeField] private GameObject playerObject;
     [SerializeField] private float blinkTime;
+    [SerializeField] private int blinkCount;
 
     private Transform playerT;
     List<MeshRenderer> playerRenderers;
@@ -24,7 +23,6 @@ public class VisualEffecter : MonoBehaviour, IBarrierAffected, IBoostable
         playerRenderers.AddRange(playerObject?.GetComponentsInChildren<MeshRenderer>());
         skinnedMeshRenderers.AddRange(playerObject?.GetComponentsInChildren<SkinnedMeshRenderer>());
     }
-
     public void BarrierHited()
     {
         StartCoroutine(PlayerHitEffect());
@@ -33,7 +31,7 @@ public class VisualEffecter : MonoBehaviour, IBarrierAffected, IBoostable
     private IEnumerator PlayerHitEffect()
     {
         float timer = 0;
-        for(int i = 0; i < 5; i++)
+        for(int i = 0; i < blinkCount; i++)
         {
             timer = 0;
             playerRenderers.ForEach(e => e.enabled = false);

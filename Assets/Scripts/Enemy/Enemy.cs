@@ -14,12 +14,11 @@ public class Enemy : MonoBehaviour, IPlayerAffected
         effectPoint = transform.parent.GetComponentInChildren<EffectPoint>().transform;
     }
 
-    public void HitedByPlayer(PlayerMovementType movementType)
+    public void HitedByPlayer(MovementType movementType)
     {
-        print($"Player enetered with {movementType}");
-        if(enemyType == EnemyType.Ground && movementType == PlayerMovementType.Slide)
+        if(enemyType == EnemyType.Ground && movementType == MovementType.Slide)
             Die();
-        if (enemyType == EnemyType.Fly && movementType == PlayerMovementType.Jump)
+        if (enemyType == EnemyType.Fly && movementType == MovementType.Jump)
             Die();
     }
 

@@ -6,6 +6,9 @@ using Dreamteck.Splines;
 [RequireComponent(typeof(LevelHolder))]
 public class RoadEntityGenerator : MonoBehaviour
 {
+    [Header("Data")]
+    [SerializeField] private List<RoadEntityData> data;
+
     [Header("Holders")]
     [SerializeField] private Transform barrierHolder;
     [SerializeField] private Transform enemysHolder;
@@ -22,10 +25,14 @@ public class RoadEntityGenerator : MonoBehaviour
     [SerializeField] private float minDistance;
     [SerializeField] private float maxDistance;
     [SerializeField] private int countOfRoads = 4;
+    [SerializeField] private int startBarriersPercent;
 
     [SerializeField] private float[] roadOffsets;
 
     [SerializeField] private RingsGenerationParams ringsGenerationParams;
+
+    [Header("Tutorial")]
+    [SerializeField] private int tutorialEndPercent;
 
     private void Awake()
     {
@@ -58,14 +65,31 @@ public class RoadEntityGenerator : MonoBehaviour
         }
     }
 
+    private void AddData(EntityType entityType, EnemyType enemyType, BarrierType barrierType, float percent)
+    {
+        var newData = new RoadEntityData();
+        newData.entityType = entityType;
+        newData.enemyType = enemyType;
+        newData.barrierType = barrierType;
+        newData.percentAtRoad = percent;
+        data.Add(newData);
+    }
+    private void AddData(RoadEntityData newData)
+    {
+        data.Add(newData);
+    }
+
     private void Generate()
     {
+        data = new List<RoadEntityData>();
+        bool isTutorial = PlayerDataHolder.GetTutorial() == 0;
         float length = roadSpline.CalculateLength();
         double percentLength = length / 100;
         double percent = percentLength / length;
         float randomDist = DistanceToPercent(Random.Range(minDistance,maxDistance));
         int randomDistPercent = (int)(randomDist * 100);
-        for(int i = 5; i < 98; i+= randomDistPercent)
+        int i = isTutorial ? tutorialEndPercent : startBarriersPercent;
+        for( ; i < 98; i+= randomDistPercent)
         {
             if(randomDist > DistanceToPercent(maxDistance - 25))
             {
@@ -73,11 +97,14 @@ public class RoadEntityGenerator : MonoBehaviour
                 int randomInt = Random.Range(0, 100);
                 if(randomInt > 30)
                 {
+                    var moneyPercent = 0.0;
                     for (int j = 0; j < countOfRoads; j++)
                     {
-                        var moneyPercent = percent * (i + randomDistPercent / 2);
+                        moneyPercent = percent * (i + randomDistPercent / 2);
                         GenerateRingsOnRoad((float)moneyPercent, 0, 10, j);
                     }
+                    RoadEntityData entityData = new RoadEntityData() { entityType = EntityType.Coins, percentAtRoad = (float)moneyPercent, height = 0, roadCount = countOfRoads };
+                    AddData(entityData);
                 }
                 
             }
@@ -136,11 +163,14 @@ public class RoadEntityGenerator : MonoBehaviour
         var randomObject = new System.Random(System.DateTime.Now.Millisecond);
         int random = (randomObject.Next() + (int)(position.x * position.z))%2; // 2 is count of aviable entities to spawn
 
+        RoadEntityData entityData = new RoadEntityData();
+        entityData.percentAtRoad = (float)percent;
         // if this is barrier
         if(random == 0)
         {
             int randomTypeId = Random.Range(0, barriers.Count);
-            var barrier = GenerateBarrier(position, rotation, randomTypeId);
+            entityData.percentAtRoad = (float)percent;
+            var barrier = GenerateBarrier(position, rotation, randomTypeId, entityData);
             var barrierType = barrier.barrierType;
             if (barrierType == BarrierType.Ground_FullRoad)
             {
@@ -159,12 +189,12 @@ public class RoadEntityGenerator : MonoBehaviour
         }
         else if (random == 1)
         {
-            GenerateEnemy(position, rotation);
+            GenerateEnemy(position, rotation, entityData);
         }
         
     }
 
-    private Barrier GenerateBarrier(Vector3 position, Quaternion rotation, int randomTypeId)
+    private Barrier GenerateBarrier(Vector3 position, Quaternion rotation, int randomTypeId, RoadEntityData entityData)
     {
         var barrier = barriers[randomTypeId].GetComponent<Barrier>();
         if(barrier == null)
@@ -176,32 +206,38 @@ public class RoadEntityGenerator : MonoBehaviour
                 return null;
             }
         }
-
+        entityData.entityType = EntityType.Barrier;
+        entityData.barrierType = barrier.barrierType;
         switch (barrier.barrierType)
         {
             case BarrierType.Ground_FullRoad:
-                CreateBarrierAtPosition(randomTypeId, position, rotation);
+                CreateBarrierAtPosition(randomTypeId, position, rotation, entityData);
+                entityData.roadCount = 1;
                 break;
             case BarrierType.Ground_SingePath:
                 System.Random random = new System.Random(System.DateTime.Now.Millisecond);
                 int randomBarriersCount = random.Next(0, countOfRoads-1);
                 CreateMultipleBarriersAtPosition(randomTypeId, randomBarriersCount, position, rotation);
+                entityData.roadCount = randomBarriersCount;
                 break;
             case BarrierType.Flying_FullRoad:
-                CreateBarrierAtPosition(randomTypeId, position, rotation);
+                CreateBarrierAtPosition(randomTypeId, position, rotation, entityData);
+                entityData.roadCount = 1;
                 break;
             case BarrierType.Flying_SinglePath:
                 System.Random randomF = new System.Random(System.DateTime.Now.Millisecond);
                 int randomBarriersCountF = randomF.Next(0, countOfRoads);
                 CreateMultipleBarriersAtPosition(randomTypeId, randomBarriersCountF, position, rotation);
+                entityData.roadCount = randomBarriersCountF;
                 break;
             default:
                 break;
         }
+        AddData(entityData);
         return barrier;
     }
 
-    private void CreateBarrierAtPosition(int barrierId,Vector3 position, Quaternion rotation)
+    private void CreateBarrierAtPosition(int barrierId,Vector3 position, Quaternion rotation, RoadEntityData entityData)
     {
         var barrierT = GameObject.Instantiate(barriers[barrierId]).transform;
         barrierT.position = position;
@@ -220,22 +256,28 @@ public class RoadEntityGenerator : MonoBehaviour
         }
     }
 
-    private void GenerateEnemy(Vector3 position, Quaternion rotation)
+    private void GenerateEnemy(Vector3 position, Quaternion rotation, RoadEntityData entityData)
     {
+        entityData.entityType = EntityType.Enemy;
         System.Random random = new System.Random(System.DateTime.Now.Millisecond);
         int randomEnemyCount = random.Next(0, countOfRoads);
         random = new System.Random(System.DateTime.Now.Millisecond);
         int randomEnemyType = random.Next(0, enemies.Count);
         Transform enemy;
+        var enemyType = enemies[randomEnemyType].GetComponentInChildren<Enemy>().enemyType;
+        entityData.enemyType = enemyType;
+        entityData.roadCount = randomEnemyCount;
         for(int i = 0; i <= randomEnemyCount; i++)
         {
             enemy = GameObject.Instantiate(enemies[randomEnemyType], position, rotation, enemysHolder).transform;
             enemy.position += enemy.right * roadOffsets[i];
             float yOffset = enemy.GetComponentInChildren<Enemy>()?.enemyType == EnemyType.Fly? .5f:0;
+            entityData.height = yOffset;
             enemy.position += enemy.up * yOffset;
             // NEW
             enemy.forward = -enemy.forward;
         }
+        AddData(entityData);
     }
 
     private float DistanceToPercent(float distance)
@@ -243,6 +285,8 @@ public class RoadEntityGenerator : MonoBehaviour
         float length = roadSpline.CalculateLength();
         return (distance / length);
     }
+
+    public List<RoadEntityData> GetRoadEntities() => data;
 }
 
 

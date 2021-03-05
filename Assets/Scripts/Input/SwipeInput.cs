@@ -7,7 +7,6 @@ public class SwipeInput : MonoBehaviour
 
     [SerializeField] private float swipeRange;
     [SerializeField] private float tapRange;
-    [SerializeField] private Text debugText;
 
     private Vector2 startPosition;
     private Vector2 currentPosition;
@@ -46,7 +45,6 @@ public class SwipeInput : MonoBehaviour
         {
             stopTouch = true;
             swipeType = ChekSwipe(startPosition - endPosition);
-            debugText.text = "Tap";
         }
 #else
         if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
@@ -66,7 +64,6 @@ public class SwipeInput : MonoBehaviour
         {
             stopTouch = true;
             swipeType = ChekSwipe(startPosition - endPosition);
-            debugText.text = "Tap";
         }
 #endif
 
@@ -76,29 +73,61 @@ public class SwipeInput : MonoBehaviour
     private SwipeType ChekSwipe(Vector2 distance)
     {
 
-        if (distance.x < -swipeRange)
+        //if (distance.x < -swipeRange)
+        //{
+        //    stopTouch = true;
+        //    return SwipeType.Left;
+        //}
+        //else if (distance.x > swipeRange)
+        //{
+        //    stopTouch = true;
+        //    return SwipeType.Right;
+        //}
+        //else if (distance.y < -swipeRange)
+        //{
+        //    stopTouch = true;
+        //    return SwipeType.Down;
+        //}
+        //else if (distance.y > swipeRange)
+        //{
+        //    stopTouch = true;
+        //    return SwipeType.Up;
+        //}
+        //else
+        //{
+        //    return SwipeType.Tap;
+        //}
+
+        if(distance.sqrMagnitude > swipeRange)
         {
-            stopTouch = true;
-            debugText.text = "Left";
-            return SwipeType.Left;
-        }
-        else if (distance.x > swipeRange)
-        {
-            stopTouch = true;
-            debugText.text = "Right";
-            return SwipeType.Right;
-        }
-        else if (distance.y < -swipeRange)
-        {
-            stopTouch = true;
-            debugText.text = "Down";
-            return SwipeType.Down;
-        }
-        else if (distance.y > swipeRange)
-        {
-            stopTouch = true;
-            debugText.text = "Up";
-            return SwipeType.Up;
+            // x-axis swipe
+            if(Mathf.Abs(distance.x) > Mathf.Abs(distance.y))
+            {
+                if(distance.x < 0)
+                {
+                    stopTouch = true;
+                    return SwipeType.Left;
+                }
+                else
+                {
+                    stopTouch = true;
+                    return SwipeType.Right;
+                }
+            }
+            // y-axis swipe
+            else
+            {
+                if (distance.y < 0)
+                {
+                    stopTouch = true;
+                    return SwipeType.Down;
+                }
+                else
+                {
+                    stopTouch = true;
+                    return SwipeType.Up;
+                }
+            }
         }
         else
         {
@@ -110,6 +139,11 @@ public class SwipeInput : MonoBehaviour
     private void NotifiyListeners(SwipeType swipeType)
     {
         OnPlayerSwiped?.Invoke(swipeType);
+    }
+
+    private void OnDestroy()
+    {
+        OnPlayerSwiped = null;
     }
 
 }

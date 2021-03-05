@@ -4,5 +4,5 @@ using UnityEngine;
 
 public interface IPlayerAffected
 {
-    void HitedByPlayer(PlayerMovementType movementType);
+    void HitedByPlayer(MovementType movementType);
 }

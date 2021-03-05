@@ -5,10 +5,20 @@ using UnityEngine;
 [CreateAssetMenu(fileName ="GenerateObjectsData",menuName ="Objects/GenerateObjectsData")]
 public class SpawnedObjects : ScriptableObject
 {
+    [Header("GameSettings")]
+    public int roadCount = 4;
+
+    [Header("On Road Generated Entities")]
     public List<GameObject> barriers;
     public List<GameObject> enemys;
     public List<GameObject> boosters;
     public List<GameObject> money;
+
+    [Header("Player")]
+    public GameObject player;
+
+    [Header("Opponents")]
+    public List<GameObject> opponents;
 
     private void OnValidate()
     {

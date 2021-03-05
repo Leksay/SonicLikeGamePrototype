@@ -2,4 +2,5 @@
 {
     void Pause();
     void Resume();
+    void RegisterPausable();
 }

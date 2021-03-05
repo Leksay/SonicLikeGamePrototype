@@ -2,6 +2,8 @@
 using Dreamteck;
 using Dreamteck.Splines;
 using System.Collections;
+using System;
+using TMPro;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(SplineFollower))]
@@ -9,12 +11,13 @@ using System.Collections;
 [RequireComponent(typeof(CapsuleCollider))]
 [RequireComponent(typeof(Player))]
 [RequireComponent(typeof(IBoostable))]
-public class PlayerMover : MonoBehaviour, IPausable, IBarrierAffected, IMover
+public class PlayerMover : MonoBehaviour, IPausable, IBarrierAffected, IMover, IPlayerControllable
 {
     public delegate void UAction();
+    public delegate void UActionFkloat(float desiredSpeed, bool justStop);
     public static event UAction OnSlide;
     public static event UAction OnSpeedBoost;
-    public static event UAction OnSpeedBoostStopped;
+    public static event UActionFkloat OnSpeedBoostStopped;
 
     [SerializeField] private Player player;
 
@@ -51,22 +54,29 @@ public class PlayerMover : MonoBehaviour, IPausable, IBarrierAffected, IMover
 
     [Header("Level")]
     [SerializeField] private LevelHolder levelHolder;
-    [SerializeField] private int currenOffsetId;
+    [SerializeField] private int currentRoadId;
 
     [Header("Dreamteck")]
     [SerializeField] private SplineFollower follower;
 
+    [Header("Skills")]
+    [SerializeField] private float speedSkill;
+    [SerializeField] private float accelerationSkill;
+
+    [Header("Effects")]
+    [SerializeField] private ParticleSystem slideEffect;
+    [SerializeField] private ParticleSystem jumpEffect;
+
     private PlayerAnimator animator;
-    private Rigidbody rb;
     private float jumpY;
     private bool isJump;
     private bool isPaused;
+    private bool isUnderControll;
     private float actualSpeed;
-    private bool isChangingPath;
+
 
     private void Awake()
     {
-        rb = GetComponent<Rigidbody>();
         collider = GetComponent<CapsuleCollider>();
         defaultColliderHeight = collider.height;
         if (player == null)
@@ -84,12 +94,25 @@ public class PlayerMover : MonoBehaviour, IPausable, IBarrierAffected, IMover
     {
         SwipeInput.OnPlayerSwiped += OnSwipe;
         desiredSpeed = defaultSpeed;
-        currenOffsetId = Random.Range(0, levelHolder.AviableRoadCount() - 1);
-        currentOffset = levelHolder.GetOffsetById(currenOffsetId);
         animator.SetRotationTime(changeRoadTime);
-        SetPlayerMovementType(PlayerMovementType.Run);
-        SetupOffset();
+        SetPlayerMovementType(MovementType.Run);
         ChangeSpeed();
+        SetupSkills();
+        RegisterPausable();
+        RegisterControllable();
+        if(GameProcess.isTutorial)
+        {
+            TutorialController.OnTutorialFakeInput += OnSwipe;
+        }
+    }
+
+    private void SetupSkills()
+    {
+        speedSkill = PlayerDataHolder.GetSpeed() / 10;
+        accelerationSkill = PlayerDataHolder.GetAcceleration() / 10;
+
+        defaultSpeed += speedSkill;
+        accelerationSpeed += accelerationSkill;
     }
 
     private void Update()
@@ -101,6 +124,7 @@ public class PlayerMover : MonoBehaviour, IPausable, IBarrierAffected, IMover
 
     private void Accelerate()
     {
+        if (isPaused) return;
         actualSpeed += accelerationSpeed * Time.deltaTime;
         if (actualSpeed >= desiredSpeed)
         {
@@ -113,6 +137,7 @@ public class PlayerMover : MonoBehaviour, IPausable, IBarrierAffected, IMover
 
     private void Damping()
     {
+        if (isPaused) return;
         actualSpeed -= accelerationSpeed * Time.deltaTime;
         if (actualSpeed <= desiredSpeed)
         {
@@ -124,8 +149,12 @@ public class PlayerMover : MonoBehaviour, IPausable, IBarrierAffected, IMover
 
     private void ChangeSpeed()
     {
-        //print($"Actual speed is {actualSpeed} DesiredSpeedIs {desiredSpeed}");
-        if(actualSpeed < desiredSpeed)
+        if (isPaused)
+        {
+            follower.followSpeed = 0;
+            return;
+        }
+        if (actualSpeed < desiredSpeed)
         {
             isAccelerating = true;
         }
@@ -139,16 +168,19 @@ public class PlayerMover : MonoBehaviour, IPausable, IBarrierAffected, IMover
 
     public void Pause()
     {
+        follower.followSpeed = 0;
         isPaused = true;
     }
 
     public void Resume()
     {
+        follower.followSpeed = actualSpeed;
         isPaused = false;
     }
     
     private void OnSwipe(SwipeInput.SwipeType swipeType)
     {
+        if (isUnderControll == false) return;
         if (changeRoadCorutine == null && ChangePath(swipeType))
         {
         }
@@ -173,9 +205,10 @@ public class PlayerMover : MonoBehaviour, IPausable, IBarrierAffected, IMover
         if(!isJump && !isSliding)
         {
             animator.SetSlideAnimation(true);
+            slideEffect.Play();
             isSliding = true;
             collider.direction = 2;
-            SetPlayerMovementType(PlayerMovementType.Slide);
+            SetPlayerMovementType(MovementType.Slide);
             OnSlide?.Invoke();
             StartCoroutine(Slide());
         }
@@ -184,10 +217,11 @@ public class PlayerMover : MonoBehaviour, IPausable, IBarrierAffected, IMover
     private void StopSlide()
     {
         isSliding = false;
+        slideEffect.Stop();
         jumpY = 0;
         collider.direction = 1;
         SetupOffset();
-        SetPlayerMovementType(PlayerMovementType.Run);
+        SetPlayerMovementType(MovementType.Run);
         animator.SetSlideAnimation(false);
     }
 
@@ -196,10 +230,11 @@ public class PlayerMover : MonoBehaviour, IPausable, IBarrierAffected, IMover
         if (!isJump && !isSliding)
         {
             isJump = true;
+            jumpEffect.Play();
             jumpY = 0;
             collider.height = defaultColliderHeight / 2;
             animator.SetJumpAnimation(true);
-            SetPlayerMovementType(PlayerMovementType.Jump);
+            SetPlayerMovementType(MovementType.Jump);
             StartCoroutine(HandleJump());
         }
     }
@@ -209,15 +244,15 @@ public class PlayerMover : MonoBehaviour, IPausable, IBarrierAffected, IMover
         jumpY = 0;
         collider.height = defaultColliderHeight;
         SetupOffset();
-        SetPlayerMovementType(PlayerMovementType.Run);
+        SetPlayerMovementType(MovementType.Run);
         isJump = false;
     }
 
     private bool ChangePath(SwipeInput.SwipeType swipeType)
     {
-        if(levelHolder.TryChangePathId(ref currenOffsetId,swipeType))
+        if (levelHolder.TryChangePathId(ref currentRoadId,swipeType))
         {
-            nextRoadOffset = levelHolder.GetOffsetById(currenOffsetId);
+            nextRoadOffset = levelHolder.GetOffsetById(currentRoadId);
             changeRoadTimer = 0;
             startOffset = currentOffset;
             changeRoadCorutine = StartCoroutine(MoveNextRoad());
@@ -226,6 +261,9 @@ public class PlayerMover : MonoBehaviour, IPausable, IBarrierAffected, IMover
         }
         return false;
     }
+    #region Getters
+    public float GetDefaultSpeed() => defaultSpeed;
+    #endregion
     #region Enumarators
     private IEnumerator Slide()
     {
@@ -283,7 +321,7 @@ public class PlayerMover : MonoBehaviour, IPausable, IBarrierAffected, IMover
             yield return null;
         }
         animator.SetJumpAnimation(false);
-
+        jumpEffect.Stop();
         float downJumpTimer = 0;
         while (downJumpTimer < downJumpTime)
         {
@@ -298,23 +336,23 @@ public class PlayerMover : MonoBehaviour, IPausable, IBarrierAffected, IMover
     #endregion
     private void SetupOffset()
     {
+        if (isPaused) return;
         follower.motion.offset = new Vector2(currentOffset, jumpY);
     }
 
     public void BarrierHited()
     {
         desiredSpeed = defaultSpeed;
-        actualSpeed = 0;
+        OnSpeedBoostStopped?.Invoke(desiredSpeed, desiredSpeed == defaultSpeed);
         booster.StopAllBoosters();
         ChangeSpeed();
     }
 
-    public void SetPlayerMovementType(PlayerMovementType newMovementType) => player.SetMovementType(newMovementType);
+    public void SetPlayerMovementType(MovementType newMovementType) => player.SetMovementType(newMovementType);
 
     // From IMover interface
     public void AddSpeed(float speed)
     {
-        print("Speed changing");
         OnSpeedBoost?.Invoke();
         desiredSpeed = Mathf.Clamp(desiredSpeed + speed,defaultSpeed, maxSpeed );
         ChangeSpeed();
@@ -323,8 +361,28 @@ public class PlayerMover : MonoBehaviour, IPausable, IBarrierAffected, IMover
     // Frome IMover interface
     public void ReduceSpeed(float speed)
     {
-        OnSpeedBoostStopped?.Invoke();
+        OnSpeedBoostStopped?.Invoke(desiredSpeed, desiredSpeed == defaultSpeed);
         desiredSpeed = Mathf.Clamp(desiredSpeed - speed, defaultSpeed, maxSpeed);
         ChangeSpeed();
     }
+
+    public void SetStartRoad(int roadId)
+    {
+        currentRoadId = roadId;
+        currentOffset = levelHolder.GetOffsetById(roadId);
+        SetupOffset();
+    }
+
+    public float GetPecent() => (float)follower.clampedPercent;
+
+    public void RegisterPausable()
+    {
+        PauseController.RegisterPausable(this);
+    }
+
+    public void StartPlayerControll() => isUnderControll = true;
+
+    public void StopPlayerControll() => isUnderControll = false;
+
+    public void RegisterControllable() => ControllManager.RegisterControllable(this);
 }

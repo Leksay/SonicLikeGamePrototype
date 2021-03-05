@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerAnimator : MonoBehaviour
+public class PlayerAnimator : MonoBehaviour, IPausable
 {
     [SerializeField] private Animator animator;
     [SerializeField]private float rotationTime;
+
+    private bool isPaused;
 
     [Tooltip("Максимальное значение turnSpeed в blend tree")]
     [SerializeField] private float animatorRotationK;
@@ -17,27 +19,32 @@ public class PlayerAnimator : MonoBehaviour
     {
         if (animator == null)
             Debug.LogError("Animator in PlayerAnimator == null");
+        RegisterPausable();
     }
 
     public void SetRotationTime(float time) => this.rotationTime = time;
 
     public void SetAnimatorSpeed(float speed)
     {
+        if (isPaused) return;
         animator.SetFloat("speed", speed);
     }
 
     public void SetAnimatorRotationSpeed(float speed)
     {
+        if (isPaused) return;
         animator.SetFloat("turnSpeed", speed);
     }
 
     public void SetJumpAnimation(bool value)
     {
+        if (isPaused) return;
         animator.SetBool("jump", value);
     }
 
     public void SetRotation(SwipeInput.SwipeType swipeType)
     {
+        if (isPaused) return;
         if (swipeType == SwipeInput.SwipeType.Left)
         {
             StartCoroutine(SmoothRotation(-1));
@@ -50,11 +57,13 @@ public class PlayerAnimator : MonoBehaviour
 
     public void SetSlideAnimation(bool value)
     {
+        if (isPaused) return;
         animator.SetBool("slide", value);
     }
 
     private IEnumerator SmoothRotation(int k)
     {
+        if (isPaused) yield return null;
         float rotationTimer = 0;
         while(rotationTimer < rotationTime)
         {
@@ -71,5 +80,22 @@ public class PlayerAnimator : MonoBehaviour
         }
         SetAnimatorRotationSpeed(0);
         yield return new WaitForSeconds(Time.deltaTime);
+    }
+
+    public void Pause()
+    {
+        animator.speed = 0;
+        isPaused = true;
+    }
+
+    public void Resume()
+    {
+        animator.speed = 1;
+        isPaused = false;
+    }
+
+    public void RegisterPausable()
+    {
+        PauseController.RegisterPausable(this);
     }
 }
