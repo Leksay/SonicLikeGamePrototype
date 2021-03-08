@@ -19,5 +19,10 @@ public class DeathLoopEnd : MonoBehaviour
         {
             myDeathLoop.OnEndTriggerEnter();
         }
+        var enemyBrain = other.GetComponent<OpponentBarin>();
+        if(enemyBrain != null)
+        {
+            enemyBrain.DeathLoopSetup(false);
+        }
     }
 }

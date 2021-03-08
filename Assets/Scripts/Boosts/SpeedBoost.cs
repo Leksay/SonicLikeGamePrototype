@@ -7,9 +7,9 @@ public class SpeedBoost : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         var boostable = other.GetComponents<IBoostable>();
-        if(boostable != null)
+        if (boostable != null)
         {
-            for(int i = 0; i < boostable.Length; i++)
+            for (int i = 0; i < boostable.Length; i++)
             {
                 boostable[i].BoostSpeed(speedValue, boostTime);
             }

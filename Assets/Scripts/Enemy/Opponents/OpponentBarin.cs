@@ -8,8 +8,6 @@ using System;
 [RequireComponent(typeof(IOpponentMover))]
 public class OpponentBarin : MonoBehaviour, IPausable, INamedRacer
 {
-    /// Должен определять что впереди врага 
-    /// Должен прыгать, меня путь или слайдить в зависимости от препятсвий
 
     [SerializeField] private string racerName;
     [SerializeField] private RoadEntityGenerator levelHolder;
@@ -20,6 +18,7 @@ public class OpponentBarin : MonoBehaviour, IPausable, INamedRacer
     [SerializeField] private float followDinstace;
     [SerializeField] private float jumpDistance;
     [SerializeField] private float slideDistance;
+    [SerializeField] private bool inDeathLoop;
     private IOpponentMover mover;
     RoadEntityData nextEntity;
     private OpponentsData data;
@@ -221,16 +220,14 @@ public class OpponentBarin : MonoBehaviour, IPausable, INamedRacer
 
     private void GoToRoad(int toRoadId)
     {
-        if (toRoadId == mover.CurrentRoadID) return;
+        if (toRoadId == mover.CurrentRoadID || inDeathLoop) return;
         if(toRoadId > mover.CurrentRoadID)
         {
             mover.ChangePath(SwipeInput.SwipeType.Right);
-            //StartCoroutine(WaitAndDoAction(data.changeRoadTime + 0.3f, ()=> { GoToRoad(toRoadId); }));
         }
         else if (toRoadId < mover.CurrentRoadID)
         {
             mover.ChangePath(SwipeInput.SwipeType.Left);
-            //StartCoroutine(WaitAndDoAction(data.changeRoadTime + 0.3f, () => { GoToRoad(toRoadId); }));
         }
     }
 
@@ -257,4 +254,6 @@ public class OpponentBarin : MonoBehaviour, IPausable, INamedRacer
             gameObject.SetActive(false);
         }
     }
+
+    public void DeathLoopSetup(bool inDeathLoop) => this.inDeathLoop = inDeathLoop;
 }
