@@ -6,10 +6,12 @@ using UnityEngine;
 [RequireComponent(typeof(Wallet))]
 public class Player : MonoBehaviour, IEnemyAffected, INamedRacer
 {
+    public static event Action OnEnemyHited;
+
     [SerializeField] private string racerName;
     [SerializeField] private MovementType movementType;
     [SerializeField] private PlayerCameraData cameraData;
-    private Wallet playerWallet;
+    public Wallet playerWallet { get; private set; }
     private MoneyCounterUI moneyCounter;
     private PlayerFollowCamera playerCameraFollow;
     private RacerStatus status;
@@ -54,6 +56,7 @@ public class Player : MonoBehaviour, IEnemyAffected, INamedRacer
     {
         if(movementType == MovementType.Run)
         {
+            OnEnemyHited?.Invoke();
             return true;
         }
         return false;
@@ -66,7 +69,7 @@ public class Player : MonoBehaviour, IEnemyAffected, INamedRacer
         var affected = other.GetComponent<IPlayerAffected>();
         if (affected != null)
         {
-            affected.HitedByPlayer(movementType);
+            affected.HitedByPlayer(movementType, true);
         }
     }
 

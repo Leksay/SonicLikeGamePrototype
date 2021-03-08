@@ -1,11 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 public class AffectorsHolder : MonoBehaviour
 {
     [SerializeField] private GameObject effectedObject;
     private List<IBarrierAffected> barrierEffected;
     private List<IEnemyAffected> enemyEffected;
+    public static event Action OnBarrierHited;
     private void Start()
     {
         barrierEffected = new List<IBarrierAffected>();
@@ -21,7 +23,14 @@ public class AffectorsHolder : MonoBehaviour
         var enemy = other.GetComponent<Enemy>();
         if(barrier != null)
         {
-            barrierEffected.ForEach(e => e.BarrierHited());
+            barrierEffected.ForEach(e =>
+            {
+                e.BarrierHited();
+                if(e.GetType() == typeof(PlayerMover))
+                {
+                    OnBarrierHited?.Invoke();
+                }
+            });
         }
         if(enemy != null)
         {

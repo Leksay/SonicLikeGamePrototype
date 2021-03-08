@@ -23,7 +23,7 @@ public class OpponentMovement : MonoBehaviour, IEnemyAffected
         var affected = other.GetComponent<IPlayerAffected>();
         if (affected != null)
         {
-            affected.HitedByPlayer(movementType);
+            affected.HitedByPlayer(movementType, false);
         }
     }
 }

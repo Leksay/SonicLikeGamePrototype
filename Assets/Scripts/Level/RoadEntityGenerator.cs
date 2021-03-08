@@ -109,6 +109,10 @@ public class RoadEntityGenerator : MonoBehaviour
                 
             }
             var splineOnPercent = roadSpline.Evaluate(percent * i);
+            if (levelHolder.InDeathLoops((float)(percent * i)))
+            {
+                continue;
+            }
             var position = splineOnPercent.position;
             var rotation = splineOnPercent.rotation;
             GenerateEnemyOrBarrier(percent * i);

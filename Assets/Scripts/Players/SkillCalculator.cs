@@ -9,8 +9,12 @@ public class SkillCalculator : MonoBehaviour
     [SerializeField] private int skillPrise;
     [SerializeField] private float maxSkillValue = 100;
     [SerializeField] private float upgradeSkillValue;
+
+    [SerializeField] private AudioClip skillSound;
+    private AudioSource source;
     private void Start()
     {
+        source = GetComponent<AudioSource>();
         SkillUI.OnSkillSelected += UpgradeSkill;
     }
 
@@ -23,10 +27,24 @@ public class SkillCalculator : MonoBehaviour
     private bool UpgradeSkill(SkillType skillType)
     {
         int playerMoney = PlayerDataHolder.GetPlayerMoney();
-        if(playerMoney >= skillPrise)
+        float skillLevel = 0;
+        switch (skillType)
+        {
+            case SkillType.Speed:
+                skillLevel = PlayerDataHolder.GetSpeed();
+                break;
+            case SkillType.Acceleration:
+                skillLevel = PlayerDataHolder.GetAcceleration();
+                break;
+            case SkillType.Strength:
+                skillLevel = PlayerDataHolder.GetXCoin();
+                break;
+        }
+        if (playerMoney >= skillPrise && skillLevel < maxSkillValue)
         {
             PlayerDataHolder.RemoveMoney(skillPrise);
             AddSkillValue(skillType);
+            source.PlayOneShot(skillSound, 0.7f);
             return true;
         }
         return false;

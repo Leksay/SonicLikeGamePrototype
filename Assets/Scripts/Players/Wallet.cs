@@ -8,6 +8,7 @@ public class Wallet : MonoBehaviour, IWallet
     private int additionalCoins;
     private float coinsMultiplier;
     public event Action<int> OnGetMoney;
+    public event Action OnGetMoneyAction;
 
     private bool additionalMoneyAdded;
     private void Start()
@@ -19,6 +20,7 @@ public class Wallet : MonoBehaviour, IWallet
     {
         balance += count;
         OnGetMoney?.Invoke(balance);
+        OnGetMoneyAction?.Invoke();
     }
 
     public void SpendMoney(int count)
@@ -31,7 +33,6 @@ public class Wallet : MonoBehaviour, IWallet
     public int SetAdditionalCoins()
     {
         if (additionalMoneyAdded) return additionalCoins;
-        print($"multiplier = {coinsMultiplier} balance = {balance}");
         additionalMoneyAdded = true;
         additionalCoins = (int)(balance * coinsMultiplier) - balance;
         return additionalCoins;

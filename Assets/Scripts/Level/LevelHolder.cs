@@ -4,12 +4,21 @@ using UnityEngine;
 using Dreamteck.Splines;
 public class LevelHolder : MonoBehaviour
 {
+    [Header("Computer")]
+    [SerializeField] private SplineComputer computer;
+    
     [Header("Debug")]
     [SerializeField] private bool enableOffsetDebug;
     [SerializeField] private SplineFollower follower;
     [SerializeField] private float currentOffset;
-
     [SerializeField] private List<float> pathOffsets;
+    [SerializeField] private List<DeathLoop> deathLoops;
+
+    private void Awake()
+    {
+        deathLoops = new List<DeathLoop>();
+        deathLoops.AddRange(FindObjectsOfType<DeathLoop>());
+    }
 
     private void Start()
     {
@@ -55,5 +64,19 @@ public class LevelHolder : MonoBehaviour
     public float GetOffsetById(int offsetId) => offsetId < pathOffsets.Count ? pathOffsets[offsetId] : -1;
     public int AviableRoadCount() => pathOffsets.Count;
     public float[] GetPathsOffsets() => pathOffsets.ToArray();
+
+    public SplineComputer GetComputer() => computer;
+
+    public bool InDeathLoops(float pecent)
+    {
+        foreach(var dl in deathLoops)
+        {
+            if (pecent >= dl.GetStartPercent() && pecent <= dl.GetEndPercent())
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }
 

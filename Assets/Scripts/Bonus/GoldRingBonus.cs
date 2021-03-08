@@ -17,7 +17,7 @@ public class GoldRingBonus : MonoBehaviour, IBonus
     private void OnTriggerEnter(Collider other)
     {
         var wallet = other.GetComponent<IWallet>();
-        if (other != null)
+        if (wallet != null)
             GetBonus(wallet);
     }
 }

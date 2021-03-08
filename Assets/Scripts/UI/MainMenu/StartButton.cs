@@ -3,21 +3,23 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
-public class StartButton : MonoBehaviour, IPointerDownHandler
+using System;
+public class StartButton : MonoBehaviour, IPointerUpHandler
 {
+    public static event Action OnButtonPressed;
     [SerializeField] private Animator startButtonAnimator;
     private bool isSelected;
     private void Start()
     {
         startButtonAnimator = GetComponent<Animator>();
     }
-    public void OnPointerDown(PointerEventData eventData)
+    public void OnPointerUp(PointerEventData eventData)
     {
         if(isSelected == false)
         {
             isSelected = true;
+            OnButtonPressed?.Invoke();
             startButtonAnimator.SetTrigger("start");
-            StartCoroutine(WaitAndLoad(.2f,1));
         }
     }
 
@@ -25,5 +27,10 @@ public class StartButton : MonoBehaviour, IPointerDownHandler
     {
         yield return new WaitForSeconds(time);
         SceneManager.LoadSceneAsync(scene);
+    }
+
+    private void OnDestroy()
+    {
+        OnButtonPressed = null;
     }
 }

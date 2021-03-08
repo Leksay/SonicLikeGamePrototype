@@ -1,9 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using System;
 public class Enemy : MonoBehaviour, IPlayerAffected
 {
+    public static event Action OnAnyEnemyDying;
     public EnemyType enemyType;
     [SerializeField] private GameObject dieEffect;
     [SerializeField] private float dieEffectTime;
@@ -14,16 +15,20 @@ public class Enemy : MonoBehaviour, IPlayerAffected
         effectPoint = transform.parent.GetComponentInChildren<EffectPoint>().transform;
     }
 
-    public void HitedByPlayer(MovementType movementType)
+    public void HitedByPlayer(MovementType movementType, bool isPlayer)
     {
         if(enemyType == EnemyType.Ground && movementType == MovementType.Slide)
-            Die();
+            Die(isPlayer);
         if (enemyType == EnemyType.Fly && movementType == MovementType.Jump)
-            Die();
+            Die(isPlayer);
     }
 
-    private void Die()
+    private void Die(bool isPlayer)
     {
+        if(isPlayer)
+        {
+            OnAnyEnemyDying?.Invoke();
+        }
         if(dieEffect != null)
         {
             var effect = GameObject.Instantiate(dieEffect, effectPoint.position, Quaternion.identity);

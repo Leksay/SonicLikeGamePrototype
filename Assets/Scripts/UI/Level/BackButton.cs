@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
-public class BackButton : MonoBehaviour, IPointerDownHandler
+public class BackButton : MonoBehaviour, IPointerUpHandler
 {
     [SerializeField] private Animator aniamtor;
     private bool isSelected;
 
-    public void OnPointerDown(PointerEventData eventData)
+    public void OnPointerUp(PointerEventData eventData)
     {
         if(isSelected == false)
         {

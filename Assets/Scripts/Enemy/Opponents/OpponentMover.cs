@@ -6,7 +6,7 @@ using Dreamteck.Splines;
 [RequireComponent(typeof(PlayerAnimator))]
 [RequireComponent(typeof(IBoostable))]
 [RequireComponent(typeof(OpponentMovement))]
-public class OpponentMover : MonoBehaviour, IMover, IBarrierAffected, IPausable, IOpponentMover
+public class OpponentMover : MonoBehaviour, IMover, IBarrierAffected, IPausable, IOpponentMover, IDefendable
 {
     #region Debug
     [SerializeField] private bool changeRight;
@@ -45,7 +45,7 @@ public class OpponentMover : MonoBehaviour, IMover, IBarrierAffected, IPausable,
     private PlayerAnimator animator;
     private bool isAccelerating;
     private bool isDamping;
-    private IBoostable booster;
+    private List<IBoostable> boosters;
 
     private float desiredSpeed;
     private float actualSpeed;
@@ -60,7 +60,8 @@ public class OpponentMover : MonoBehaviour, IMover, IBarrierAffected, IPausable,
     private float changeRoadTimer;
     private Coroutine changeRoadCorutine;
     private bool initialized;
-    
+    private bool defended;
+
     void Start()
     {
         if(levelHolder == null)
@@ -71,9 +72,11 @@ public class OpponentMover : MonoBehaviour, IMover, IBarrierAffected, IPausable,
         animator = GetComponent<PlayerAnimator>();
         collider = GetComponent<CapsuleCollider>();
         opponent = GetComponent<OpponentMovement>();
+        follower.computer = levelHolder.GetComputer();
         defaultColliderHeight = collider.height;
         currentOffset = levelHolder.GetOffsetById(currenOffsetId);
-        booster = GetComponent<IBoostable>();
+        boosters = new List<IBoostable>();
+        boosters.AddRange(GetComponents<IBoostable>());
         Initialize(DataHolder.GetOpponentData(), DataHolder.GetLevelData());
         RegisterPausable();
     }
@@ -159,9 +162,14 @@ public class OpponentMover : MonoBehaviour, IMover, IBarrierAffected, IPausable,
 
     public void BarrierHited()
     {
+        if (defended)
+        {
+            boosters.ForEach(b => b.StopShild());
+            return;
+        }
         desiredSpeed = defaultSpeed;
         actualSpeed = 0;
-        booster.StopAllBoosters();
+        boosters.ForEach(b => b.StopAllBoosters());
         ChangeSpeed();
     }
 
@@ -372,4 +380,5 @@ public class OpponentMover : MonoBehaviour, IMover, IBarrierAffected, IPausable,
     {
         PauseController.RegisterPausable(this);
     }
+    public void SetDefend(bool isDefended) => defended = isDefended;
 }

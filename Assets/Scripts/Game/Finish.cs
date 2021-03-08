@@ -31,6 +31,7 @@ public class Finish : MonoBehaviour
         if (player != null)
         {
             playerFinished = true;
+            ControllManager.RemoveControll();
             OnCrossFinishLine?.Invoke();
         }
         else

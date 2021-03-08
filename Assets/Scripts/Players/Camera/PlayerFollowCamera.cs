@@ -13,6 +13,7 @@ public class PlayerFollowCamera : MonoBehaviour
     [SerializeField] private Transform cameSlideT;
     [SerializeField] private Transform playerT;
     [SerializeField] private Transform cameraStartT;
+    [SerializeField] private Transform deathLoopT;
     [SerializeField] private SplineComputer roadSpline;
     [SerializeField] private PlayerMover mover;
     [Space]
@@ -32,6 +33,10 @@ public class PlayerFollowCamera : MonoBehaviour
     [SerializeField] private float speedBoostedFOV;
     [SerializeField] private float speedBoostedSmooth;
     [SerializeField] private float speedReturningSmooth;
+    [Header("Death loop settings")]
+    [SerializeField] private float returningSmooth;
+    private float deathLoopTimer;
+    private bool isLoopReturning;
     private Camera cam;
     private float defaultFOV;
     private float currentFOV;
@@ -41,6 +46,7 @@ public class PlayerFollowCamera : MonoBehaviour
     private float defaultSpeed;
     private float slideTime = .8f;
     private bool isStarting;
+    private bool isOnDeathLoop;
     private float actualHeight;
     private Transform myT;
 
@@ -54,6 +60,8 @@ public class PlayerFollowCamera : MonoBehaviour
         PlayerMover.OnSlide += OnSlide;
         PlayerMover.OnSpeedBoost += BoostSpeed;
         PlayerMover.OnSpeedBoostStopped += SpeedBoostStopped;
+        DeathLoop.OnEnterDeathLoop += StartDeathLoop;
+        DeathLoop.OnExitDeathLoop += ExitDeathLoop;
         myT = transform;
         defaultSpeed = mover.GetDefaultSpeed();
         actualHeight = defaultHeight;
@@ -104,6 +112,8 @@ public class PlayerFollowCamera : MonoBehaviour
         PlayerMover.OnSlide -= OnSlide;
         PlayerMover.OnSpeedBoost -= BoostSpeed;
         PlayerMover.OnSpeedBoostStopped -= SpeedBoostStopped;
+        DeathLoop.OnEnterDeathLoop -= StartDeathLoop;
+        DeathLoop.OnExitDeathLoop -= ExitDeathLoop;
     }
 
     private void Update()
@@ -120,6 +130,7 @@ public class PlayerFollowCamera : MonoBehaviour
 
     private void ChangeFOV()
     {
+        if (isOnDeathLoop) return;
         if(currentFOV != desiredFOV)
         {
             float smooth = isSpeedBoosted ? speedBoostedSmooth : speedReturningSmooth;
@@ -184,6 +195,17 @@ public class PlayerFollowCamera : MonoBehaviour
                 isReturning = false;
             }
         }
+        else if(isLoopReturning)
+        {
+            deathLoopTimer += Time.deltaTime/1.5f;
+            position = Vector3.Lerp(myT.position,Vector3.Lerp(myT.position, cameraPointT.position, deathLoopTimer),deathLoopTimer);
+            myT.rotation = Quaternion.LookRotation(playerT.position - myT.position, Vector3.up);
+            if(deathLoopTimer >=.3f)
+            {
+                isLoopReturning = false;
+            }
+            
+        }
         else
         {
             if(isStarting)
@@ -193,8 +215,19 @@ public class PlayerFollowCamera : MonoBehaviour
             }
             else
             {
-                position = cameraPointT.position;
-                position += cameraPointT.up * actualHeight;
+                if (isOnDeathLoop)
+                {
+                    deathLoopTimer += Time.deltaTime;
+                    position = Vector3.Lerp(myT.position, deathLoopT.position, Time.deltaTime);
+                    myT.rotation = Quaternion.LookRotation(playerT.position - myT.position, Vector3.up);
+                }
+                else
+                {
+                    // normal movement 
+                    position = cameraPointT.position;
+                    position += cameraPointT.up * actualHeight;
+                }
+                
             }
         }
         myT.position = position;
@@ -239,6 +272,23 @@ public class PlayerFollowCamera : MonoBehaviour
         action();
     }
 
+    private void StartDeathLoop()
+    {
+        isOnDeathLoop = true;
+        isLoopReturning = false;
+        deathLoopTimer = 0;
+        ControllManager.RemoveControll();
+        print("camera " + isOnDeathLoop);
+    }
+
+    private void ExitDeathLoop()
+    {
+        isOnDeathLoop = false;
+        isLoopReturning = true;
+        deathLoopTimer = 0;
+        ControllManager.GiveControll();
+    }
+
     public void InitializePlayerCamera(PlayerCameraData data)
     {
         this.playerT = data.playerT; ;
@@ -246,6 +296,7 @@ public class PlayerFollowCamera : MonoBehaviour
         this.cameSlideT = data.slidePositionT;
         this.mover = data.mover;
         this.cameraStartT = data.cameraStartT;
+        this.deathLoopT = data.deathLoopPositionT;
         Intitalize();
     }
 }

@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2741710bb505e5442bd7e24596c8976d, type: 3}
+  m_Name: SoundsData
+  m_EditorClassIdentifier: 
+  Acceleration: {fileID: 8300000, guid: 4c227aebb6c4fde4e8883147f18c6f96, type: 3}
+  BarrierHited: {fileID: 8300000, guid: 374531bf3e1193246bd2472d8896e6b8, type: 3}
+  Bonus1: {fileID: 8300000, guid: 4d07e1caafad0574aaacbb0b34632fe5, type: 3}
+  Bonus2: {fileID: 8300000, guid: dfcabaffb5531ef4384d903696118d68, type: 3}
+  Bonus3: {fileID: 8300000, guid: fcdf63724f9729e47b27b2b9069b40d9, type: 3}
+  Bonus4: {fileID: 8300000, guid: ec5719e7ceba9fe47a768a8ce67aa7e1, type: 3}
+  Bonus5: {fileID: 8300000, guid: 253b32c676f1fba458b87ff839577ad6, type: 3}
+  Coins: {fileID: 8300000, guid: ec1527db054a07c43b437e94a06607bd, type: 3}
+  EnemyHited: {fileID: 8300000, guid: d58ec7dad0f58c942899404b52d85356, type: 3}
+  Finish: {fileID: 8300000, guid: a13c7b2fb746dae49938e0d57fceef34, type: 3}
+  Jump: {fileID: 8300000, guid: 4f49fd2c40d4db54a8069ca315fd9f1f, type: 3}
+  Scores: {fileID: 8300000, guid: e01f37d8a81901a4ba99e893315b3031, type: 3}
+  Swipe: {fileID: 8300000, guid: e79957f814794e5499cafe86e208cef9, type: 3}
+  HitEnemy: {fileID: 8300000, guid: 881e3f52c86c94f26a60718d35627cd8, type: 3}

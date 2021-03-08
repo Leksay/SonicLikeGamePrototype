@@ -1,9 +1,8 @@
 ﻿using UnityEngine;
-using Dreamteck;
 using Dreamteck.Splines;
 using System.Collections;
+using System.Collections.Generic;
 using System;
-using TMPro;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(SplineFollower))]
@@ -11,13 +10,15 @@ using TMPro;
 [RequireComponent(typeof(CapsuleCollider))]
 [RequireComponent(typeof(Player))]
 [RequireComponent(typeof(IBoostable))]
-public class PlayerMover : MonoBehaviour, IPausable, IBarrierAffected, IMover, IPlayerControllable
+public class PlayerMover : MonoBehaviour, IPausable, IBarrierAffected, IMover, IPlayerControllable, IDefendable
 {
     public delegate void UAction();
     public delegate void UActionFkloat(float desiredSpeed, bool justStop);
     public static event UAction OnSlide;
     public static event UAction OnSpeedBoost;
     public static event UActionFkloat OnSpeedBoostStopped;
+    public static event Action OnSwipeAction;
+    public static event Action OnJumpAction;
 
     [SerializeField] private Player player;
 
@@ -29,7 +30,7 @@ public class PlayerMover : MonoBehaviour, IPausable, IBarrierAffected, IMover, I
     [SerializeField] private float maxSpeed;
     private float desiredSpeed;// Speed to accelerate to 
     private bool isDamping;
-    private IBoostable booster;
+    private List<IBoostable> boosters;
 
     private CapsuleCollider collider;
     private float defaultColliderHeight;
@@ -73,7 +74,7 @@ public class PlayerMover : MonoBehaviour, IPausable, IBarrierAffected, IMover, I
     private bool isPaused;
     private bool isUnderControll;
     private float actualSpeed;
-
+    private bool defended;
 
     private void Awake()
     {
@@ -87,7 +88,8 @@ public class PlayerMover : MonoBehaviour, IPausable, IBarrierAffected, IMover, I
             levelHolder = FindObjectOfType<LevelHolder>();
         animator = GetComponent<PlayerAnimator>();
         collider = GetComponent<CapsuleCollider>();
-        booster = GetComponent<IBoostable>();
+        boosters = new List<IBoostable>();
+        boosters.AddRange(GetComponents<IBoostable>());
     }
 
     private void Start()
@@ -95,6 +97,7 @@ public class PlayerMover : MonoBehaviour, IPausable, IBarrierAffected, IMover, I
         SwipeInput.OnPlayerSwiped += OnSwipe;
         desiredSpeed = defaultSpeed;
         animator.SetRotationTime(changeRoadTime);
+        follower.computer = levelHolder.GetComputer();
         SetPlayerMovementType(MovementType.Run);
         ChangeSpeed();
         SetupSkills();
@@ -231,6 +234,7 @@ public class PlayerMover : MonoBehaviour, IPausable, IBarrierAffected, IMover, I
         {
             isJump = true;
             jumpEffect.Play();
+            OnJumpAction?.Invoke();
             jumpY = 0;
             collider.height = defaultColliderHeight / 2;
             animator.SetJumpAnimation(true);
@@ -254,6 +258,7 @@ public class PlayerMover : MonoBehaviour, IPausable, IBarrierAffected, IMover, I
         {
             nextRoadOffset = levelHolder.GetOffsetById(currentRoadId);
             changeRoadTimer = 0;
+            OnSwipeAction?.Invoke();
             startOffset = currentOffset;
             changeRoadCorutine = StartCoroutine(MoveNextRoad());
             animator.SetRotation(swipeType);
@@ -342,9 +347,16 @@ public class PlayerMover : MonoBehaviour, IPausable, IBarrierAffected, IMover, I
 
     public void BarrierHited()
     {
+        if(defended)
+        {
+            boosters.ForEach(b=>b.StopShild());
+            defended = false;
+            return;
+        }
         desiredSpeed = defaultSpeed;
+        actualSpeed = 0;
         OnSpeedBoostStopped?.Invoke(desiredSpeed, desiredSpeed == defaultSpeed);
-        booster.StopAllBoosters();
+        boosters.ForEach(b => b.StopAllBoosters());
         ChangeSpeed();
     }
 
@@ -385,4 +397,9 @@ public class PlayerMover : MonoBehaviour, IPausable, IBarrierAffected, IMover, I
     public void StopPlayerControll() => isUnderControll = false;
 
     public void RegisterControllable() => ControllManager.RegisterControllable(this);
+
+    public void SetDefend(bool isDefended)
+    {
+        defended = isDefended;
+    }
 }

@@ -6,6 +6,7 @@ using System;
 
 public class PlayersSpawner : MonoBehaviour
 {
+
     private GameObject playerPrefab;
     private List<GameObject> opponents;
     private int roadCount;
@@ -16,6 +17,7 @@ public class PlayersSpawner : MonoBehaviour
         opponents = DataHolder.GetOpponentsList();
         roadCount = DataHolder.GetRoadCount();
         GeneratePlayerAndOpponents();
+        PauseController.SetPause();
     }
 
     public void GeneratePlayerAndOpponents()
@@ -27,7 +29,7 @@ public class PlayersSpawner : MonoBehaviour
         bool isTutorial = PlayerDataHolder.GetTutorial() == 0;
         int playerRoadId = isTutorial ? 2 : roads[UnityEngine.Random.Range(0, roadCount)];
         SpawnPlayer(playerRoadId);
-        for(int i = 0; i < roadCount; i++)
+        for (int i = 0; i < roadCount; i++)
         {
             if (i != playerRoadId)
             {

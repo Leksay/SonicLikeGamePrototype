@@ -1,16 +1,20 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public class VisualEffecter : MonoBehaviour, IBarrierAffected, IBoostable
+using System;
+public class VisualEffecter : MonoBehaviour, IBarrierAffected, IBoostable, IDefendable
 {
-    [Header("Boost")]
+    [Header("Speed Boost")]
     [SerializeField] private GameObject boostEffectPrefab;
     [SerializeField] private float boostEffectTime;
 
     [SerializeField] private GameObject playerObject;
     [SerializeField] private float blinkTime;
     [SerializeField] private int blinkCount;
+
+    [Header("Shild")]
+    [SerializeField] private GameObject shildObject;
+    private bool defended;
 
     private Transform playerT;
     List<MeshRenderer> playerRenderers;
@@ -25,6 +29,7 @@ public class VisualEffecter : MonoBehaviour, IBarrierAffected, IBoostable
     }
     public void BarrierHited()
     {
+        if (defended) return;
         StartCoroutine(PlayerHitEffect());
     }
 
@@ -60,5 +65,41 @@ public class VisualEffecter : MonoBehaviour, IBarrierAffected, IBoostable
 
     public void StopAllBoosters()
     {
+    }
+
+    public void ShildBoost(float time)
+    {
+        defended = true;
+        shildObject.SetActive(true);
+    }
+
+    public void StopShild()
+    {
+        StartCoroutine(NextFrameShildOff());
+        shildObject.SetActive(false);
+    }
+
+    private IEnumerator NextFrameShildOff()
+    {
+        yield return null;
+        defended = false;
+    }
+
+    public void MagnetFieldBoost(float time)
+    {
+        // need to implement magnet field visual
+    }
+
+    public void StopMagnetField()
+    {
+        // need to implement magnet field visual
+    }
+
+    public void SetDefend(bool isDefended)
+    {
+        if(isDefended == false)
+        {
+            StopShild();
+        }
     }
 }

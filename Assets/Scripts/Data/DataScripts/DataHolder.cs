@@ -2,13 +2,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using Dreamteck.Splines;
 public class DataHolder : MonoBehaviour
 {
     private static DataHolder instance;
 
+    [SerializeField] private SplineComputer spline;
     [SerializeField] private SpawnedObjects spawnedObjects;
     [SerializeField] private OpponentsData opponentsData;
+    [SerializeField] private SoundsData soundsData;
     [SerializeField] private LevelData levelData;
     [SerializeField] private GameProcess gameProcess;
     [SerializeField] private Player currentPlayer;
@@ -42,4 +44,6 @@ public class DataHolder : MonoBehaviour
     public static GameProcess GetGameProcess() => instance.gameProcess;
     public static void SetCurrentPlayer(Player player) => instance.currentPlayer = player;
     public static Player GetCurrentPlayer() => instance.currentPlayer;
+    public static SoundsData GetSoundsData() => instance.soundsData;
+    public static SplineComputer GetSplineComputer() => instance.spline;
 }
