@@ -6,6 +6,9 @@ public class Finish : MonoBehaviour
 {
     public static event Action OnCrossFinishLine;
     public static event Action<OpponentBarin> OnCrossFinishLineEnemy;
+    public static event Action<RacerStatus.RacerValues> OnPlayerCrossFinish;
+    public static event Action<RacerStatus.RacerValues> OnEnemyCrossFinish;
+
     public static int playerPlace { get; private set; }
     private static bool playerFinished;
     [SerializeField] private float finishAppearsTime;
@@ -32,6 +35,14 @@ public class Finish : MonoBehaviour
         {
             playerFinished = true;
             ControllManager.RemoveControll();
+            var racer = other.GetComponent<RacerStatus>();
+            if (racer != null)
+            {
+                racer.finished = true;
+                OnPlayerCrossFinish?.Invoke(racer.GetRacerValues());
+            }
+
+            PlayerDataHolder.AddGameCount();
             OnCrossFinishLine?.Invoke();
         }
         else
@@ -42,7 +53,12 @@ public class Finish : MonoBehaviour
                 if(playerFinished == false)
                 {
                     playerPlace++;
-                    print(playerPlace);
+                    var racer = other.GetComponent<RacerStatus>();
+                    if (racer != null)
+                    {
+                        racer.finished = true;
+                        OnEnemyCrossFinish?.Invoke(racer.GetRacerValues());
+                    }
                 }
                 OnCrossFinishLineEnemy?.Invoke(enemy);
             }

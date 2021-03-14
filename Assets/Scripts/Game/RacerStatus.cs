@@ -7,6 +7,8 @@ using UnityEngine;
 [RequireComponent(typeof(INamedRacer))]
 public class RacerStatus : MonoBehaviour
 {
+    [SerializeField] private Sprite icon;
+    public bool finished;
     private IMover mover;
     private IWallet wallet;
     private INamedRacer named;
@@ -25,7 +27,8 @@ public class RacerStatus : MonoBehaviour
         {
             coins = wallet.GetBalance(),
             percent = mover.GetPecent(),
-            name = named.GetName()
+            name = named.GetName(),
+            icon = this.icon
         };
     }
 
@@ -36,5 +39,7 @@ public class RacerStatus : MonoBehaviour
         public float percent;
         public int coins;
         public string name;
+        public int place;
+        public Sprite icon;
     }
 }

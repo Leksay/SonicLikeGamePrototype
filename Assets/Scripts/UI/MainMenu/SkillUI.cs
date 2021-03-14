@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 using TMPro;
 using UnityEngine.UI;
@@ -12,17 +10,22 @@ public class SkillUI : MonoBehaviour, IPointerDownHandler
     [SerializeField] private ParticleSystem OnTouchPS;
     [SerializeField] private SkillType skillType;
     [SerializeField] private Slider skillSlider;
+    private TMP_Text priceText;
 
     private void Start()
     {
         SkillCalculator.OnSkillUpgraded += OnSkillUpgraded;
         InitializeSlider();
+        priceText = GetComponent<TMP_Text>();
+        SetPrice();
     }
 
     private void OnDestroy()
     {
         SkillCalculator.OnSkillUpgraded -= OnSkillUpgraded;
     }
+
+    private void SetPrice() => priceText.text = SkillCalculator.GetPriseByType(skillType).ToString();
 
     public void OnPointerDown(PointerEventData eventData)
     {
@@ -54,10 +57,10 @@ public class SkillUI : MonoBehaviour, IPointerDownHandler
 
     private void OnSkillUpgraded(SkillType type, float value)
     {
-
         if(skillType == type)
         {
             skillSlider.value = NormailzeSliderValue(value);
+            SetPrice();
         }
     }
 

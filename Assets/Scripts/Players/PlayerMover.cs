@@ -19,6 +19,7 @@ public class PlayerMover : MonoBehaviour, IPausable, IBarrierAffected, IMover, I
     public static event UActionFkloat OnSpeedBoostStopped;
     public static event Action OnSwipeAction;
     public static event Action OnJumpAction;
+    public static event Action OnSlideBreak;
 
     [SerializeField] private Player player;
 
@@ -75,6 +76,8 @@ public class PlayerMover : MonoBehaviour, IPausable, IBarrierAffected, IMover, I
     private bool isUnderControll;
     private float actualSpeed;
     private bool defended;
+    private bool inDeathLoop;
+    private bool slideBreak;
 
     private void Awake()
     {
@@ -183,12 +186,13 @@ public class PlayerMover : MonoBehaviour, IPausable, IBarrierAffected, IMover, I
     
     private void OnSwipe(SwipeInput.SwipeType swipeType)
     {
-        if (isUnderControll == false) return;
+        if (isUnderControll == false && inDeathLoop == false) return;
         if (changeRoadCorutine == null && ChangePath(swipeType))
         {
         }
         else
         {
+            if (isUnderControll == false) return;
             switch (swipeType)
             {
                 case SwipeInput.SwipeType.Up:
@@ -205,9 +209,15 @@ public class PlayerMover : MonoBehaviour, IPausable, IBarrierAffected, IMover, I
 
     private void StartSlide()
     {
-        if(!isJump && !isSliding)
+        if (/*!isJump && */!isSliding)
         {
             animator.SetSlideAnimation(true);
+            if(isJump)
+            {
+                StopJump();
+                animator.SetJumpAnimation(false);
+            }
+            slideBreak = false;
             slideEffect.Play();
             isSliding = true;
             collider.direction = 2;
@@ -230,11 +240,17 @@ public class PlayerMover : MonoBehaviour, IPausable, IBarrierAffected, IMover, I
 
     private void StartJump()
     {
-        if (!isJump && !isSliding)
+        if (!isJump /*&& !isSliding*/)
         {
             isJump = true;
             jumpEffect.Play();
             OnJumpAction?.Invoke();
+            if(isSliding)
+            {
+                slideBreak = true;
+                OnSlideBreak?.Invoke();
+                animator.SetSlideAnimation(false);
+            }
             jumpY = 0;
             collider.height = defaultColliderHeight / 2;
             animator.SetJumpAnimation(true);
@@ -273,7 +289,7 @@ public class PlayerMover : MonoBehaviour, IPausable, IBarrierAffected, IMover, I
     private IEnumerator Slide()
     {
         float timer = 0;
-        while(timer < slideTime)
+        while(timer < slideTime && !slideBreak)
         {
             jumpY = Mathf.Lerp(0, -playerSlideOffset, (timer) / slideTime);
             timer += Time.deltaTime;
@@ -281,7 +297,7 @@ public class PlayerMover : MonoBehaviour, IPausable, IBarrierAffected, IMover, I
             yield return null;
         }
         timer = 0;
-        while (timer < slideTime / 3)
+        while (timer < slideTime / 3 && !slideBreak)
         {
             jumpY = Mathf.Lerp(-playerSlideOffset, 0, (timer * 3) / slideTime);
             timer += Time.deltaTime;
@@ -289,7 +305,6 @@ public class PlayerMover : MonoBehaviour, IPausable, IBarrierAffected, IMover, I
             yield return null;
         }
         StopSlide();
-        yield return new WaitForSeconds(Time.deltaTime);
     }
 
     private IEnumerator MoveNextRoad()
@@ -384,6 +399,21 @@ public class PlayerMover : MonoBehaviour, IPausable, IBarrierAffected, IMover, I
         currentOffset = levelHolder.GetOffsetById(roadId);
         SetupOffset();
     }
+
+    private void OnEnable()
+    {
+        DeathLoop.OnEnterDeathLoop += DeathLoopEnter;
+        DeathLoop.OnExitDeathLoop += DeathLoopExit;
+    }
+
+    private void OnDisable()
+    {
+        DeathLoop.OnEnterDeathLoop -= DeathLoopEnter;
+        DeathLoop.OnExitDeathLoop -= DeathLoopExit;
+    }
+
+    private void DeathLoopEnter() => inDeathLoop = true;
+    private void DeathLoopExit() => inDeathLoop = false;
 
     public float GetPecent() => (float)follower.clampedPercent;
 

@@ -13515,6 +13515,7 @@ MonoBehaviour:
   followDinstace: 0.01
   jumpDistance: 0.005
   slideDistance: 0.007
+  inDeathLoop: 0
   entitiesData: []
 --- !u!114 &-8031899966794541707
 MonoBehaviour:
@@ -13528,6 +13529,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa538822b28b82e4d889a66a8a70b895, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  icon: {fileID: 21300000, guid: 52a7ae179f8b3d740807d53f1902ea6d, type: 3}
 --- !u!114 &1526508794612086300
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -45,7 +45,7 @@ public class GameProcess : MonoBehaviour
         // тут пересчитываем деньги
     }
 
-    private void nDisable()
+    private void OnDisable()
     {
         StaticDestroyer();
     }

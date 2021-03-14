@@ -131,7 +131,7 @@ public class OpponentMover : MonoBehaviour, IMover, IBarrierAffected, IPausable,
         follower = GetComponent<SplineFollower>();
         animator = GetComponent<PlayerAnimator>();
 
-        defaultSpeed = opponentData.defaultSpeed + Random.Range(-1,2);
+        defaultSpeed = opponentData.defaultSpeed + Random.Range(-1,1) + Time.realtimeSinceStartup%3 * Random.Range(-1,1);
         changeRoadTime = opponentData.changeRoadTime;
         changeRoadTreshold = opponentData.changeRoadTreshold;
         accelerationSpeed = opponentData.accelerationSpeed;

@@ -11,6 +11,9 @@ public class FinishTab : MonoBehaviour
     private int xCoins;
     private int finalBalance;
 
+    [Header("Rows")]
+    [SerializeField] private List<FinishTabRow> rows;
+
     [SerializeField] private TMP_Text playerPlace;
     //[SerializeField] private TMP_Text playerName;
     [SerializeField] private TMP_Text playerCoins;
@@ -18,12 +21,31 @@ public class FinishTab : MonoBehaviour
     [SerializeField] private TMP_Text playerBalance;
     private void Start()
     {
-        Finish.OnCrossFinishLine += ShowFinishMenu;
-        BalanceTrigger.OnBalanceAnimationTrigger += SetBalanceAnimation;
-        CoinsTrigger.OnCoinsTrigger += SetCoinsAnimation;
-        xCoinsTrigger.OnXCoinsTrigger += SetXCoinsAnimation;
+        //Finish.OnCrossFinishLine += ShowFinishMenu;
+        FinishPlaceHolder.OnPlayerFinishedAndCalculated += ShowResultTab;
+        //BalanceTrigger.OnBalanceAnimationTrigger += SetBalanceAnimation;
+        //CoinsTrigger.OnCoinsTrigger += SetCoinsAnimation;
+        //xCoinsTrigger.OnXCoinsTrigger += SetXCoinsAnimation;
         gameObject.SetActive(false);
     }
+ 
+    private void ShowResultTab(ref RacerStatus.RacerValues[] places)
+    {
+        ShowFinishMenu();
+        //print("=========================");
+        //for (int i = 0; i < places.Length; i++)
+        //{
+        //    print($"{places[i].place} {places[i].name} {places[i].percent}%");
+        //}
+        for (int i = 0; i < rows.Count; i++)
+        {
+            rows[i].SetName(places[i].name);
+            rows[i].SetCoins(places[i].coins);
+            rows[i].SetIcon(places[i].icon);
+        }
+
+    }
+    #region OldFunctions
 
     private void OnDestroy()
     {
@@ -31,6 +53,7 @@ public class FinishTab : MonoBehaviour
         BalanceTrigger.OnBalanceAnimationTrigger -= SetBalanceAnimation;
         CoinsTrigger.OnCoinsTrigger -= SetCoinsAnimation;
         xCoinsTrigger.OnXCoinsTrigger -= SetXCoinsAnimation;
+        FinishPlaceHolder.OnPlayerFinishedAndCalculated -= ShowResultTab;
     }
 
     private void FillTextData()
@@ -38,32 +61,27 @@ public class FinishTab : MonoBehaviour
         playerPlace.text = Finish.playerPlace.ToString();
         int balance = DataHolder.GetCurrentPlayer().GetRacerStatus().RacerWallet().GetBalance();
         int additionalCoins = DataHolder.GetCurrentPlayer().GetRacerStatus().RacerWallet().GetAdditionalCoins();
-        playerCoins.text = $"Coins:";
-        playerAdditionalCoins.text = $"xCoins: ";
-        playerBalance.text = $"Balance:";
+        playerCoins.text = $"Coins: 0";
+        playerAdditionalCoins.text = $"xCoins: 0";
+        playerBalance.text = $"Balance: 0";
         coins = balance;
         xCoins = additionalCoins;
         finalBalance = balance + additionalCoins;
     }
 
-    private void ClearAllText()
-    {
-        playerPlace.text = "";
-        playerCoins.text = "";
-        playerAdditionalCoins.text = "";
-    }
     private void ShowFinishMenu()
     {
         gameObject?.SetActive(true);
-        var status = DataHolder.GetCurrentPlayer().GetRacerStatus();
-        StartCoroutine(WaitAndFillData(.15f));
+        //var status = DataHolder.GetCurrentPlayer().GetRacerStatus();
+        //StartCoroutine(WaitAndFillData(.15f));
     }
 
 
     private IEnumerator WaitAndFillData(float time)
     {
         yield return new WaitForSeconds(time);
-        FillTextData();
+        //FillTextData();
+
     }
 
     private void SetBalanceAnimation()
@@ -116,4 +134,5 @@ public class FinishTab : MonoBehaviour
             yield return null;
         }
     }
+    #endregion
 }

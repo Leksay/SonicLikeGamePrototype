@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using System;
 public class Enemy : MonoBehaviour, IPlayerAffected
 {
@@ -28,7 +26,7 @@ public class Enemy : MonoBehaviour, IPlayerAffected
         if(isPlayer)
         {
             OnAnyEnemyDying?.Invoke();
-        }
+        } 
         if(dieEffect != null)
         {
             var effect = GameObject.Instantiate(dieEffect, effectPoint.position, Quaternion.identity);

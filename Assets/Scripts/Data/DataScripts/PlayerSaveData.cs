@@ -11,6 +11,7 @@ public class PlayerSaveData : ScriptableObject
     public AccelerationSkillData AccelerationSkill;
     public xCoinSkillData xCoinSkill;
     public TutorialData Tutorial;
+    public CountOfGames GamesCount;
 }
 [Serializable]
 public struct TutorialData
@@ -48,4 +49,10 @@ public struct xCoinSkillData
 {
     public string Key;
     public float value;
+}
+[Serializable]
+public struct CountOfGames
+{
+    public string Key;
+    public int value;
 }

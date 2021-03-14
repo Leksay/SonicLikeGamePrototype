@@ -5,7 +5,13 @@ using UnityEngine;
 public class FieldWallet : MonoBehaviour, IWallet
 {
     [SerializeField] private Wallet playerWallet;
+    private Transform parent;
+    public Transform walletTransform => parent;
 
+    private void Start()
+    {
+        parent = transform.parent;
+    }
     public int GetAdditionalCoins() => 0;
     public int GetBalance() => 0;
 

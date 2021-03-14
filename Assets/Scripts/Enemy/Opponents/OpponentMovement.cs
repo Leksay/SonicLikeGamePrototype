@@ -10,7 +10,6 @@ public class OpponentMovement : MonoBehaviour, IEnemyAffected
     {
         if (movementType == MovementType.Run)
         {
-            print("Hited by enemy!");
             return true;
         }
         return false;

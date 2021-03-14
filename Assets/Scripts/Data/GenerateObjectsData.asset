@@ -32,6 +32,6 @@ MonoBehaviour:
   - {fileID: 4391843425018444964, guid: 143798230a7ef824fb78dc947f80ce37, type: 3}
   money:
   - {fileID: 8085503786815817074, guid: 2cc34fa9256d63d428a4b8afe2b30bda, type: 3}
-  player: {fileID: 238741848576855422, guid: e6237934f9443d644bf65339f258f075, type: 3}
+  player: {fileID: 5474253543698582368, guid: e1fcb4cee34ef3844b08c33fb824c067, type: 3}
   opponents:
   - {fileID: 1937193138540872184, guid: 411b255f3458dcf43b52a4a75c07b461, type: 3}

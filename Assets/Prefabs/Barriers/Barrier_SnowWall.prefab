@@ -31,19 +31,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4825986049651240031
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2464234186957226010}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 99913d68a10fbfa43bf02003d6468005, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  barrierType: 0
 --- !u!136 &4825986049651240030
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -58,6 +45,19 @@ CapsuleCollider:
   m_Height: 3.82
   m_Direction: 0
   m_Center: {x: -0.018803656, y: 0.36, z: -0.012099311}
+--- !u!114 &4825986049651240031
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2464234186957226010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99913d68a10fbfa43bf02003d6468005, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  barrierType: 0
 --- !u!1001 &2464234186957129402
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -123,6 +123,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 7916fc6d9c575284f9be291bb5005783, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2300000, guid: 7916fc6d9c575284f9be291bb5005783, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2300000, guid: 7916fc6d9c575284f9be291bb5005783, type: 3}
+      propertyPath: m_ReceiveShadows
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2300000, guid: 7916fc6d9c575284f9be291bb5005783, type: 3}

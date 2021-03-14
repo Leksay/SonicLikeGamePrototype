@@ -13,8 +13,12 @@ public class PlayersSpawner : MonoBehaviour
 
     private void Start()
     {
-        playerPrefab = DataHolder.GetPlayerPrefab();
-        opponents = DataHolder.GetOpponentsList();
+        playerPrefab = SkinDataHolder.GetPlayerSkinData().players[SkinnController.currentSkin].PlayerHolder;
+        opponents = new List<GameObject>();
+        for (int i = 0; i < SkinDataHolder.GetPlayerSkinData().opponents.Count; i++)
+        {
+            opponents.Add(SkinDataHolder.GetPlayerSkinData().opponents[i].PlayerHolder);
+        }
         roadCount = DataHolder.GetRoadCount();
         GeneratePlayerAndOpponents();
         PauseController.SetPause();
@@ -29,18 +33,27 @@ public class PlayersSpawner : MonoBehaviour
         bool isTutorial = PlayerDataHolder.GetTutorial() == 0;
         int playerRoadId = isTutorial ? 2 : roads[UnityEngine.Random.Range(0, roadCount)];
         SpawnPlayer(playerRoadId);
-        for (int i = 0; i < roadCount; i++)
+        List<int> opponentsSkinsId = new List<int>();
+        for (int i = 0; i < SkinDataHolder.GetPlayerSkinData().opponents.Count; i++)
         {
-            if (i != playerRoadId)
-            {
-                SpawnEnemy(i);
-            }
+            if (i != SkinnController.currentSkin)
+                opponentsSkinsId.Add(i);
         }
+        //for (int i = 0; i < 1/*roadCount*/; i++)
+        //{
+        //    if (i != playerRoadId)
+        //    {
+        //        SpawnEnemy(i, opponentsSkinsId);
+        //    }
+        //}
+        var enemy = GameObject.Instantiate(opponents[1]);
+        enemy.GetComponent<IOpponentMover>().SetRoad(1);
     }
 
-    private void SpawnEnemy(int road)
+    private void SpawnEnemy(int road, List<int> ids)
     {
-        var enemy = GameObject.Instantiate(opponents[0]);
+        var enemy = GameObject.Instantiate(opponents[ids[0]]);
+        ids.RemoveAt(0);
         enemy.GetComponent<IOpponentMover>().SetRoad(road);
     }
 

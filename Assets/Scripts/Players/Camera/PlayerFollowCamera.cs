@@ -7,6 +7,7 @@ using System;
 [RequireComponent(typeof(Camera))]
 public class PlayerFollowCamera : MonoBehaviour
 {
+    public static Camera followCamera;
     private bool isWorking;
 
     [SerializeField] private Transform cameraPointT;
@@ -49,6 +50,7 @@ public class PlayerFollowCamera : MonoBehaviour
     private bool isOnDeathLoop;
     private float actualHeight;
     private Transform myT;
+    private Quaternion cameraStartRotation;
 
     private void Intitalize()
     {
@@ -57,11 +59,13 @@ public class PlayerFollowCamera : MonoBehaviour
             Debug.LogError("plyaer T in CameraFollow script is null");
         }
         cam = Camera.main;
+        followCamera = cam;
         PlayerMover.OnSlide += OnSlide;
         PlayerMover.OnSpeedBoost += BoostSpeed;
         PlayerMover.OnSpeedBoostStopped += SpeedBoostStopped;
         DeathLoop.OnEnterDeathLoop += StartDeathLoop;
         DeathLoop.OnExitDeathLoop += ExitDeathLoop;
+        PlayerMover.OnSlideBreak += StopSlideAction;
         myT = transform;
         defaultSpeed = mover.GetDefaultSpeed();
         actualHeight = defaultHeight;
@@ -69,6 +73,7 @@ public class PlayerFollowCamera : MonoBehaviour
         isWorking = true;
         isStarting = true;
         StartLine.OnCrossStartLine += OnPlayerCrossLine;
+        myT.parent = cameraPointT;
     }
 
     private void OnPlayerCrossLine()
@@ -79,6 +84,7 @@ public class PlayerFollowCamera : MonoBehaviour
     private void OnDestroy()
     {
         StartLine.OnCrossStartLine -= OnPlayerCrossLine;
+        PlayerMover.OnSlideBreak -= StopSlideAction;
     }
 
     private IEnumerator MoveToPlayer(float moveTime)
@@ -197,12 +203,14 @@ public class PlayerFollowCamera : MonoBehaviour
         }
         else if(isLoopReturning)
         {
-            deathLoopTimer += Time.deltaTime/1.5f;
+            deathLoopTimer += Time.deltaTime/3;
             position = Vector3.Lerp(myT.position,Vector3.Lerp(myT.position, cameraPointT.position, deathLoopTimer),deathLoopTimer);
-            myT.rotation = Quaternion.LookRotation(playerT.position - myT.position, Vector3.up);
-            if(deathLoopTimer >=.3f)
+            myT.rotation =  Quaternion.LookRotation((playerT.position + cameraPointT.up * (actualHeight + 0.35f)) - myT.position, cameraPointT.up);
+            if(deathLoopTimer >=9f)
             {
-                isLoopReturning = false;
+                myT.rotation = Quaternion.Lerp(myT.rotation, cameraPointT.rotation, rotateSmooth);
+                if(deathLoopTimer > 1.1f )
+                    isLoopReturning = false;
             }
             
         }
@@ -217,9 +225,16 @@ public class PlayerFollowCamera : MonoBehaviour
             {
                 if (isOnDeathLoop)
                 {
-                    deathLoopTimer += Time.deltaTime;
-                    position = Vector3.Lerp(myT.position, deathLoopT.position, Time.deltaTime);
-                    myT.rotation = Quaternion.LookRotation(playerT.position - myT.position, Vector3.up);
+                    deathLoopTimer += Time.deltaTime/11;
+                    position = Vector3.Lerp(myT.position, deathLoopT.position, deathLoopTimer);
+                    if(deathLoopTimer < 0.35)
+                    {
+                        myT.rotation = Quaternion.Lerp(myT.rotation, Quaternion.LookRotation((playerT.position + cameraPointT.up * (actualHeight + 0.25f)) - myT.position, Vector3.up), rotateSmooth);
+                    }
+                    else
+                    {
+                        myT.rotation =  Quaternion.LookRotation((playerT.position + cameraPointT.up * (actualHeight+0.25f))- myT.position, Vector3.up);
+                    }
                 }
                 else
                 {
@@ -262,7 +277,7 @@ public class PlayerFollowCamera : MonoBehaviour
     {
         isSliding = true;
         isReturning = false;
-        StartCoroutine(WaitAndDoAction(slideTime, () => { isSliding = false; isReturning = true; }));
+        StartCoroutine(WaitAndDoAction(slideTime, StopSlideAction));
     }
 
 
@@ -272,13 +287,18 @@ public class PlayerFollowCamera : MonoBehaviour
         action();
     }
 
+    private void StopSlideAction()
+    {
+        isSliding = false;
+        isReturning = true;
+    }
+
     private void StartDeathLoop()
     {
         isOnDeathLoop = true;
         isLoopReturning = false;
         deathLoopTimer = 0;
         ControllManager.RemoveControll();
-        print("camera " + isOnDeathLoop);
     }
 
     private void ExitDeathLoop()

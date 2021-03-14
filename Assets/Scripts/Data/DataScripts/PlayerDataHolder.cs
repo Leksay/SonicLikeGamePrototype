@@ -32,6 +32,7 @@ public class PlayerDataHolder : MonoBehaviour
     public static float GetAcceleration() => instance.playerData.AccelerationSkill.value;
     public static float GetXCoin() => instance.playerData.xCoinSkill.value;
     public static int GetTutorial() => instance.playerData.Tutorial.value; // 0 fistStart, 1 already tutorialled
+    public static int GetGamesCount() => PlayerPrefs.GetInt(instance.playerData.GamesCount.Key);
 
     private void LoadPlayerData()
     {
@@ -41,6 +42,7 @@ public class PlayerDataHolder : MonoBehaviour
         playerData.Name.Name = PlayerPrefs.GetString(playerData.Name.Key);
         playerData.Money.value = PlayerPrefs.GetInt(playerData.Money.Key);
         playerData.Tutorial.value = PlayerPrefs.GetInt(playerData.Tutorial.Key);
+        playerData.GamesCount.value = PlayerPrefs.GetInt(playerData.GamesCount.Key);
     }
 
     private static void NotifyMoneyChanged(int balance)
@@ -57,6 +59,15 @@ public class PlayerDataHolder : MonoBehaviour
         PlayerPrefs.SetString(data.Name.Key, data.Name.Name);
         PlayerPrefs.SetInt(data.Money.Key, data.Money.value);
         PlayerPrefs.SetInt(data.Tutorial.Key, data.Tutorial.value);
+        PlayerPrefs.SetInt(data.GamesCount.Key, data.GamesCount.value);
+    }
+
+    public static void ClearSkills()
+    {
+        PlayerSaveData data = instance.playerData;
+        PlayerPrefs.SetFloat(data.AccelerationSkill.Key, 0);
+        PlayerPrefs.SetFloat(data.xCoinSkill.Key, 0);
+        PlayerPrefs.SetFloat(data.SpeedSkill.Key, 0);
     }
 
     public static void AddMoney(int money)
@@ -100,5 +111,10 @@ public class PlayerDataHolder : MonoBehaviour
     {
         instance.playerData.Tutorial.value = value;
         PlayerPrefs.SetInt(instance.playerData.Tutorial.Key, instance.playerData.Tutorial.value);
+    }
+
+    public static void AddGameCount()
+    {
+        PlayerPrefs.SetInt(instance.playerData.GamesCount.Key, GetGamesCount()+ 1);
     }
 }

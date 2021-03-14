@@ -30,3 +30,6 @@ MonoBehaviour:
   Tutorial:
     Key: tutorial
     value: 1
+  GamesCount:
+    Key: gamesCount
+    value: 0

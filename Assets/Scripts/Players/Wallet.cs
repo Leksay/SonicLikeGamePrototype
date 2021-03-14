@@ -9,11 +9,15 @@ public class Wallet : MonoBehaviour, IWallet
     private float coinsMultiplier;
     public event Action<int> OnGetMoney;
     public event Action OnGetMoneyAction;
-
+    private Transform myT;
     private bool additionalMoneyAdded;
+
+    public Transform walletTransform { get => myT; }
+
     private void Start()
     {
         balance = 0;
+        myT = transform;
     }
 
     public void GetMoney(int count)
