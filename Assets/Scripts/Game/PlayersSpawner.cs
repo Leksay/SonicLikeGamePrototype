@@ -39,15 +39,13 @@ public class PlayersSpawner : MonoBehaviour
             if (i != SkinnController.currentSkin)
                 opponentsSkinsId.Add(i);
         }
-        //for (int i = 0; i < 1/*roadCount*/; i++)
-        //{
-        //    if (i != playerRoadId)
-        //    {
-        //        SpawnEnemy(i, opponentsSkinsId);
-        //    }
-        //}
-        var enemy = GameObject.Instantiate(opponents[1]);
-        enemy.GetComponent<IOpponentMover>().SetRoad(1);
+        for (int i = 0; i < roadCount; i++)
+        {
+            if (i != playerRoadId)
+            {
+                SpawnEnemy(i, opponentsSkinsId);
+            }
+        }
     }
 
     private void SpawnEnemy(int road, List<int> ids)
