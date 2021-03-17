@@ -5362,6 +5362,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46fc80111ff913e42ae161407073d386, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rotationSpeed: 3
   skinns:
   - {fileID: 533372265}
   - {fileID: 1524630796}
@@ -5588,7 +5589,7 @@ PrefabInstance:
     - target: {fileID: 3091234980230331111, guid: c140b67a359474dd89d41d0ac0381a64,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 237.87306
+      value: 237.87305
       objectReference: {fileID: 0}
     - target: {fileID: 3091234980230331111, guid: c140b67a359474dd89d41d0ac0381a64,
         type: 3}

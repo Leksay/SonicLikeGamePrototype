@@ -34,8 +34,7 @@ public class Skin : MonoBehaviour
             {
                 for (int i = 0; i < r.materials.Length; i++)
                 {
-                    r.materials[i].color = Color.black;
-                    r.materials[i].mainTexture = Texture2D.blackTexture;
+                    r.materials[i].SetColor("_Color", Color.white * 0.15f);
                     r.materials[i].SetFloat("Shininess", 0);
                 }
             });

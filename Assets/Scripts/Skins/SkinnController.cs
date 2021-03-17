@@ -5,8 +5,12 @@ using System;
 public class SkinnController : MonoBehaviour
 {
     public static event Action<bool> OnChangeActive;
+    public static event Action OnRightBorder;
+    public static event Action OnLeftBorder;
 
+    public static int skinnCount;
     public static int currentSkin { get; private set; }
+    [SerializeField] private float rotationSpeed;
     [SerializeField] private List<Skin> skinns;
     [SerializeField] private Transform skinnRotator;
     [SerializeField] private float offset;
@@ -29,6 +33,7 @@ public class SkinnController : MonoBehaviour
         startY = transform.position.y;
         currentOffset = offset;
         desiredOffset = offset;
+        skinnCount = skinns.Count;
         for (int i = 0; i < skinnsT.Count; i++)
         {
             float x = skinnRotator.position.x + radious * Mathf.Cos(i + offset);
@@ -82,6 +87,11 @@ public class SkinnController : MonoBehaviour
         currentSkin = Mathf.Clamp(currentSkin + 1, 0, skinns.Count-1);
         desiredOffset = offset - currentSkin;
         moving = true;
+        if (currentSkin == skinns.Count - 1)
+        {
+            OnRightBorder?.Invoke();
+        }
+
         StartCoroutine(MoveToNext());
         OnChangeActive?.Invoke(CurrentSkinIsActive());
     }
@@ -93,6 +103,10 @@ public class SkinnController : MonoBehaviour
         desiredOffset = currentOffset + 1;
         moving = true;
         StartCoroutine(MoveToPrevious());
+        if (currentSkin == 0)
+        {
+            OnLeftBorder?.Invoke();
+        }
         OnChangeActive?.Invoke(CurrentSkinIsActive());
     }
 
@@ -100,7 +114,7 @@ public class SkinnController : MonoBehaviour
     {
         while(currentOffset > desiredOffset)
         {
-            currentOffset -= Time.deltaTime;
+            currentOffset -= Time.deltaTime * rotationSpeed;
             SetPosition();
             yield return null;
         }
@@ -115,7 +129,7 @@ public class SkinnController : MonoBehaviour
     {
         while (currentOffset < desiredOffset)
         {
-            currentOffset += Time.deltaTime;
+            currentOffset += Time.deltaTime * rotationSpeed;
             SetPosition();
             yield return null;
         }

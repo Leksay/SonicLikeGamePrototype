@@ -52,11 +52,12 @@ public class FollowArrow : MonoBehaviour
     private void FixedUpdate()
     {
         if (isWorking == false) return;
+        print(playerT);
         var myPercent = spline.Project(playerT.position);
         var followPercent = spline.Project(followTransform.position);
         Vector3 indicationPosition = cam.WorldToScreenPoint(followTransform.position);
         var viewportPoint = cam.WorldToViewportPoint(followTransform.position);
-        if (renderer.isVisible || Mathf.Abs((float)(myPercent - followPercent)) > 0.05f)
+        if (renderer.isVisible || Mathf.Abs((float)(myPercent - followPercent)) > 0.015f)
         {
             myImage.color = transparent;
             return;

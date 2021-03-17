@@ -17,16 +17,16 @@ MonoBehaviour:
     Name: Player
   Money:
     Key: money
-    value: 1359
+    value: 38325
   SpeedSkill:
     Key: speedSkill
-    value: 60
+    value: 80
   AccelerationSkill:
     Key: accelerationSkill
-    value: 50
+    value: 40
   xCoinSkill:
     Key: xCoinSkill
-    value: 0
+    value: 30
   Tutorial:
     Key: tutorial
     value: 1
