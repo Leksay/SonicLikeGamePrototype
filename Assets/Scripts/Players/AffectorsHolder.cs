@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Players;
 public class AffectorsHolder : MonoBehaviour
 {
     [SerializeField] private GameObject effectedObject;

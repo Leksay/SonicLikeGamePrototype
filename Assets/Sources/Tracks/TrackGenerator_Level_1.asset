@@ -16,63 +16,67 @@ MonoBehaviour:
   _prefabs:
     Normal:
       mesh: {fileID: 4300000, guid: ba58d8b252659514195801a1d1fae338, type: 3}
-      material: {fileID: 2100000, guid: 87d2215b0b73e85429deecaafc3c57d0, type: 2}
-      scale: {x: 0.03, y: 0.2, z: 1}
+      scale: {x: 0.0165, y: 0.1, z: 1}
     Rails:
       mesh: {fileID: 4300000, guid: 311d320ec6aded547bd1987f55ebf614, type: 3}
-      material: {fileID: 2100000, guid: 87d2215b0b73e85429deecaafc3c57d0, type: 2}
-      scale: {x: 0.02, y: 0.2, z: 1}
+      scale: {x: 0.012, y: 0.1, z: 1}
+    RoadMaterial: {fileID: 2100000, guid: 87d2215b0b73e85429deecaafc3c57d0, type: 2}
     StartLine:
-      prefab: {fileID: 0}
-      offset: 0
+      prefab: {fileID: 8291550927873293769, guid: 2673207d8eb6b884eb03d7f71ca65693,
+        type: 3}
+      offset: {x: 0, y: 0, z: 0}
+    startPointIndex: 14
     FinishLine:
-      prefab: {fileID: 0}
-      offset: 0
+      prefab: {fileID: 6158137469767189023, guid: 6ebe312bbf744ba4fb307d720361b9da,
+        type: 3}
+      offset: {x: 0, y: 2.8, z: -14}
+    finishAdd: 50
     Magnet:
       prefab: {fileID: 542659991630719771, guid: db220430852f80f448275d4b14a63a1e,
         type: 3}
-      offset: 0
+      offset: {x: 0, y: 0, z: 0}
     Obstacle:
       prefab: {fileID: 3300883095922200285, guid: 8e536ba427e8a5a4ab0e0e32076083d3,
         type: 3}
-      offset: 0
+      offset: {x: 0, y: 0, z: 0}
     ObstacleBlock:
       prefab: {fileID: 7306404836748552877, guid: f925a0e5bda958d49b191a430aa4effe,
         type: 3}
-      offset: 0
+      offset: {x: 0, y: 0, z: 0}
     EnemyGround:
       prefab: {fileID: 3289411158023636781, guid: 909f92e38b7f190479fdc036995ad04e,
         type: 3}
-      offset: 0
+      offset: {x: 0, y: 0, z: 0}
     EnemyAir:
       prefab: {fileID: 3638159731382217644, guid: f70ffbae6bc10e9438a2ddd4aff6d61a,
         type: 3}
-      offset: 2
+      offset: {x: 0, y: 2, z: 0}
     Shield:
       prefab: {fileID: 7592200423514927142, guid: a296d4ae2217cfd42a260117a7499450,
         type: 3}
-      offset: 1
+      offset: {x: 0, y: 1.5, z: 0}
     Accelerator:
       prefab: {fileID: 328180074251637069, guid: 4115951e0ea4ac94eb7f247e00f55c1d,
         type: 3}
-      offset: 0
+      offset: {x: 0, y: 0, z: 0}
     CoinLow:
       prefab: {fileID: 3860823586787003211, guid: d1786164d70a0a440804122c766c55b9,
         type: 3}
-      offset: 0.25
+      offset: {x: 0, y: 0, z: 0}
     CoinMiddle:
       prefab: {fileID: 3978206949454726411, guid: f6f3905ae2a4df845b349ab6a6a7606e,
         type: 3}
-      offset: 0.5
+      offset: {x: 0, y: 0, z: 0}
     CoinHigh:
       prefab: {fileID: 8858498933852328836, guid: 8228f2d0a49f64141a4e6c5ce96ca318,
         type: 3}
-      offset: 0.75
+      offset: {x: 0, y: 0, z: 0}
   _stepLength: 1
   _stepHorizontalRotate: 3
   _stepVerticalRotate: 20
   _lines: 4
   _linesInterval: 2
+  _simplifyTrackMeshes: 1
   _track:
   - fold: 0
     Lines:
@@ -432,7 +436,7 @@ MonoBehaviour:
       surface: 0
     - values: 08000000
       surface: 0
-    - values: 
+    - values: 08000000
       surface: 0
     - values: 
       surface: 0
@@ -454,7 +458,7 @@ MonoBehaviour:
       surface: 0
     - values: 0a000000
       surface: 0
-    - values: 0800000008000000
+    - values: 08000000
       surface: 0
     - values: 
       surface: 0
@@ -465,7 +469,7 @@ MonoBehaviour:
       surface: 0
     - values: 09000000
       surface: 0
-    - values: 0800000008000000
+    - values: 08000000
       surface: 0
     - values: 
       surface: 0
@@ -487,7 +491,7 @@ MonoBehaviour:
       surface: 0
     - values: 
       surface: 0
-    - values: 
+    - values: 08000000
       surface: 0
     - values: 
       surface: 0
@@ -1165,62 +1169,62 @@ MonoBehaviour:
     dir: 0
   - fold: 0
     Lines:
-    - values: 
+    - values: 0a000000
       surface: 0
     - values: 
       surface: 0
     - values: 
       surface: 0
-    - values: 
+    - values: 0a000000
       surface: 0
     dir: 0
   - fold: 0
     Lines:
-    - values: 0a00000009000000
+    - values: 09000000
       surface: 0
-    - values: 0800000008000000
+    - values: 08000000
       surface: 0
-    - values: 0800000008000000
+    - values: 08000000
       surface: 0
-    - values: 0a00000009000000
+    - values: 09000000
       surface: 0
     dir: 0
   - fold: 0
     Lines:
-    - values: 0800000008000000
-      surface: 0
     - values: 08000000
       surface: 0
     - values: 08000000
       surface: 0
-    - values: 0800000008000000
+    - values: 08000000
+      surface: 0
+    - values: 08000000
       surface: 0
     dir: 0
   - fold: 0
     Lines:
-    - values: 0800000008000000
-      surface: 0
     - values: 08000000
       surface: 0
     - values: 08000000
       surface: 0
-    - values: 0800000008000000
+    - values: 08000000
+      surface: 0
+    - values: 08000000
       surface: 0
     dir: 0
   - fold: 0
     Lines:
-    - values: 
-      surface: 0
     - values: 08000000
       surface: 0
     - values: 08000000
       surface: 0
-    - values: 
+    - values: 08000000
+      surface: 0
+    - values: 08000000
       surface: 0
     dir: 0
   - fold: 0
     Lines:
-    - values: 
+    - values: 08000000
       surface: 0
     - values: 08000000
       surface: 0
@@ -1983,7 +1987,7 @@ MonoBehaviour:
       surface: 0
     - values: 
       surface: 0
-    - values: 
+    - values: 08000000
       surface: 0
     - values: 
       surface: 0
@@ -2005,7 +2009,7 @@ MonoBehaviour:
       surface: 0
     - values: 02000000
       surface: 0
-    - values: 0800000008000000
+    - values: 08000000
       surface: 0
     - values: 04000000
       surface: 0
@@ -2025,7 +2029,7 @@ MonoBehaviour:
     Lines:
     - values: 
       surface: 0
-    - values: 
+    - values: 08000000
       surface: 0
     - values: 
       surface: 0
@@ -2047,7 +2051,7 @@ MonoBehaviour:
     Lines:
     - values: 04000000
       surface: 0
-    - values: 0800000008000000
+    - values: 08000000
       surface: 0
     - values: 02000000
       surface: 0
@@ -2093,7 +2097,7 @@ MonoBehaviour:
       surface: 0
     - values: 02000000
       surface: 0
-    - values: 0800000008000000
+    - values: 08000000
       surface: 0
     - values: 04000000
       surface: 0
@@ -2115,7 +2119,7 @@ MonoBehaviour:
       surface: 0
     - values: 
       surface: 0
-    - values: 
+    - values: 08000000
       surface: 0
     - values: 
       surface: 0
@@ -2201,11 +2205,11 @@ MonoBehaviour:
     Lines:
     - values: 
       surface: 0
-    - values: 
+    - values: 08000000
       surface: 0
     - values: 
       surface: 0
-    - values: 
+    - values: 08000000
       surface: 0
     dir: 0
   - fold: 0
@@ -2223,42 +2227,42 @@ MonoBehaviour:
     Lines:
     - values: 
       surface: 0
-    - values: 0800000008000000
+    - values: 08000000
       surface: 0
     - values: 
       surface: 0
-    - values: 0800000008000000
+    - values: 08000000
       surface: 0
     dir: 0
   - fold: 0
     Lines:
-    - values: 
+    - values: 08000000
       surface: 0
-    - values: 0800000008000000
+    - values: 08000000
       surface: 0
-    - values: 
+    - values: 08000000
       surface: 0
-    - values: 0800000008000000
-      surface: 0
-    dir: 0
-  - fold: 0
-    Lines:
-    - values: 0800000008000000
-      surface: 0
-    - values: 
-      surface: 0
-    - values: 0800000008000000
-      surface: 0
-    - values: 
+    - values: 08000000
       surface: 0
     dir: 0
   - fold: 0
     Lines:
-    - values: 0800000008000000
+    - values: 08000000
+      surface: 0
+    - values: 08000000
+      surface: 0
+    - values: 08000000
+      surface: 0
+    - values: 08000000
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 08000000
       surface: 0
     - values: 
       surface: 0
-    - values: 0800000008000000
+    - values: 08000000
       surface: 0
     - values: 
       surface: 0
@@ -2276,11 +2280,11 @@ MonoBehaviour:
     dir: 0
   - fold: 0
     Lines:
-    - values: 
+    - values: 08000000
       surface: 0
     - values: 
       surface: 0
-    - values: 
+    - values: 08000000
       surface: 0
     - values: 
       surface: 0
@@ -4905,17 +4909,6 @@ MonoBehaviour:
     dir: 0
   - fold: 0
     Lines:
-    - values: 08000000
-      surface: 0
-    - values: 
-      surface: 0
-    - values: 
-      surface: 0
-    - values: 08000000
-      surface: 0
-    dir: 0
-  - fold: 0
-    Lines:
     - values: 0800000008000000
       surface: 0
     - values: 
@@ -4945,6 +4938,567 @@ MonoBehaviour:
     - values: 
       surface: 0
     - values: 0800000008000000
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 0800000008000000
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 0800000008000000
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    dir: 0
+  - fold: 0
+    Lines:
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
+      surface: 0
+    - values: 
       surface: 0
     dir: 0
   - fold: 0

@@ -27,10 +27,10 @@ public class DataHolder : MonoBehaviour
             throw new System.Exception("spawned Objects in DataHolder is null");
     }
 
-
+    public static void             RefreshObjects()  => instance.spawnedObjects.FindObjects();
     public static List<GameObject> GetBarriersList() => instance.spawnedObjects.barriers;
-    public static List<GameObject> GetEnemiesList() => instance.spawnedObjects.enemys;
-    public static List<GameObject> GetMoneyList() => instance.spawnedObjects.money;
+    public static List<GameObject> GetEnemiesList()  => instance.spawnedObjects.enemys;
+    public static List<GameObject> GetMoneyList()    => instance.spawnedObjects.money;
 
     public static OpponentsData GetOpponentData() => instance.opponentsData;
 

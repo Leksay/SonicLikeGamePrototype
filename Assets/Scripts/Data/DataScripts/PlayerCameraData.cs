@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Players;
+using UnityEngine;
 
 [System.Serializable]
 public class PlayerCameraData

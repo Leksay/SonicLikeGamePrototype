@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Dreamteck.Splines;
 using System;
+using Players.Camera;
 
 public class FollowArrow : MonoBehaviour
 {

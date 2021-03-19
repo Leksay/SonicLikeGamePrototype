@@ -4,56 +4,55 @@ using UnityEngine;
 using Dreamteck.Splines;
 using System.Linq;
 using System;
+using Level;
 
 [RequireComponent(typeof(IOpponentMover))]
 public class OpponentBarin : MonoBehaviour, IPausable, INamedRacer
 {
 
-    [SerializeField] private string racerName;
-    [SerializeField] private RoadEntityGenerator levelHolder;
+    [SerializeField] private string         racerName;
+    [SerializeField] private LevelHolder    levelHolder;
     [SerializeField] private SplineFollower follower;
 
     [Header("Move params")]
     [SerializeField] private float avoidDistance;
-    [SerializeField] private float followDinstace;
-    [SerializeField] private float jumpDistance;
-    [SerializeField] private float slideDistance;
-    [SerializeField] private bool inDeathLoop;
-    private IOpponentMover mover;
-    RoadEntityData nextEntity;
-    private OpponentsData data;
-    private bool isPaused;
-    private Action currentBehaviour;
-    private BehaviourType behaviour;
-    private int currentFollowRoad;
+    [SerializeField] private float                followDinstace;
+    [SerializeField] private float                jumpDistance;
+    [SerializeField] private float                slideDistance;
+    [SerializeField] private bool                 inDeathLoop;
+    private                  IOpponentMover       _mover;
+    private                  RoadEntityData       _nextEntity;
+    private                  bool                 _isPaused;
+    private                  Action               _currentBehaviour;
+    private                  BehaviourType        _behaviour;
+    private                  int                  _currentFollowRoad;
     [SerializeField] private List<RoadEntityData> entitiesData;
 
     public void Pause()
     {
-        isPaused = true;
+        _isPaused = true;
     }
 
     public void Resume()
     {
-        isPaused = false;
+        _isPaused = false;
     }
 
     private void Awake()
     {
-        mover = GetComponent<IOpponentMover>();
+        _mover = GetComponent<IOpponentMover>();
     }
 
     private void Start()
     {
-        if (levelHolder == null) levelHolder = FindObjectOfType<LevelHolder>().GetComponent<RoadEntityGenerator>();
+        if (levelHolder == null) levelHolder = FindObjectOfType<LevelHolder>();
         if (follower == null) Debug.LogError("Opponent's brain follower is null");
-        data = DataHolder.GetOpponentData();
-        RoadEntityData[] roadEntityArray = new RoadEntityData[levelHolder.GetRoadEntities().Count];
+        RoadEntityData[] roadEntityArray = new RoadEntityData[levelHolder.allEntities.Count];
         entitiesData = new List<RoadEntityData>();
-        levelHolder.GetRoadEntities().CopyTo(roadEntityArray);
+        levelHolder.allEntities.CopyTo(roadEntityArray);
         entitiesData.AddRange(roadEntityArray);
         entitiesData = entitiesData.OrderBy(d => d.percentAtRoad).ToList();
-        nextEntity = GetNextEntityData();
+        _nextEntity = GetNextEntityData();
         racerName += UnityEngine.Random.Range(0, 100);
         Finish.OnCrossFinishLineEnemy += DisableEnemy;
         RegisterPausable();
@@ -65,9 +64,9 @@ public class OpponentBarin : MonoBehaviour, IPausable, INamedRacer
 
     private void Update()
     {
-        if (isPaused) return;
+        if (_isPaused) return;
         OpponentLogic();
-        currentBehaviour();
+        _currentBehaviour();
     }
     private void OnDestroy()
     {
@@ -75,9 +74,9 @@ public class OpponentBarin : MonoBehaviour, IPausable, INamedRacer
     }
     private void OpponentLogic()
     {
-        if(PercentToNextEntity() < 0 || currentBehaviour == null)
+        if(PercentToNextEntity() < 0 || _currentBehaviour == null)
         {
-            nextEntity = GetNextEntityData();
+            _nextEntity = GetNextEntityData();
             MakeDecision();
             ChooseCurrentBahaviour();
         }
@@ -86,23 +85,23 @@ public class OpponentBarin : MonoBehaviour, IPausable, INamedRacer
 
     private void ChooseCurrentBahaviour()
     {
-        switch (behaviour)
+        switch (_behaviour)
         {
             case BehaviourType.Avoid:
-                currentBehaviour = Avoid;
+                _currentBehaviour = Avoid;
                 break;
             case BehaviourType.Follow:
-                if(nextEntity.desiredRoad == -1)
+                if(_nextEntity.desiredRoad == -1)
                 {
-                    nextEntity.desiredRoad = UnityEngine.Random.Range(0, nextEntity.roadCount - 1);
+                    _nextEntity.desiredRoad = UnityEngine.Random.Range(0, _nextEntity.roadCount - 1);
                 }
-                currentBehaviour = Follow;
+                _currentBehaviour = Follow;
                 break;
             case BehaviourType.Attack:
-                currentBehaviour = Attack;
+                _currentBehaviour = Attack;
                 break;
             case BehaviourType.Nothing:
-                currentBehaviour = DoNothing;
+                _currentBehaviour = DoNothing;
                 break;
             default:
                 break;
@@ -113,15 +112,15 @@ public class OpponentBarin : MonoBehaviour, IPausable, INamedRacer
     {
         if(PercentToNextEntity() <= jumpDistance)
         {
-            if(nextEntity.enemyType == EnemyType.Fly)
+            if(_nextEntity.enemyType == EnemyType.Fly)
             {
-                mover.DoJump();
+                _mover.DoJump();
             }
-            else if(nextEntity.enemyType == EnemyType.Ground)
+            else if(_nextEntity.enemyType == EnemyType.Ground)
             {
-                mover.DoSlide();
+                _mover.DoSlide();
             }
-            entitiesData.Remove(nextEntity);
+            entitiesData.Remove(_nextEntity);
         }
     }
 
@@ -129,23 +128,23 @@ public class OpponentBarin : MonoBehaviour, IPausable, INamedRacer
     {
         if (PercentToNextEntity() < followDinstace)
         {
-            GoToRoad(nextEntity.desiredRoad);
-            entitiesData.Remove(nextEntity);
-            currentBehaviour = DoNothing;
+            GoToRoad(_nextEntity.desiredRoad);
+            entitiesData.Remove(_nextEntity);
+            _currentBehaviour = DoNothing;
         }
     }
 
     private void Avoid()
     {
-        if (nextEntity == null) return;
+        if (_nextEntity == null) return;
         if (PercentToNextEntity() <= avoidDistance)
         {
-            Avoid(nextEntity);
-            entitiesData.Remove(nextEntity);
+            Avoid(_nextEntity);
+            entitiesData.Remove(_nextEntity);
         }
     }
 
-    private float PercentToNextEntity() => nextEntity != null? (nextEntity.percentAtRoad - GetCurrentPercent()): 1.0f;
+    private float PercentToNextEntity() => _nextEntity != null? (_nextEntity.percentAtRoad - GetCurrentPercent()): 1.0f;
 
     private void Avoid(RoadEntityData nextEntity)
     {
@@ -154,7 +153,7 @@ public class OpponentBarin : MonoBehaviour, IPausable, INamedRacer
             case BarrierType.Ground_FullRoad:
                 if(PercentToNextEntity() < jumpDistance)
                 {
-                    mover.DoJump();
+                    _mover.DoJump();
                     entitiesData.Remove(nextEntity);
                 }
                 break;
@@ -173,7 +172,7 @@ public class OpponentBarin : MonoBehaviour, IPausable, INamedRacer
                 }
                 if(PercentToNextEntity() < slideDistance)
                 {
-                    mover.DoSlide();
+                    _mover.DoSlide();
                     entitiesData.Remove(nextEntity);
                     GetNextEntityData();
                 }
@@ -188,18 +187,18 @@ public class OpponentBarin : MonoBehaviour, IPausable, INamedRacer
 
     private void MakeDecision()
     {
-        behaviour = BehaviourType.Nothing;
-        if(nextEntity != null)
-            switch (nextEntity.entityType)
+        _behaviour = BehaviourType.Nothing;
+        if(_nextEntity != null)
+            switch (_nextEntity.entityType)
             {
                 case EntityType.Barrier:
-                    behaviour = BehaviourType.Avoid;
+                    _behaviour = BehaviourType.Avoid;
                     break;
                 case EntityType.Enemy:
-                    behaviour = BehaviourType.Attack;
+                    _behaviour = BehaviourType.Attack;
                     break;
                 case EntityType.Coins:
-                    behaviour = BehaviourType.Follow;
+                    _behaviour = BehaviourType.Follow;
                     break;
                 default:
                     break;
@@ -220,14 +219,14 @@ public class OpponentBarin : MonoBehaviour, IPausable, INamedRacer
 
     private void GoToRoad(int toRoadId)
     {
-        if (toRoadId == mover.CurrentRoadID || inDeathLoop) return;
-        if(toRoadId > mover.CurrentRoadID)
+        if (toRoadId == _mover.CurrentRoadID || inDeathLoop) return;
+        if(toRoadId > _mover.CurrentRoadID)
         {
-            mover.ChangePath(SwipeInput.SwipeType.Right);
+            _mover.ChangePath(SwipeInput.SwipeType.Right);
         }
-        else if (toRoadId < mover.CurrentRoadID)
+        else if (toRoadId < _mover.CurrentRoadID)
         {
-            mover.ChangePath(SwipeInput.SwipeType.Left);
+            _mover.ChangePath(SwipeInput.SwipeType.Left);
         }
     }
 

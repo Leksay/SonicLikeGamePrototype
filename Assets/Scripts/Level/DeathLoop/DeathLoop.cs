@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Level;
 public class DeathLoop : MonoBehaviour
 {
     public static event Action OnEnterDeathLoop;

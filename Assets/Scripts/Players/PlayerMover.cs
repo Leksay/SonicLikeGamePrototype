@@ -1,435 +1,467 @@
-﻿using UnityEngine;
-using Dreamteck.Splines;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System;
-
-[RequireComponent(typeof(Rigidbody))]
-[RequireComponent(typeof(SplineFollower))]
-[RequireComponent(typeof(PlayerAnimator))]
-[RequireComponent(typeof(CapsuleCollider))]
-[RequireComponent(typeof(Player))]
-[RequireComponent(typeof(IBoostable))]
-public class PlayerMover : MonoBehaviour, IPausable, IBarrierAffected, IMover, IPlayerControllable, IDefendable
+using Dreamteck.Splines;
+using Level;
+using UnityEngine;
+namespace Players
 {
-    public delegate void UAction();
-    public delegate void UActionFkloat(float desiredSpeed, bool justStop);
-    public static event UAction OnSlide;
-    public static event UAction OnSpeedBoost;
-    public static event UActionFkloat OnSpeedBoostStopped;
-    public static event Action OnSwipeAction;
-    public static event Action OnJumpAction;
-    public static event Action OnSlideBreak;
+	[RequireComponent(typeof(Rigidbody))]
+	[RequireComponent(typeof(SplineFollower))]
+	[RequireComponent(typeof(PlayerAnimator))]
+	[RequireComponent(typeof(CapsuleCollider))]
+	[RequireComponent(typeof(Player))]
+	[RequireComponent(typeof(IBoostable))]
+	public class PlayerMover : MonoBehaviour, IPausable, IBarrierAffected, IMover, IPlayerControllable, IDefendable
+	{
+		public delegate void             UAction();
+		public delegate void             UActionFloat(float desiredSpeed, bool justStop);
+		public static event UAction      OnSlide;
+		public static event UAction      OnSpeedBoost;
+		public static event UActionFloat OnSpeedBoostStopped;
+		public static event Action       OnSwipeAction;
+		public static event Action       OnJumpAction;
+		public static event Action       OnSlideBreak;
 
-    [SerializeField] private Player player;
+		[SerializeField] private Player player;
 
-    [Header("Move")]
-    [SerializeField] private float defaultSpeed;
-    [SerializeField] private float changeRoadTime;
-    [SerializeField] private float changeRoadTreshold;
-    [SerializeField] private float accelerationSpeed;
-    [SerializeField] private float maxSpeed;
-    private float desiredSpeed;// Speed to accelerate to 
-    private bool isDamping;
-    private List<IBoostable> boosters;
+		[Header("Move")]
+		[SerializeField] private float defaultSpeed;
+		[SerializeField] private float changeRoadTime;
+		[SerializeField] private float changeRoadTreshold;
+		[SerializeField] private float accelerationSpeed;
+		[SerializeField] private float maxSpeed;
+		[SerializeField] private bool  isAccelerating;
 
-    private CapsuleCollider collider;
-    private float defaultColliderHeight;
-    private float startOffset;
-    public float currentOffset { get; private set; }
-    private float nextRoadOffset;
-    private float changeRoadTimer;
-    private Coroutine changeRoadCorutine;
-    [SerializeField]private bool isAccelerating;
+		[Header("Jump")]
+		[SerializeField] private float jumpHeigh;
+		[SerializeField] private float upJumpTime;
+		[SerializeField] private float downJumpTime;
+		[SerializeField] private float inAirTime;
 
-    [Header("Jump")]
-    [SerializeField] private float jumpHeigh;
-    [SerializeField] private float upJumpTime;
-    [SerializeField] private float downJumpTime;
-    [SerializeField] private float inAirTime;
+		[Header("Slide")]
+		[SerializeField] private float slideTime;
 
-    [Header("Slide")]
-    [SerializeField] private float slideTime;
-    private float playerSlideOffset = 0.5f;
-    private bool isSliding;
+		[Header("Level")]
+		[SerializeField] private LevelHolder levelHolder;
+		[SerializeField] private int currentRoadId;
+
+		[Header("Dreamteck")]
+		[SerializeField] private SplineFollower follower;
+
+		[Header("Skills")]
+		[SerializeField] private float speedSkill;
+		[SerializeField] private float accelerationSkill;
+
+		[Header("Effects")]
+		[SerializeField] private ParticleSystem slideEffect;
+		[SerializeField] private ParticleSystem jumpEffect;
+
+		private float            _desiredSpeed; // Speed to accelerate to 
+		private bool             _isDamping;
+		private List<IBoostable> _boosters;
+
+		private new CapsuleCollider _collider;
+		private     float           _defaultColliderHeight;
+		private     float           _startOffset;
+		private     float           _nextRoadOffset;
+		private     Coroutine       _changeRoadCoroutine;
+
+		private float _playerSlideOffset = 0.5f;
+		private bool  _isSliding;
+
+		private PlayerAnimator _animator;
+		private float          _jumpY;
+		private bool           _isJump;
+		private bool           _isPaused;
+		private bool           _isUnderControl;
+		private float          _actualSpeed;
+		private bool           _defended;
+		private bool           _inDeathLoop;
+		private bool           _slideBreak;
+
+#region UNITY EVENTS
+		private void Awake()
+		{
+			_collider              = GetComponent<CapsuleCollider>();
+			_defaultColliderHeight = _collider.height;
+			if (player == null)
+				player = GetComponent<Player>();
+			if (follower == null)
+				follower = GetComponent<SplineFollower>();
+			if (levelHolder == null)
+				levelHolder = FindObjectOfType<LevelHolder>();
+			_animator = GetComponent<PlayerAnimator>();
+			_collider = GetComponent<CapsuleCollider>();
+			_boosters = new List<IBoostable>();
+			_boosters.AddRange(GetComponents<IBoostable>());
+		}
+
+		private void Start()
+		{
+			SwipeInput.OnPlayerSwiped += OnSwipe;
+			_desiredSpeed             =  defaultSpeed;
+			_animator.SetRotationTime(changeRoadTime);
+			SetPlayerMovementType(MovementType.Run);
+			ChangeSpeed();
+			SetupSkills();
+			RegisterPausable();
+			RegisterControllable();
+			if (GameProcess.isTutorial)
+			{
+				TutorialController.OnTutorialFakeInput += OnSwipe;
+			}
+		}
+
+		private void Update()
+		{
+			if (_isPaused) return;
+			if (isAccelerating) Accelerate();
+			if (_isDamping) Damping();
+		}
+
+		private void OnEnable()
+		{
+			DeathLoop.OnEnterDeathLoop += DeathLoopEnter;
+			DeathLoop.OnExitDeathLoop  += DeathLoopExit;
+		}
+
+		private void OnDisable()
+		{
+			DeathLoop.OnEnterDeathLoop -= DeathLoopEnter;
+			DeathLoop.OnExitDeathLoop  -= DeathLoopExit;
+		}
+  #endregion
+
+		private void SetupSkills()
+		{
+			speedSkill        = PlayerDataHolder.GetSpeed()        / 10;
+			accelerationSkill = PlayerDataHolder.GetAcceleration() / 10;
+
+			defaultSpeed      += speedSkill;
+			accelerationSpeed += accelerationSkill;
+		}
+
+		private void Accelerate()
+		{
+			if (_isPaused) return;
+			_actualSpeed += accelerationSpeed * Time.deltaTime;
+			if (_actualSpeed >= _desiredSpeed)
+			{
+				_actualSpeed   = _desiredSpeed;
+				isAccelerating = false;
+				_isDamping     = false;
+			}
+			ChangeSpeed();
+		}
+
+		private void Damping()
+		{
+			if (_isPaused) return;
+			_actualSpeed -= accelerationSpeed * Time.deltaTime;
+			if (_actualSpeed <= _desiredSpeed)
+			{
+				_actualSpeed = _desiredSpeed;
+				_isDamping   = false;
+			}
+			ChangeSpeed();
+		}
+
+		private void ChangeSpeed()
+		{
+			if (_isPaused)
+			{
+				follower.followSpeed = 0;
+				return;
+			}
+			if (_actualSpeed < _desiredSpeed)
+			{
+				isAccelerating = true;
+			}
+			else if (_actualSpeed > _desiredSpeed)
+			{
+				_isDamping = true;
+			}
+			follower.followSpeed = _actualSpeed;
+			_animator.SetAnimatorSpeed(_actualSpeed);
+		}
+
+		private void OnSwipe(SwipeInput.SwipeType swipeType)
+		{
+			if (_isUnderControl == false && _inDeathLoop == false) return;
+			if (_isUnderControl == false) return;
+			if (_changeRoadCoroutine == null)
+			{
+				ChangePath2(swipeType);
+			}
+			else
+			{
+				switch (swipeType)
+				{
+					case SwipeInput.SwipeType.Up:
+						StartJump();
+						break;
+					case SwipeInput.SwipeType.Down:
+						StartSlide();
+						break;
+					case SwipeInput.SwipeType.Tap:
+						break;
+				}
+			}
+		}
+
+		private void StartSlide()
+		{
+			if ( /*!isJump && */!_isSliding)
+			{
+				_animator.SetSlideAnimation(true);
+				if (_isJump)
+				{
+					StopJump();
+					_animator.SetJumpAnimation(false);
+				}
+				_slideBreak = false;
+				slideEffect.Play();
+				_isSliding          = true;
+				_collider.direction = 2;
+				SetPlayerMovementType(MovementType.Slide);
+				OnSlide?.Invoke();
+				StartCoroutine(Slide());
+			}
+		}
+		private IEnumerator Slide()
+		{
+			float timer = 0;
+			while (timer < slideTime && !_slideBreak)
+			{
+				_jumpY =  Mathf.Lerp(0, -_playerSlideOffset, (timer) / slideTime);
+				timer  += Time.deltaTime;
+				SetupOffset();
+				yield return null;
+			}
+			timer = 0;
+			while (timer < slideTime / 3 && !_slideBreak)
+			{
+				_jumpY =  Mathf.Lerp(-_playerSlideOffset, 0, (timer * 3) / slideTime);
+				timer  += Time.deltaTime;
+				SetupOffset();
+				yield return null;
+			}
+			StopSlide();
+		}
+		private void StopSlide()
+		{
+			_isSliding = false;
+			slideEffect.Stop();
+			_jumpY              = 0;
+			_collider.direction = 1;
+			SetupOffset();
+			SetPlayerMovementType(MovementType.Run);
+			_animator.SetSlideAnimation(false);
+		}
 
 
-    [Header("Level")]
-    [SerializeField] private LevelHolder levelHolder;
-    [SerializeField] private int currentRoadId;
+		private void StartJump()
+		{
+			if (!_isJump /*&& !isSliding*/)
+			{
+				_isJump = true;
+				jumpEffect.Play();
+				OnJumpAction?.Invoke();
+				if (_isSliding)
+				{
+					_slideBreak = true;
+					OnSlideBreak?.Invoke();
+					_animator.SetSlideAnimation(false);
+				}
+				_jumpY           = 0;
+				_collider.height = _defaultColliderHeight / 2;
+				_animator.SetJumpAnimation(true);
+				SetPlayerMovementType(MovementType.Jump);
+				StartCoroutine(HandleJump());
+			}
+		}
+		private IEnumerator HandleJump()
+		{
+			float upJumpTimer = 0;
+			while (upJumpTimer < upJumpTime)
+			{
+				SetupOffset();
+				_jumpY      =  Mathf.Lerp(0, jumpHeigh, upJumpTimer / upJumpTime);
+				upJumpTimer += Time.deltaTime;
+				yield return null;
+			}
 
-    [Header("Dreamteck")]
-    [SerializeField] private SplineFollower follower;
+			float inAirTimer = 0;
+			while (inAirTimer < inAirTime)
+			{
+				inAirTimer += Time.deltaTime;
+				yield return null;
+			}
+			_animator.SetJumpAnimation(false);
+			jumpEffect.Stop();
+			float downJumpTimer = 0;
+			while (downJumpTimer < downJumpTime)
+			{
+				SetupOffset();
+				_jumpY        =  Mathf.Lerp(jumpHeigh, 0, downJumpTimer / downJumpTime);
+				downJumpTimer += Time.deltaTime;
+				yield return null;
+			}
+			StopJump();
+			yield return new WaitForSeconds(Time.deltaTime);
+		}
+		private void StopJump()
+		{
+			_jumpY           = 0;
+			_collider.height = _defaultColliderHeight;
+			SetupOffset();
+			SetPlayerMovementType(MovementType.Run);
+			_isJump = false;
+		}
 
-    [Header("Skills")]
-    [SerializeField] private float speedSkill;
-    [SerializeField] private float accelerationSkill;
 
-    [Header("Effects")]
-    [SerializeField] private ParticleSystem slideEffect;
-    [SerializeField] private ParticleSystem jumpEffect;
+		private void ChangePath2(SwipeInput.SwipeType swipeType)
+		{
+			Debug.Log($"[Swipe] {swipeType}");
+			var targetLine = currentRoadId;
+			switch (swipeType)
+			{
+				case SwipeInput.SwipeType.Left:
+					targetLine = Mathf.Clamp(--targetLine, 0, levelHolder._lines.Length - 1);
+					break;
+				case SwipeInput.SwipeType.Right:
+					targetLine = Mathf.Clamp(++targetLine, 0, levelHolder._lines.Length - 1);
+					break;
+			}
+			if (targetLine == currentRoadId) return;
+			var p0 = follower.result;                                                                              // point on current spline
+			var p1 = levelHolder._lines[targetLine].Evaluate(levelHolder._lines[targetLine].Project(p0.position)); // closest point on side line
+			var d  = p0.position - p1.position;
+			var v  = Vector3.Project(d, p0.right * levelHolder._lineWidth); // project vector RIGHT from current on vector between points on lines
+			if (v.magnitude > levelHolder._lineWidth * 1.1f) return;        // if RIGHT less distance between points
+			currentRoadId = targetLine;
+			d.Normalize();
+			var d2 = new Vector2(Vector3.Dot(d,p1.right), Vector3.Dot(d,p1.normal)); // offset is [X * point.right + Y * point.normal]
+			follower.computer      = levelHolder._lines[currentRoadId];
+			_changeRoadCoroutine   = StartCoroutine(SwitchLine(d2));
+		}
+		private IEnumerator SwitchLine(Vector3 baseOffset)
+		{
+			var changeRoadTimer = 0f;
+			while (changeRoadTimer < changeRoadTime)
+			{
+				follower.motion.offset = Vector3.Lerp(baseOffset, Vector3.zero, changeRoadTimer / changeRoadTime);
+				yield return null;
+				changeRoadTimer += Time.deltaTime;
+			}
+			follower.motion.offset = Vector3.zero;
+			_changeRoadCoroutine   = null;
+		}
 
-    private PlayerAnimator animator;
-    private float jumpY;
-    private bool isJump;
-    private bool isPaused;
-    private bool isUnderControll;
-    private float actualSpeed;
-    private bool defended;
-    private bool inDeathLoop;
-    private bool slideBreak;
+		/*
+		private bool ChangePath(SwipeInput.SwipeType swipeType)
+		{
+			if (levelHolder.TryChangePathId(ref currentRoadId, swipeType))
+			{
+				_nextRoadOffset = levelHolder.GetOffsetById(currentRoadId);
+				OnSwipeAction?.Invoke();
+				_startOffset         = _currentOffset;
+				_changeRoadCoroutine = StartCoroutine(MoveNextRoad());
+				_animator.SetRotation(swipeType);
+				return true;
+			}
+			return false;
+		}
+		private IEnumerator MoveNextRoad()
+		{
+			var changeRoadTimer = 0f;
+			while (Mathf.Abs(_nextRoadOffset - _currentOffset) > changeRoadTreshold)
+			{
+				_currentOffset  =  Mathf.Lerp(_startOffset, _nextRoadOffset, changeRoadTimer / changeRoadTime);
+				changeRoadTimer += Time.deltaTime;
+				SetupOffset();
+				yield return null;
+			}
+			SetupOffset();
+			_currentOffset = _nextRoadOffset;
+			StopCoroutine(_changeRoadCoroutine);
+			_changeRoadCoroutine = null;
+			yield return new WaitForSeconds(Time.deltaTime);
+		}
+		/**/
 
-    private void Awake()
-    {
-        collider = GetComponent<CapsuleCollider>();
-        defaultColliderHeight = collider.height;
-        if (player == null)
-            player = GetComponent<Player>();
-        if (follower == null)
-            follower = GetComponent<SplineFollower>();
-        if (levelHolder == null)
-            levelHolder = FindObjectOfType<LevelHolder>();
-        animator = GetComponent<PlayerAnimator>();
-        collider = GetComponent<CapsuleCollider>();
-        boosters = new List<IBoostable>();
-        boosters.AddRange(GetComponents<IBoostable>());
-    }
+		public float GetDefaultSpeed() => defaultSpeed;
+		private void SetupOffset()
+		{
+			if (_isPaused) return;
+			follower.motion.offset = new Vector2(follower.motion.offset.x, _jumpY);
+		}
+		public  void SetPlayerMovementType(MovementType newMovementType) => player.SetMovementType(newMovementType);
+		private void DeathLoopEnter()                                    => _inDeathLoop = true;
+		private void DeathLoopExit()                                     => _inDeathLoop = false;
 
-    private void Start()
-    {
-        SwipeInput.OnPlayerSwiped += OnSwipe;
-        desiredSpeed = defaultSpeed;
-        animator.SetRotationTime(changeRoadTime);
-        follower.computer = levelHolder.GetComputer();
-        SetPlayerMovementType(MovementType.Run);
-        ChangeSpeed();
-        SetupSkills();
-        RegisterPausable();
-        RegisterControllable();
-        if(GameProcess.isTutorial)
-        {
-            TutorialController.OnTutorialFakeInput += OnSwipe;
-        }
-    }
+#region IPausable
+		public void Pause()
+		{
+			follower.followSpeed = 0;
+			_isPaused            = true;
+		}
+		public void Resume()
+		{
+			follower.followSpeed = _actualSpeed;
+			_isPaused            = false;
+		}
+		public void RegisterPausable() => PauseController.RegisterPausable(this);
+  #endregion
 
-    private void SetupSkills()
-    {
-        speedSkill = PlayerDataHolder.GetSpeed() / 10;
-        accelerationSkill = PlayerDataHolder.GetAcceleration() / 10;
+#region IBarrierAffected
+		public void BarrierHited()
+		{
+			if (_defended)
+			{
+				_boosters.ForEach(b => b.StopShild());
+				_defended = false;
+				return;
+			}
+			_desiredSpeed = defaultSpeed;
+			_actualSpeed  = 0;
+			OnSpeedBoostStopped?.Invoke(_desiredSpeed, true);
+			_boosters.ForEach(b => b.StopAllBoosters());
+			ChangeSpeed();
+		}
+  #endregion
 
-        defaultSpeed += speedSkill;
-        accelerationSpeed += accelerationSkill;
-    }
+#region IMover
+		public void AddSpeed(float speed)
+		{
+			OnSpeedBoost?.Invoke();
+			_desiredSpeed = Mathf.Clamp(_desiredSpeed + speed, defaultSpeed, maxSpeed);
+			ChangeSpeed();
+		}
+		public void ReduceSpeed(float speed)
+		{
+			_desiredSpeed = Mathf.Clamp(_desiredSpeed - speed, defaultSpeed, maxSpeed);
+			OnSpeedBoostStopped?.Invoke(_desiredSpeed, _desiredSpeed == defaultSpeed);
+			ChangeSpeed();
+		}
+		public void SetStartRoad(int roadId)
+		{
+			currentRoadId     = roadId;
+			follower.computer = levelHolder._lines[currentRoadId];
+			SetupOffset();
+		}
+		public float GetPercent() => (float)follower.clampedPercent;
+  #endregion
 
-    private void Update()
-    {
-        if (isPaused) return;
-        if (isAccelerating) Accelerate();
-        if (isDamping) Damping();
-    }
+#region IPlayerControllable
+		public void StartPlayerControl()   => _isUnderControl = true;
+		public void StopPlayerControl()    => _isUnderControl = false;
+		public void RegisterControllable() => ControllManager.RegisterControllable(this);
+  #endregion
 
-    private void Accelerate()
-    {
-        if (isPaused) return;
-        actualSpeed += accelerationSpeed * Time.deltaTime;
-        if (actualSpeed >= desiredSpeed)
-        {
-            actualSpeed = desiredSpeed;
-            isAccelerating = false;
-            isDamping = false;
-        }
-        ChangeSpeed();
-    }
-
-    private void Damping()
-    {
-        if (isPaused) return;
-        actualSpeed -= accelerationSpeed * Time.deltaTime;
-        if (actualSpeed <= desiredSpeed)
-        {
-            actualSpeed = desiredSpeed;
-            isDamping = false;
-        }
-        ChangeSpeed();
-    }
-
-    private void ChangeSpeed()
-    {
-        if (isPaused)
-        {
-            follower.followSpeed = 0;
-            return;
-        }
-        if (actualSpeed < desiredSpeed)
-        {
-            isAccelerating = true;
-        }
-        else if(actualSpeed > desiredSpeed)
-        {
-            isDamping = true;
-        }
-        follower.followSpeed = actualSpeed;
-        animator.SetAnimatorSpeed(actualSpeed);
-    }
-
-    public void Pause()
-    {
-        follower.followSpeed = 0;
-        isPaused = true;
-    }
-
-    public void Resume()
-    {
-        follower.followSpeed = actualSpeed;
-        isPaused = false;
-    }
-    
-    private void OnSwipe(SwipeInput.SwipeType swipeType)
-    {
-        if (isUnderControll == false && inDeathLoop == false) return;
-        if (changeRoadCorutine == null && ChangePath(swipeType))
-        {
-        }
-        else
-        {
-            if (isUnderControll == false) return;
-            switch (swipeType)
-            {
-                case SwipeInput.SwipeType.Up:
-                    StartJump();
-                    break;
-                case SwipeInput.SwipeType.Down:
-                    StartSlide();
-                    break;
-                case SwipeInput.SwipeType.Tap:
-                    break;
-            }
-        }
-    }
-
-    private void StartSlide()
-    {
-        if (/*!isJump && */!isSliding)
-        {
-            animator.SetSlideAnimation(true);
-            if(isJump)
-            {
-                StopJump();
-                animator.SetJumpAnimation(false);
-            }
-            slideBreak = false;
-            slideEffect.Play();
-            isSliding = true;
-            collider.direction = 2;
-            SetPlayerMovementType(MovementType.Slide);
-            OnSlide?.Invoke();
-            StartCoroutine(Slide());
-        }
-    }
-
-    private void StopSlide()
-    {
-        isSliding = false;
-        slideEffect.Stop();
-        jumpY = 0;
-        collider.direction = 1;
-        SetupOffset();
-        SetPlayerMovementType(MovementType.Run);
-        animator.SetSlideAnimation(false);
-    }
-
-    private void StartJump()
-    {
-        if (!isJump /*&& !isSliding*/)
-        {
-            isJump = true;
-            jumpEffect.Play();
-            OnJumpAction?.Invoke();
-            if(isSliding)
-            {
-                slideBreak = true;
-                OnSlideBreak?.Invoke();
-                animator.SetSlideAnimation(false);
-            }
-            jumpY = 0;
-            collider.height = defaultColliderHeight / 2;
-            animator.SetJumpAnimation(true);
-            SetPlayerMovementType(MovementType.Jump);
-            StartCoroutine(HandleJump());
-        }
-    }
-
-    private void StopJump()
-    {
-        jumpY = 0;
-        collider.height = defaultColliderHeight;
-        SetupOffset();
-        SetPlayerMovementType(MovementType.Run);
-        isJump = false;
-    }
-
-    private bool ChangePath(SwipeInput.SwipeType swipeType)
-    {
-        if (levelHolder.TryChangePathId(ref currentRoadId,swipeType))
-        {
-            nextRoadOffset = levelHolder.GetOffsetById(currentRoadId);
-            changeRoadTimer = 0;
-            OnSwipeAction?.Invoke();
-            startOffset = currentOffset;
-            changeRoadCorutine = StartCoroutine(MoveNextRoad());
-            animator.SetRotation(swipeType);
-            return true;
-        }
-        return false;
-    }
-    #region Getters
-    public float GetDefaultSpeed() => defaultSpeed;
-    #endregion
-    #region Enumarators
-    private IEnumerator Slide()
-    {
-        float timer = 0;
-        while(timer < slideTime && !slideBreak)
-        {
-            jumpY = Mathf.Lerp(0, -playerSlideOffset, (timer) / slideTime);
-            timer += Time.deltaTime;
-            SetupOffset();
-            yield return null;
-        }
-        timer = 0;
-        while (timer < slideTime / 3 && !slideBreak)
-        {
-            jumpY = Mathf.Lerp(-playerSlideOffset, 0, (timer * 3) / slideTime);
-            timer += Time.deltaTime;
-            SetupOffset();
-            yield return null;
-        }
-        StopSlide();
-    }
-
-    private IEnumerator MoveNextRoad()
-    {
-        while(Mathf.Abs(nextRoadOffset - currentOffset) > changeRoadTreshold)
-        {
-            currentOffset = Mathf.Lerp(startOffset, nextRoadOffset, changeRoadTimer/changeRoadTime);
-            changeRoadTimer += Time.deltaTime;
-            SetupOffset();
-            yield return null;
-        }
-        SetupOffset();
-        currentOffset = nextRoadOffset;
-        StopCoroutine(changeRoadCorutine);
-        changeRoadCorutine = null;
-        yield return new WaitForSeconds(Time.deltaTime);
-    }
-
-    private IEnumerator HandleJump()
-    {
-        float upJumpTimer = 0;
-        while (upJumpTimer < upJumpTime)
-        {
-            SetupOffset();
-            jumpY = Mathf.Lerp(0, jumpHeigh, upJumpTimer / upJumpTime);
-            upJumpTimer += Time.deltaTime;
-            yield return null;
-        }
-
-        float inAirTimer = 0;
-        while (inAirTimer < inAirTime)
-        {
-            inAirTimer += Time.deltaTime;
-            yield return null;
-        }
-        animator.SetJumpAnimation(false);
-        jumpEffect.Stop();
-        float downJumpTimer = 0;
-        while (downJumpTimer < downJumpTime)
-        {
-            SetupOffset();
-            jumpY = Mathf.Lerp(jumpHeigh, 0, downJumpTimer / downJumpTime);
-            downJumpTimer += Time.deltaTime;
-            yield return null;
-        }
-        StopJump();
-        yield return new WaitForSeconds(Time.deltaTime);
-    }
-    #endregion
-    private void SetupOffset()
-    {
-        if (isPaused) return;
-        follower.motion.offset = new Vector2(currentOffset, jumpY);
-    }
-
-    public void BarrierHited()
-    {
-        if(defended)
-        {
-            boosters.ForEach(b=>b.StopShild());
-            defended = false;
-            return;
-        }
-        desiredSpeed = defaultSpeed;
-        actualSpeed = 0;
-        OnSpeedBoostStopped?.Invoke(desiredSpeed, desiredSpeed == defaultSpeed);
-        boosters.ForEach(b => b.StopAllBoosters());
-        ChangeSpeed();
-    }
-
-    public void SetPlayerMovementType(MovementType newMovementType) => player.SetMovementType(newMovementType);
-
-    // From IMover interface
-    public void AddSpeed(float speed)
-    {
-        OnSpeedBoost?.Invoke();
-        desiredSpeed = Mathf.Clamp(desiredSpeed + speed,defaultSpeed, maxSpeed );
-        ChangeSpeed();
-    }
-
-    // Frome IMover interface
-    public void ReduceSpeed(float speed)
-    {
-        OnSpeedBoostStopped?.Invoke(desiredSpeed, desiredSpeed == defaultSpeed);
-        desiredSpeed = Mathf.Clamp(desiredSpeed - speed, defaultSpeed, maxSpeed);
-        ChangeSpeed();
-    }
-
-    public void SetStartRoad(int roadId)
-    {
-        currentRoadId = roadId;
-        currentOffset = levelHolder.GetOffsetById(roadId);
-        SetupOffset();
-    }
-
-    private void OnEnable()
-    {
-        DeathLoop.OnEnterDeathLoop += DeathLoopEnter;
-        DeathLoop.OnExitDeathLoop += DeathLoopExit;
-    }
-
-    private void OnDisable()
-    {
-        DeathLoop.OnEnterDeathLoop -= DeathLoopEnter;
-        DeathLoop.OnExitDeathLoop -= DeathLoopExit;
-    }
-
-    private void DeathLoopEnter() => inDeathLoop = true;
-    private void DeathLoopExit() => inDeathLoop = false;
-
-    public float GetPecent() => (float)follower.clampedPercent;
-
-    public void RegisterPausable()
-    {
-        PauseController.RegisterPausable(this);
-    }
-
-    public void StartPlayerControll() => isUnderControll = true;
-
-    public void StopPlayerControll() => isUnderControll = false;
-
-    public void RegisterControllable() => ControllManager.RegisterControllable(this);
-
-    public void SetDefend(bool isDefended)
-    {
-        defended = isDefended;
-    }
+#region IDefenable
+		public void SetDefend(bool isDefended) => _defended = isDefended;
+  #endregion
+	}
 }

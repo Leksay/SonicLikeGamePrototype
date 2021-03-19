@@ -19,10 +19,7 @@ public class SwipeInput : MonoBehaviour
         Left, Right, Up, Down, Tap
     }
 
-    private void Update()
-    {
-        Swipe();
-    }
+    private void Update() => Swipe();
 
     private void Swipe()
     {

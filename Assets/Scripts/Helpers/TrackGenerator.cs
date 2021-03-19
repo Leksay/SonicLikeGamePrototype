@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Dreamteck.Splines;
+using EasyEditorGUI;
+using Level;
 using UnityEditor;
 using UnityEngine;
 namespace Helpers
@@ -85,26 +87,29 @@ left turn	right turn	up turn	down turn
 		public float        _stepVerticalRotate   = 5f;
 		public int          _lines                = 4;
 		public float        _linesInterval        = 1f;
+		public bool         _simplifyTrackMeshes  = true;
 
 		[Serializable] public class TrackPrefabs
 		{
 			[Serializable] public class MeshData
 			{
-				public Mesh     mesh;
-				public Material material;
-				public Vector3  scale = Vector3.one;
+				public Mesh    mesh;
+				public Vector3 scale = Vector3.one;
 			}
 			[Serializable] public class TrackObject
 			{
 				public GameObject prefab;
-				public float      offset;
+				public Vector3    offset;
 			}
 			[Header("Line")]
 			public MeshData Normal;
 			public MeshData Rails;
+			public Material RoadMaterial;
 			[Header("On track objects")]
 			public TrackObject StartLine;
+			public int         startPointIndex = 3;
 			public TrackObject FinishLine;
+			public int         finishAdd = 10;
 			public TrackObject Magnet;
 			public TrackObject Obstacle;
 			public TrackObject ObstacleBlock;
@@ -147,11 +152,12 @@ left turn	right turn	up turn	down turn
 					steps = i;
 					break;
 				}
-			_track = new TrackStep[steps];
+			steps  += _prefabs.finishAdd;
+			_track =  new TrackStep[steps];
 			for (var i = 0; i < steps; i++)
 			{
 				_track[i] = new TrackStep(_lines);
-				var line = input1[i].Split(';');
+				var line = i < steps - 1 - _prefabs.finishAdd ? input1[i].Split(';') : new[] { "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", };
 				for (var j = 0; j <= 3; j++)
 				{
 					_track[i].Lines[j]         = ParseSlotItem(line[j]);
@@ -174,36 +180,43 @@ left turn	right turn	up turn	down turn
 
 			var points = new List<SplinePoint>(_track.Length);
 			var point  = new GameObject().transform;
-			for (var i = 0; i < _track.Length; i++)
+			foreach (var t in _track)
 			{
 				var p = new SplinePoint(point.position);
-				point.Rotate(_directions2[(int)_track[i].dir]);
+				point.Rotate(_directions2[(int)t.dir]);
 				point.position += point.forward * _stepLength;
 				points.Add(p);
 			}
 			spline.SetPoints(points.ToArray());
 			spline.type = Spline.Type.BSpline;
 
-			//spline.Rebuild();
 			DestroyImmediate(point.gameObject);
+			var start = Instantiate(_prefabs.StartLine.prefab);
+			var pos   = spline.Evaluate(spline.Project(points[_prefabs.startPointIndex].position));
+			start.transform.rotation = pos.rotation;
+			start.transform.position = pos.position + pos.rotation * _prefabs.StartLine.offset;
+			start.transform.parent   = spline.transform.parent;
+			var finish = Instantiate(_prefabs.FinishLine.prefab);
+			pos                       = spline.Evaluate(spline.Project(points[points.Count - 1 - _prefabs.finishAdd].position));
+			finish.transform.rotation = pos.rotation;
+			finish.transform.position = pos.position + pos.rotation * _prefabs.FinishLine.offset;
+			finish.transform.parent   = spline.transform.parent;
 			CreateLines(levelHolder);
 		}
 
 		private void CreateLines(LevelHolder levelHolder)
 		{
-			var spline     = levelHolder.GetComputer();
-			var totalWidth = _lines * _linesInterval;
-			var deviance   = new float[_lines];
-			var points     = spline.GetPoints();
-			var tracks     = new SplinePoint[_lines][];
+			var spline   = levelHolder.GetComputer();
+			var deviance = new float[_lines];
+			var points   = spline.GetPoints();
+			var tracks   = new SplinePoint[_lines][];
 
 			// calc line deviance from center
 			for (var i = 0; i < _lines; i++)
 			{
-				deviance[i] = Mathf.Lerp(-totalWidth / 2f, totalWidth / 2f, i / (float)(_lines - 1));
+				deviance[i] = _linesInterval * (i - (_lines - 1) / 2f);
 				tracks[i]   = new SplinePoint[points.Length];
 			}
-			levelHolder.Init(spline, deviance);
 
 			var trackSurfaces                                 = new List<TrackInterval>[_lines];
 			for (var i = 0; i < _lines; i++) trackSurfaces[i] = new List<TrackInterval>();
@@ -249,7 +262,7 @@ left turn	right turn	up turn	down turn
 					var pos = spline.Project(points[i].position);
 					var p   = spline.Evaluate(pos);
 					tracks[line][i].position = points[i].position + p.right * deviance[line];
-					tracks[line][i].size     = _linesInterval * 0.9f;
+					tracks[line][i].size     = _linesInterval;
 					tracks[line][i].normal   = points[i].normal;
 				}
 			}
@@ -263,6 +276,7 @@ left turn	right turn	up turn	down turn
 				go.transform.parent = spline.gameObject.transform;
 				var s = go.AddComponent<SplineComputer>();
 				splines.Add(s);
+				s.space = SplineComputer.Space.Local;
 				s.SetPoints(tracks[i]);
 				s.type = Spline.Type.BSpline;
 				s.RebuildImmediate();
@@ -274,9 +288,10 @@ left turn	right turn	up turn	down turn
 				{
 					if (divider > interval.segments) divider = interval.segments;
 				}
+				divider = _simplifyTrackMeshes ? divider : 1;
 				for (var index = 0; index < trackSurfaces[i].Count; index++)
 				{
-					EditorUtility.DisplayProgressBar("Create splines from lines & set SplineMesh for road bake", $"Line #{i + 1} of {_lines} :: Interval: {index} of {trackSurfaces[i].Count - 1}", index / (float)(trackSurfaces[i].Count - 1));
+					EditorUtility.DisplayProgressBar("Create lines & road bake", $"Line #{i + 1} of {_lines} :: Interval: {index} of {trackSurfaces[i].Count - 1}", index / (float)(trackSurfaces[i].Count - 1));
 					var interval = trackSurfaces[i][index];
 					var md       = interval.type == TrackSurface.Railroad ? _prefabs.Rails : _prefabs.Normal;
 
@@ -284,19 +299,25 @@ left turn	right turn	up turn	down turn
 					channel.minScale = md.scale;
 					channel.maxScale = md.scale;
 					channel.AddMesh(md.mesh);
-
-					channel.count = interval.segments / divider;
-
-					//channel.count    = (int)((interval.end - interval.start) / 0.005d);
+					channel.count    = interval.segments / divider;
 					channel.clipFrom = interval.start;
 					channel.clipTo   = interval.end;
 				}
-				EditorUtility.DisplayProgressBar("Create splines from lines & set SplineMesh for road bake", $"Line #{i + 1} of {_lines} :: Build mesh", 0);
+				EditorUtility.DisplayProgressBar("Create lines & road bake", $"Line #{i + 1} of {_lines} :: Build mesh", 0);
 				sm.RebuildImmediate(true);
 				sm.Rebuild(true);
+				sm.gameObject.GetComponent<MeshRenderer>().sharedMaterial = _prefabs.RoadMaterial;
 			}
+			levelHolder.Init(spline,            deviance);
+			levelHolder.Init(splines.ToArray(), _linesInterval);
+
+			levelHolder.barriers = new List<GameObject>();
+			levelHolder.boosters = new List<GameObject>();
+			levelHolder.enemies  = new List<GameObject>();
+			levelHolder.money    = new List<GameObject>();
 
 			// create track objects
+			List<RoadEntityData> allEntities = new List<RoadEntityData>();
 			for (var i = 0; i < points.Length; i++)
 			{
 				for (var j = 0; j < _track[i].Lines.Length; j++)
@@ -306,46 +327,73 @@ left turn	right turn	up turn	down turn
 						var point = splines[j].Evaluate(splines[j].Project(splines[j].GetPoint(i).position));
 
 						TrackPrefabs.TrackObject prefab = null;
+						IList<GameObject>         list   = null;
 						switch (item)
 						{
 							case TrackItem.Magnet:
+							{
 								prefab = _prefabs.Magnet;
 								break;
+							}
 							case TrackItem.Obstacle:
+							{
 								prefab = _prefabs.Obstacle;
+								list   = levelHolder.barriers;
+								allEntities.Add(RoadEntityData.CreateBarrier(BarrierType.Ground_SingePath, i                 / (float)(points.Length - 1), 0.5f, j));
 								break;
+							}
 							case TrackItem.ObstacleHard:
+							{
 								prefab = _prefabs.ObstacleBlock;
+								list   = levelHolder.barriers;
+								allEntities.Add(RoadEntityData.CreateBarrier(BarrierType.Ground_SingePath, i / (float)(points.Length - 1), 1.5f, j));
 								break;
+							}
 							case TrackItem.EnemyGround:
+							{
 								prefab = _prefabs.EnemyGround;
+								list   = levelHolder.enemies;
+								allEntities.Add(RoadEntityData.CreateEnemy(EnemyType.Ground, i / (float)(points.Length - 1), 0.5f, j));
 								break;
+							}
 							case TrackItem.EnemyAir:
+							{
 								prefab = _prefabs.EnemyAir;
+								list   = levelHolder.enemies;
+								var red = new RoadEntityData(EntityType.Enemy, EnemyType.Fly, BarrierType.Flying_SinglePath, i / (float)(points.Length - 1), 1.5f, 0f, j, j);
+								allEntities.Add(red);
 								break;
+							}
 							case TrackItem.Shield:
+							{
 								prefab = _prefabs.Shield;
 								break;
+							}
 							case TrackItem.Accelerator:
+							{
 								prefab = _prefabs.Accelerator;
+								list   = levelHolder.boosters;
 								break;
+							}
 						}
 						if (prefab != null)
 						{
 							var obj = Instantiate(prefab.prefab);
-							obj.transform.position = point.position + point.normal * prefab.offset;
+							obj.transform.position = point.position + (point.normal * prefab.offset.y + point.direction * prefab.offset.z + point.right * prefab.offset.x);
 							obj.transform.rotation = Quaternion.LookRotation(point.direction, Vector3.up);
 							obj.transform.parent   = splines[j].transform;
+							list?.Add(obj);
 						}
-						CreateCoins(_track[i].Lines[j].values.Where(t => t == TrackItem.CoinLow || t == TrackItem.CoinMiddle || t == TrackItem.CoinHigh).ToArray(), point, splines[j].transform);
+						CreateCoins(_track[i].Lines[j].values.Where(t => t == TrackItem.CoinLow || t == TrackItem.CoinMiddle || t == TrackItem.CoinHigh).ToArray(), point, splines[j].transform, levelHolder.money, allEntities);
 					}
 					EditorUtility.DisplayProgressBar("Create track objects", $"Line #{j + 1} of {_track[i].Lines.Length} :: Point: {i + 1} of {points.Length}", i / (float)(points.Length - 1));
 				}
 			}
 			EditorUtility.ClearProgressBar();
+			eGUI.SetDirty(levelHolder.gameObject);
 		}
 
-		private void CreateCoins(TrackItem[] coins, SplineResult point, Transform parent)
+		private void CreateCoins(TrackItem[] coins, SplineResult point, Transform parent, IList<GameObject> list, List<RoadEntityData> a)
 		{
 			if (coins == null || coins.Length == 0) return;
 			var distance = _linesInterval / coins.Length;
@@ -356,20 +404,24 @@ left turn	right turn	up turn	down turn
 				{
 					case TrackItem.CoinLow:
 						prefab = _prefabs.CoinLow;
+						a.Add(RoadEntityData.CreateCoin((float)point.percent,0));
 						break;
 					case TrackItem.CoinMiddle:
 						prefab = _prefabs.CoinMiddle;
+						a.Add(RoadEntityData.CreateCoin((float)point.percent, 0));
 						break;
 					case TrackItem.CoinHigh:
 						prefab = _prefabs.CoinHigh;
+						a.Add(RoadEntityData.CreateCoin((float)point.percent, 0));
 						break;
 				}
 				if (prefab != null)
 				{
 					var go = Instantiate(prefab.prefab);
-					go.transform.position = point.position + point.normal * prefab.offset + point.direction * (distance * i);
+					go.transform.position = point.position + (point.normal * prefab.offset.y + point.direction * prefab.offset.z + point.right * prefab.offset.x) + point.direction * (distance * i);
 					go.transform.rotation = Quaternion.LookRotation(point.direction, Vector3.up);
-					go.transform.parent    = parent;
+					go.transform.parent   = parent;
+					list?.Add(go);
 				}
 			}
 		}

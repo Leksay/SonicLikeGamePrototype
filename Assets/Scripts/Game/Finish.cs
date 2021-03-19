@@ -34,7 +34,7 @@ public class Finish : MonoBehaviour
         if (player != null)
         {
             playerFinished = true;
-            ControllManager.RemoveControll();
+            ControllManager.RemoveControl();
             var racer = other.GetComponent<RacerStatus>();
             if (racer != null)
             {

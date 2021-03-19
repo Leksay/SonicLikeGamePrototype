@@ -26,7 +26,7 @@ public class RacerStatus : MonoBehaviour
         return new RacerValues()
         {
             coins = wallet.GetBalance(),
-            percent = mover.GetPecent(),
+            percent = mover.GetPercent(),
             name = named.GetName(),
             icon = this.icon
         };

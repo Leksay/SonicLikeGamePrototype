@@ -5,7 +5,7 @@ using UnityEngine;
 public class ControllManager : MonoBehaviour
 {
     private static ControllManager instance;
-    private static List<IPlayerControllable> controllables;
+    private static List<IPlayerControllable> _controllables = new List<IPlayerControllable>();
     private void Awake()
     {
         if (instance == null)
@@ -17,24 +17,23 @@ public class ControllManager : MonoBehaviour
             DestroyMe();
             Destroy(this.gameObject);
         }
-        controllables = new List<IPlayerControllable>();
     }
 
-    public static void GiveControll()
+    public static void GiveControl()
     {
-        controllables.ForEach(c => c.StartPlayerControll());
+        _controllables.ForEach(c => c.StartPlayerControl());
     }
 
-    public static void RemoveControll()
+    public static void RemoveControl()
     {
-        controllables.ForEach(c => c.StopPlayerControll());
+        _controllables.ForEach(c => c.StopPlayerControl());
     }
 
-    public static void RegisterControllable(IPlayerControllable controllable) => controllables.Add(controllable);
+    public static void RegisterControllable(IPlayerControllable controllable) => _controllables.Add(controllable);
 
     public static void DestroyMe()
     {
-        controllables = null;
+        _controllables = null;
         Destroy(instance?.gameObject);
     }
 }

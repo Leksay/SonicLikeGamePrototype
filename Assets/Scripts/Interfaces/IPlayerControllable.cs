@@ -1,6 +1,6 @@
 ﻿public interface IPlayerControllable 
 {
-    void StartPlayerControll();
-    void StopPlayerControll();
+    void StartPlayerControl();
+    void StopPlayerControl();
     void RegisterControllable();
 }

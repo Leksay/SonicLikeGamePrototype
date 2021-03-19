@@ -66,8 +66,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 238741848576855422}
-  m_LocalRotation: {x: 2.8515176e-11, y: 1, z: -0.000009132115, w: 0.000003163816}
-  m_LocalPosition: {x: -283.65176, y: 3.5999622, z: 142.59377}
+  m_LocalRotation: {x: 0, y: 1, z: -0.000000059604634, w: 0}
+  m_LocalPosition: {x: -283.65176, y: 3.5999887, z: 142.62625}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 7410701774747481312}
@@ -13379,12 +13379,12 @@ MonoBehaviour:
   targetRigidbody2D: {fileID: 0}
   targetTransform: {fileID: 238741848576855423}
   _result:
-    position: {x: -283.65176, y: -0.000038233207, z: 142.59377}
+    position: {x: -283.65176, y: -0.0000116062165, z: 142.62625}
     normal: {x: 0, y: 1.0000001, z: -0.00000011920929}
-    direction: {x: 0.000006327632, y: -0.00001826423, z: -1}
+    direction: {x: 0, y: -0.00000011920927, z: -1}
     color: {r: 1, g: 1, b: 1, a: 1}
     size: 1
-    percent: 0.000009999999747378752
+    percent: 0
   wrapMode: 0
   followMode: 0
   autoStartPosition: 0
@@ -13434,7 +13434,7 @@ MonoBehaviour:
   slideTime: 0.6
   levelHolder: {fileID: 0}
   currentRoadId: 0
-  follower: {fileID: 0}
+  follower: {fileID: 238741848576855420}
   speedSkill: 0
   accelerationSkill: 0
   slideEffect: {fileID: 8520877699240979873}
@@ -13559,6 +13559,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   icon: {fileID: 21300000, guid: c48abda92ca223045bbcad527d0c007f, type: 3}
+  finished: 0
 --- !u!114 &8870538368816722792
 MonoBehaviour:
   m_ObjectHideFlags: 0
