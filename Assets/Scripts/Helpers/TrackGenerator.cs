@@ -126,6 +126,7 @@ left turn	right turn	up turn	down turn
 
 		private Vector3[] _directions2;
 
+#if UNITY_EDITOR
 		private void CreateRotations()
 		{
 			_directions2 = new Vector3[] {
@@ -191,12 +192,12 @@ left turn	right turn	up turn	down turn
 			spline.type = Spline.Type.BSpline;
 
 			DestroyImmediate(point.gameObject);
-			var start = Instantiate(_prefabs.StartLine.prefab);
+			var start   = (GameObject)PrefabUtility.InstantiatePrefab(_prefabs.StartLine.prefab);
 			var pos   = spline.Evaluate(spline.Project(points[_prefabs.startPointIndex].position));
 			start.transform.rotation = pos.rotation;
 			start.transform.position = pos.position + pos.rotation * _prefabs.StartLine.offset;
 			start.transform.parent   = spline.transform.parent;
-			var finish = Instantiate(_prefabs.FinishLine.prefab);
+			var finish = (GameObject)PrefabUtility.InstantiatePrefab(_prefabs.FinishLine.prefab);
 			pos                       = spline.Evaluate(spline.Project(points[points.Count - 1 - _prefabs.finishAdd].position));
 			finish.transform.rotation = pos.rotation;
 			finish.transform.position = pos.position + pos.rotation * _prefabs.FinishLine.offset;
@@ -327,7 +328,7 @@ left turn	right turn	up turn	down turn
 						var point = splines[j].Evaluate(splines[j].Project(splines[j].GetPoint(i).position));
 
 						TrackPrefabs.TrackObject prefab = null;
-						IList<GameObject>         list   = null;
+						IList<GameObject>        list   = null;
 						switch (item)
 						{
 							case TrackItem.Magnet:
@@ -339,7 +340,7 @@ left turn	right turn	up turn	down turn
 							{
 								prefab = _prefabs.Obstacle;
 								list   = levelHolder.barriers;
-								allEntities.Add(RoadEntityData.CreateBarrier(BarrierType.Ground_SingePath, i                 / (float)(points.Length - 1), 0.5f, j));
+								allEntities.Add(RoadEntityData.CreateBarrier(BarrierType.Ground_SingePath, i / (float)(points.Length - 1), 0.5f, j));
 								break;
 							}
 							case TrackItem.ObstacleHard:
@@ -378,13 +379,13 @@ left turn	right turn	up turn	down turn
 						}
 						if (prefab != null)
 						{
-							var obj = Instantiate(prefab.prefab);
+							var obj = (GameObject)PrefabUtility.InstantiatePrefab(prefab.prefab);
 							obj.transform.position = point.position + (point.normal * prefab.offset.y + point.direction * prefab.offset.z + point.right * prefab.offset.x);
 							obj.transform.rotation = Quaternion.LookRotation(point.direction, Vector3.up);
 							obj.transform.parent   = splines[j].transform;
 							list?.Add(obj);
 						}
-						CreateCoins(_track[i].Lines[j].values.Where(t => t == TrackItem.CoinLow || t == TrackItem.CoinMiddle || t == TrackItem.CoinHigh).ToArray(), point, splines[j].transform, levelHolder.money, allEntities);
+						CreateCoins(_track[i].Lines[j].values.Where(t => t == TrackItem.CoinLow || t == TrackItem.CoinMiddle || t == TrackItem.CoinHigh).ToArray(), point, splines[j].transform, levelHolder.money, allEntities, j);
 					}
 					EditorUtility.DisplayProgressBar("Create track objects", $"Line #{j + 1} of {_track[i].Lines.Length} :: Point: {i + 1} of {points.Length}", i / (float)(points.Length - 1));
 				}
@@ -393,7 +394,7 @@ left turn	right turn	up turn	down turn
 			eGUI.SetDirty(levelHolder.gameObject);
 		}
 
-		private void CreateCoins(TrackItem[] coins, SplineResult point, Transform parent, IList<GameObject> list, List<RoadEntityData> a)
+		private void CreateCoins(TrackItem[] coins, SplineResult point, Transform parent, IList<GameObject> list, List<RoadEntityData> a, int road)
 		{
 			if (coins == null || coins.Length == 0) return;
 			var distance = _linesInterval / coins.Length;
@@ -404,20 +405,21 @@ left turn	right turn	up turn	down turn
 				{
 					case TrackItem.CoinLow:
 						prefab = _prefabs.CoinLow;
-						a.Add(RoadEntityData.CreateCoin((float)point.percent,0));
+						a.Add(RoadEntityData.CreateCoin((float)point.percent, 0, road));
 						break;
 					case TrackItem.CoinMiddle:
 						prefab = _prefabs.CoinMiddle;
-						a.Add(RoadEntityData.CreateCoin((float)point.percent, 0));
+						a.Add(RoadEntityData.CreateCoin((float)point.percent, 0, road));
 						break;
 					case TrackItem.CoinHigh:
 						prefab = _prefabs.CoinHigh;
-						a.Add(RoadEntityData.CreateCoin((float)point.percent, 0));
+						a.Add(RoadEntityData.CreateCoin((float)point.percent, 0, road));
 						break;
 				}
 				if (prefab != null)
 				{
-					var go = Instantiate(prefab.prefab);
+					
+					var go = (GameObject)PrefabUtility.InstantiatePrefab(prefab.prefab);
 					go.transform.position = point.position + (point.normal * prefab.offset.y + point.direction * prefab.offset.z + point.right * prefab.offset.x) + point.direction * (distance * i);
 					go.transform.rotation = Quaternion.LookRotation(point.direction, Vector3.up);
 					go.transform.parent   = parent;
@@ -499,5 +501,6 @@ left turn	right turn	up turn	down turn
 			}
 			return TrackDir.None;
 		}
+#endif
 	}
 }
