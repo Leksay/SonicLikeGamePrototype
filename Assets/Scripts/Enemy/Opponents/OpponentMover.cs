@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Dreamteck.Splines;
 using Level;
+using Players;
 using UnityEngine;
 namespace Enemy.Opponents
 {
@@ -331,8 +332,7 @@ namespace Enemy.Opponents
 			var p0 = _follower.result;                                                                             // point on current spline
 			var p1 = levelHolder._lines[targetLine].Evaluate(levelHolder._lines[targetLine].Project(p0.position)); // closest point on side line
 			var d  = p0.position - p1.position;
-			var v  = Vector3.Project(d, p0.right * levelHolder._lineWidth); // project vector RIGHT from current on vector between points on lines
-			if (v.magnitude > levelHolder._lineWidth * 1.1f) return;        // if RIGHT less distance between points
+			if (!PlayerMover.CheckLineSwap(levelHolder._lines[targetLine], p0, levelHolder._lineWidth)) return;
 			currentRoadId = targetLine;
 			d.Normalize();
 			var d2 = new Vector2(Vector3.Dot(d, p1.right), Vector3.Dot(d, p1.normal)); // offset is [X * point.right + Y * point.normal]
