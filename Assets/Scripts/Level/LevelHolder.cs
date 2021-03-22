@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Dreamteck.Splines;
+using Players;
 using UnityEngine;
 namespace Level
 {
@@ -17,7 +19,8 @@ namespace Level
 
 		[Header("Debug")]
 		[SerializeField] private bool enableOffsetDebug;
-		[SerializeField] private SplineFollower  follower;
+		[SerializeField] private SplineFollower follower;
+
 		//[SerializeField] private float           currentOffset;
 		//[SerializeField] private List<float>     pathOffsets = new List<float>();
 		//[SerializeField] private List<DeathLoop> deathLoops;
@@ -26,7 +29,7 @@ namespace Level
 		public float            _lineWidth;
 
 		public SplineComputer GetComputer() => computer;
-		
+
 		public void Init(SplineComputer spline) => computer = spline;
 
 		public void Init(SplineComputer[] splines, float lineWidth)
@@ -105,5 +108,26 @@ namespace Level
 				follower.motion.offset = new Vector2(0, currentOffset);
 		}
 		/**/
+
+		private void OnDrawGizmosSelected()
+		{
+			for (var i = 1; i < _lines.Length; i += 2)
+			{
+				var points = _lines[i].GetPoints();
+				for (var j = 0; j < points.Length; j++)
+				{
+					var p    = _lines[i].Evaluate(j);
+					var pL   = _lines[i - 1].EvaluatePosition(_lines[i - 1].Project(p.position));
+					Gizmos.color = PlayerMover.CheckLineSwap(_lines[i - 1], p, _lineWidth) ? Color.green : Color.red;
+					Gizmos.DrawLine(p.position, pL);
+					if (i + 1 < _lines.Length)
+					{
+						pL           = _lines[i + 1].EvaluatePosition(_lines[i + 1].Project(p.position));
+						Gizmos.color = PlayerMover.CheckLineSwap(_lines[i + 1], p, _lineWidth) ? Color.green : Color.red;
+						Gizmos.DrawLine(p.position, pL);
+					}
+				}
+			}
+		}
 	}
 }
