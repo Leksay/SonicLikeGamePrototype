@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Internal;
 using Players.Camera;
 using UnityEngine;
 
@@ -29,7 +30,7 @@ public class Player : MonoBehaviour, IEnemyAffected, INamedRacer
         {
             Debug.LogError("Racer status on Player is null");
         }
-        moneyCounter = DataHolder.GetMoneyCounterUI();
+        moneyCounter = Locator.GetObject<MoneyCounterUI>();
         playerCameraFollow = FindObjectOfType<PlayerFollowCamera>();
         playerCameraFollow.InitializePlayerCamera(cameraData);
         DataHolder.SetCurrentPlayer(this);
@@ -50,7 +51,7 @@ public class Player : MonoBehaviour, IEnemyAffected, INamedRacer
 
     private void UpdateBalance(int balance)
     {
-        moneyCounter.SetText(balance);
+        moneyCounter?.SetText(balance);
     }
 
     public bool HitedByEnemy(EnemyType enemyType)
@@ -70,7 +71,7 @@ public class Player : MonoBehaviour, IEnemyAffected, INamedRacer
         var affected = other.GetComponent<IPlayerAffected>();
         if (affected != null)
         {
-            affected.HitedByPlayer(movementType, true);
+            affected.HitByPlayer(movementType, true);
         }
     }
 

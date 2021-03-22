@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Enemy;
+using Enemy.Opponents;
 using UnityEngine;
 
 public class DeathLoopStart : MonoBehaviour

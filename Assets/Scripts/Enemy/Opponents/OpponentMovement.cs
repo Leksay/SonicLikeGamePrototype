@@ -1,28 +1,26 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class OpponentMovement : MonoBehaviour, IEnemyAffected
+﻿using UnityEngine;
+namespace Enemy.Opponents
 {
-    [SerializeField] private MovementType movementType;
-
-    public bool HitedByEnemy(EnemyType enemyType)
+    public class OpponentMovement : MonoBehaviour, IEnemyAffected
     {
-        if (movementType == MovementType.Run)
+        [SerializeField] private MovementType movementType;
+
+        public bool HitedByEnemy(EnemyType enemyType)
         {
-            return true;
+            if (movementType == MovementType.Run)
+                return true;
+            return false;
         }
-        return false;
-    }
 
-    public void SetMovementType(MovementType movementType) => this.movementType = movementType;
+        public void SetMovementType(MovementType movementType) => this.movementType = movementType;
 
-    private void OnTriggerEnter(Collider other)
-    {
-        var affected = other.GetComponent<IPlayerAffected>();
-        if (affected != null)
+        private void OnTriggerEnter(Collider other)
         {
-            affected.HitedByPlayer(movementType, false);
+            var affected = other.GetComponent<IPlayerAffected>();
+            if (affected != null)
+            {
+                affected.HitByPlayer(movementType, false);
+            }
         }
     }
 }

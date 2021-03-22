@@ -30444,7 +30444,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 5991259849460688672}
-  defaultSpeed: 26
+  defaultSpeed: 13
   changeRoadTime: 0.3
   changeRoadTreshold: 0.1
   accelerationSpeed: 20
@@ -30582,6 +30582,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   icon: {fileID: 21300000, guid: c7e87a742111b3e43ae010077da7d2df, type: 3}
+  finished: 0
 --- !u!114 &3129842040155707711
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -21,12 +21,12 @@ public class AffectorsHolder : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         var barrier = other.GetComponent<Barrier>();
-        var enemy = other.GetComponent<Enemy>();
+        var enemy = other.GetComponent<Enemy.Opponents.Enemy>();
         if(barrier != null)
         {
             barrierEffected.ForEach(e =>
             {
-                e.BarrierHited();
+                e.BarrierHit();
                 if(e.GetType() == typeof(PlayerMover))
                 {
                     OnBarrierHited?.Invoke();
@@ -40,7 +40,7 @@ public class AffectorsHolder : MonoBehaviour
                 // попадание срабатывает
                 if (e.HitedByEnemy(enemy.enemyType))
                 {
-                    barrierEffected.ForEach(b => b.BarrierHited());
+                    barrierEffected.ForEach(b => b.BarrierHit());
                 }
             });
         }

@@ -416,7 +416,7 @@ namespace Players
   #endregion
 
 #region IBarrierAffected
-		public void BarrierHited()
+		public void BarrierHit()
 		{
 			if (_defended)
 			{

@@ -53,7 +53,6 @@ public class FollowArrow : MonoBehaviour
     private void FixedUpdate()
     {
         if (isWorking == false) return;
-        print(playerT);
         var myPercent = spline.Project(playerT.position);
         var followPercent = spline.Project(followTransform.position);
         Vector3 indicationPosition = cam.WorldToScreenPoint(followTransform.position);

@@ -47,7 +47,7 @@ public class RoadEntityGenerator : MonoBehaviour
 		if (splineHolder == null)
 			throw new Exception("spline Holder Object in BarrierGenerator is null");
 
-		roadOffsets = levelHolder.GetPathsOffsets();
+		//roadOffsets = levelHolder.GetPathsOffsets();
 		barriers    = new List<GameObject>();
 		barriers.AddRange(DataHolder.GetBarriersList().ToArray());
 		enemies = new List<GameObject>();
@@ -107,8 +107,7 @@ public class RoadEntityGenerator : MonoBehaviour
 
 			}
 			var splineOnPercent = roadSpline.Evaluate(percent * i);
-			if (levelHolder.InDeathLoops((float)(percent * i)))
-				continue;
+			//if (levelHolder.InDeathLoops((float)(percent * i))) continue;
 			var position = splineOnPercent.position;
 			var rotation = splineOnPercent.rotation;
 			GenerateEnemyOrBarrier(percent * i);
@@ -251,14 +250,14 @@ public class RoadEntityGenerator : MonoBehaviour
 		random = new System.Random(DateTime.Now.Millisecond);
 		var       randomEnemyType = random.Next(0, enemies.Count);
 		Transform enemy;
-		var       enemyType = enemies[randomEnemyType].GetComponentInChildren<Enemy>().enemyType;
+		var       enemyType = enemies[randomEnemyType].GetComponentInChildren<Enemy.Opponents.Enemy>().enemyType;
 		entityData.enemyType = enemyType;
 		entityData.roadCount = randomEnemyCount;
 		for (var i = 0; i <= randomEnemyCount; i++)
 		{
 			enemy          =  Instantiate(enemies[randomEnemyType], position, rotation, enemysHolder).transform;
 			enemy.position += enemy.right * roadOffsets[i];
-			var yOffset = enemy.GetComponentInChildren<Enemy>()?.enemyType == EnemyType.Fly ? .5f : 0;
+			var yOffset = enemy.GetComponentInChildren<Enemy.Opponents.Enemy>()?.enemyType == EnemyType.Fly ? .5f : 0;
 			entityData.height =  yOffset;
 			enemy.position    += enemy.up * yOffset;
 

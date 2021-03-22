@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Internal;
 using Level;
 using UnityEngine;
 
@@ -7,7 +8,7 @@ using UnityEngine;
 public class LevelData 
 {
     public LevelHolder levelHolder;
-    public RoadEntityGenerator generator;
-    public MoneyCounterUI moneyCounter;
-    public FinishTab finishTab;
+    //public RoadEntityGenerator generator;
+    public MoneyCounterUI moneyCounter => Locator.GetObject<MoneyCounterUI>();
+    public FinishTab finishTab => Locator.GetObject<FinishTab>();
 }

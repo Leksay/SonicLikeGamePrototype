@@ -13535,6 +13535,7 @@ MonoBehaviour:
   inAirTime: 0
   slideTime: 0
   levelHolder: {fileID: 0}
+  currentRoadId: 0
 --- !u!114 &383019570304511849
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13583,7 +13584,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3804025340710262759}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cdf97e879c936d84e89c434533c01f35, type: 3}
   m_Name: 

@@ -1,4 +1,4 @@
 ﻿public interface IBarrierAffected
 {
-    void BarrierHited();
+    void BarrierHit();
 }

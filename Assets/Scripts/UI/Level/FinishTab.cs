@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using System;
-public class FinishTab : MonoBehaviour
+using Internal;
+public class FinishTab : MonoBehaviour, IRegistrable
 {
     
     // fast dirty code
@@ -135,4 +136,10 @@ public class FinishTab : MonoBehaviour
         }
     }
     #endregion
+
+    private void Awake()      => Register();
+    private void OnEnable()   => Register();
+    private void OnDisable()  => Unregister();
+    public  void Register()   => Locator.Register(typeof(FinishTab), this);
+    public  void Unregister() => Locator.Unregister(typeof(FinishTab));
 }

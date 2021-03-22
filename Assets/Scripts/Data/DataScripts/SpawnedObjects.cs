@@ -33,7 +33,7 @@ public class SpawnedObjects : ScriptableObject
 		if (enemys != null && enemys.Count > 0)
 			enemys.ForEach(e => {
 				if (e != null)
-					if (e.GetComponent<Enemy>() == null && e.GetComponentInChildren<Enemy>() == null)
+					if (e.GetComponent<Enemy.Opponents.Enemy>() == null && e.GetComponentInChildren<Enemy.Opponents.Enemy>() == null)
 						enemys.Remove(e);
 			});
 		if (boosters != null && boosters.Count > 0)
@@ -53,7 +53,7 @@ public class SpawnedObjects : ScriptableObject
 		if (barriers == null) barriers = new List<GameObject>();
 		barriers.AddRange(FindObjectsOfType<Barrier>().Select(t => t.gameObject));
 		if (enemys == null) enemys = new List<GameObject>();
-		enemys.AddRange(FindObjectsOfType<Enemy>().Select(t => t.gameObject));
+		enemys.AddRange(FindObjectsOfType<Enemy.Opponents.Enemy>().Select(t => t.gameObject));
 		if (boosters == null) boosters = new List<GameObject>();
 		boosters.AddRange(FindObjectsOfType<SpeedBoost>().Select(t => t.gameObject));
 		if (money == null) money = new List<GameObject>();

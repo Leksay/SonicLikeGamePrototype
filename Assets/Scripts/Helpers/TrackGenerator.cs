@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using Dreamteck.Splines;
 using EasyEditorGUI;
 using Level;
@@ -44,15 +46,13 @@ left turn	right turn	up turn	down turn
 
 		public enum TrackDir
 		{
-			None      = 0,
-			Left      = 1, //L
-			Right     = 2, //R
-			Up        = 3, //U
-			Down      = 4, //D
-			LeftUp    = 5, //LU
-			LeftDown  = 6, //LD
-			RightUp   = 7, //RU
-			RightDown = 8, //RD
+			None       = 0,
+			Left       = 1, //L
+			Right      = 2, //R
+			Up         = 3, //U
+			Down       = 4, //D
+			ShiftLeft  = 5,
+			ShiftRight = 6,
 		}
 
 		[Serializable] public class TrackSlot
@@ -67,7 +67,7 @@ left turn	right turn	up turn	down turn
 			public bool fold = false;
 #endif
 			public TrackSlot[] Lines;
-			public TrackDir    dir;
+			public TrackDir[]  dir;
 			public TrackStep(int lines) => Lines = new TrackSlot[lines];
 		}
 
@@ -85,6 +85,7 @@ left turn	right turn	up turn	down turn
 		public float        _stepLength           = 3f;
 		public float        _stepHorizontalRotate = 5f;
 		public float        _stepVerticalRotate   = 5f;
+		public float        _stepHorizontalShift  = 1f;
 		public int          _lines                = 4;
 		public float        _linesInterval        = 1f;
 		public bool         _simplifyTrackMeshes  = true;
@@ -141,6 +142,18 @@ left turn	right turn	up turn	down turn
 				new Vector3(_stepVerticalRotate,  _stepHorizontalRotate,  0f), //RD
 			};
 		}
+		private void PatchRotation(Transform t)
+		{
+			var f  = t.forward;
+			var r  = t.right;
+			var r2 = r;
+			r.y = 0f;
+
+			//var u   = t.up;
+			var a = Vector3.SignedAngle(r2, r, f);
+			a = Mathf.Min(Mathf.Abs(a), _stepHorizontalRotate) * Mathf.Sign(a);
+			t.Rotate(t.forward, a, Space.World);
+		}
 
 		private void ParseTrack()
 		{
@@ -177,14 +190,21 @@ left turn	right turn	up turn	down turn
 			var go          = new GameObject("Track", typeof(SplineComputer));
 			go.transform.parent = holder.transform;
 			var spline = go.GetComponent<SplineComputer>();
-			levelHolder.Init(spline, null);
+			levelHolder.Init(spline);
 
 			var points = new List<SplinePoint>(_track.Length);
 			var point  = new GameObject().transform;
 			foreach (var t in _track)
 			{
 				var p = new SplinePoint(point.position);
-				point.Rotate(_directions2[(int)t.dir]);
+				p.normal = point.up;
+				foreach (var dir in t.dir)
+					if (dir == TrackDir.ShiftLeft || dir == TrackDir.ShiftRight)
+						point.position += point.right * ((dir == TrackDir.ShiftLeft ? -1f : 1f) * _stepHorizontalShift);
+					else
+						point.Rotate(_directions2[(int)dir]);
+
+				//PatchRotation(point);
 				point.position += point.forward * _stepLength;
 				points.Add(p);
 			}
@@ -192,7 +212,7 @@ left turn	right turn	up turn	down turn
 			spline.type = Spline.Type.BSpline;
 
 			DestroyImmediate(point.gameObject);
-			var start   = (GameObject)PrefabUtility.InstantiatePrefab(_prefabs.StartLine.prefab);
+			var start = (GameObject)PrefabUtility.InstantiatePrefab(_prefabs.StartLine.prefab);
 			var pos   = spline.Evaluate(spline.Project(points[_prefabs.startPointIndex].position));
 			start.transform.rotation = pos.rotation;
 			start.transform.position = pos.position + pos.rotation * _prefabs.StartLine.offset;
@@ -309,7 +329,7 @@ left turn	right turn	up turn	down turn
 				sm.Rebuild(true);
 				sm.gameObject.GetComponent<MeshRenderer>().sharedMaterial = _prefabs.RoadMaterial;
 			}
-			levelHolder.Init(spline,            deviance);
+			levelHolder.Init(spline);
 			levelHolder.Init(splines.ToArray(), _linesInterval);
 
 			levelHolder.barriers = new List<GameObject>();
@@ -361,8 +381,7 @@ left turn	right turn	up turn	down turn
 							{
 								prefab = _prefabs.EnemyAir;
 								list   = levelHolder.enemies;
-								var red = new RoadEntityData(EntityType.Enemy, EnemyType.Fly, BarrierType.Flying_SinglePath, i / (float)(points.Length - 1), 1.5f, 0f, j, j);
-								allEntities.Add(red);
+								allEntities.Add(RoadEntityData.CreateEnemy(EnemyType.Fly, i / (float)(points.Length - 1), 0.5f, j));
 								break;
 							}
 							case TrackItem.Shield:
@@ -380,8 +399,8 @@ left turn	right turn	up turn	down turn
 						if (prefab != null)
 						{
 							var obj = (GameObject)PrefabUtility.InstantiatePrefab(prefab.prefab);
-							obj.transform.position = point.position + (point.normal * prefab.offset.y + point.direction * prefab.offset.z + point.right * prefab.offset.x);
-							obj.transform.rotation = Quaternion.LookRotation(point.direction, Vector3.up);
+							obj.transform.rotation = Quaternion.LookRotation(point.direction, point.normal);
+							obj.transform.position = point.position + point.rotation * prefab.offset;
 							obj.transform.parent   = splines[j].transform;
 							list?.Add(obj);
 						}
@@ -390,6 +409,7 @@ left turn	right turn	up turn	down turn
 					EditorUtility.DisplayProgressBar("Create track objects", $"Line #{j + 1} of {_track[i].Lines.Length} :: Point: {i + 1} of {points.Length}", i / (float)(points.Length - 1));
 				}
 			}
+			levelHolder.allEntities = allEntities;
 			EditorUtility.ClearProgressBar();
 			eGUI.SetDirty(levelHolder.gameObject);
 		}
@@ -418,10 +438,10 @@ left turn	right turn	up turn	down turn
 				}
 				if (prefab != null)
 				{
-					
+
 					var go = (GameObject)PrefabUtility.InstantiatePrefab(prefab.prefab);
-					go.transform.position = point.position + (point.normal * prefab.offset.y + point.direction * prefab.offset.z + point.right * prefab.offset.x) + point.direction * (distance * i);
-					go.transform.rotation = Quaternion.LookRotation(point.direction, Vector3.up);
+					go.transform.rotation = Quaternion.LookRotation(point.direction, point.normal);
+					go.transform.position = point.position + point.rotation * prefab.offset + point.direction * (distance * i);
 					go.transform.parent   = parent;
 					list?.Add(go);
 				}
@@ -482,24 +502,37 @@ left turn	right turn	up turn	down turn
 				}
 			return TrackSurface.Normal;
 		}
-		private TrackDir ParseSlotDir(string data)
+		private TrackDir[] ParseSlotDir(string data)
 		{
-			switch (data)
+			var res = new TrackDir[data.Length];
+			for (var i = 0; i < data.Length; i++)
 			{
-				case "L": return TrackDir.Left;
-				case "R": return TrackDir.Right;
-				case "U": return TrackDir.Up;
-				case "D": return TrackDir.Down;
-				case "LU":
-				case "UL": return TrackDir.LeftUp;
-				case "LD":
-				case "DL": return TrackDir.LeftDown;
-				case "RU":
-				case "UR": return TrackDir.RightUp;
-				case "RD":
-				case "DR": return TrackDir.RightDown;
+				switch (data[i])
+				{
+					case 'L':
+						res[i] = TrackDir.Left;
+						break;
+					case 'R':
+						res[i] = TrackDir.Right;
+						break;
+					case 'U':
+						res[i] = TrackDir.Up;
+						break;
+					case 'D':
+						res[i] = TrackDir.Down;
+						break;
+					case 'l':
+						res[i] = TrackDir.ShiftLeft;
+						break;
+					case 'r':
+						res[i] = TrackDir.ShiftRight;
+						break;
+					default:
+						res[i] = TrackDir.None;
+						break;
+				}
 			}
-			return TrackDir.None;
+			return res;
 		}
 #endif
 	}

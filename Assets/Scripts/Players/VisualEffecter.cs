@@ -27,7 +27,7 @@ public class VisualEffecter : MonoBehaviour, IBarrierAffected, IBoostable, IDefe
         playerRenderers.AddRange(playerObject?.GetComponentsInChildren<MeshRenderer>());
         skinnedMeshRenderers.AddRange(playerObject?.GetComponentsInChildren<SkinnedMeshRenderer>());
     }
-    public void BarrierHited()
+    public void BarrierHit()
     {
         if (defended) return;
         StartCoroutine(PlayerHitEffect());

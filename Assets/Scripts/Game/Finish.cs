@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Enemy;
+using Enemy.Opponents;
 public class Finish : MonoBehaviour
 {
     public static event Action OnCrossFinishLine;
