@@ -47,18 +47,26 @@ left turn	right turn	up turn	down turn
 		public enum TrackDir
 		{
 			None       = 0,
-			Left       = 1, //L
-			Right      = 2, //R
-			Up         = 3, //U
-			Down       = 4, //D
-			ShiftLeft  = 5,
-			ShiftRight = 6,
+			Left       = 1, // L
+			Right      = 2, // R
+			Up         = 3, // U
+			Down       = 4, // D
+			ShiftLeft  = 5, // l
+			ShiftRight = 6, // r
+			ShiftUp    = 7, // u
+			ShiftDown  = 8, // d
 		}
 
 		[Serializable] public class TrackSlot
 		{
 			public TrackItem[]  values;
+			public TrackDir[]   dirs;
 			public TrackSurface surface;
+			public TrackSlot(TrackItem[] values, TrackDir[] dirs)
+			{
+				this.values = values;
+				this.dirs   = dirs;
+			}
 		}
 
 		[Serializable] public class TrackStep
@@ -85,7 +93,8 @@ left turn	right turn	up turn	down turn
 		public float        _stepLength           = 3f;
 		public float        _stepHorizontalRotate = 5f;
 		public float        _stepVerticalRotate   = 5f;
-		public float        _stepHorizontalShift  = 1f;
+		public float        _stepHorizontalShift  = 0.2f;
+		public float        _stepVerticalShift    = 0.2f;
 		public int          _lines                = 4;
 		public float        _linesInterval        = 1f;
 		public bool         _simplifyTrackMeshes  = true;
@@ -123,9 +132,8 @@ left turn	right turn	up turn	down turn
 			public TrackObject CoinHigh;
 		}
 
-		public TrackStep[] _track;
-
-		private Vector3[] _directions2;
+		public  TrackStep[] _track;
+		private Vector3[]   _directions2;
 
 #if UNITY_EDITOR
 		private void CreateRotations()
@@ -242,6 +250,8 @@ left turn	right turn	up turn	down turn
 			var trackSurfaces                                 = new List<TrackInterval>[_lines];
 			for (var i = 0; i < _lines; i++) trackSurfaces[i] = new List<TrackInterval>();
 
+			var offset = new Vector3[_lines];
+
 			// create points for lines & calc intervals for mesh
 			for (var i = 0; i < points.Length; i++)
 			{
@@ -282,7 +292,26 @@ left turn	right turn	up turn	down turn
 
 					var pos = spline.Project(points[i].position);
 					var p   = spline.Evaluate(pos);
-					tracks[line][i].position = points[i].position + p.right * deviance[line];
+
+					foreach (var dir in _track[i].Lines[line].dirs)
+						switch (dir)
+						{
+							case TrackDir.ShiftLeft:
+								offset[line].x += -_stepHorizontalShift;
+								break;
+							case TrackDir.ShiftRight:
+								offset[line].x += _stepHorizontalShift;
+								break;
+							case TrackDir.ShiftUp:
+								offset[line].y += _stepVerticalShift;
+								break;
+							case TrackDir.ShiftDown:
+								offset[line].y += -_stepVerticalShift;
+								break;
+							default:
+								throw new ArgumentOutOfRangeException();
+						}
+					tracks[line][i].position = points[i].position + p.right * deviance[line] + (Quaternion.LookRotation(p.direction, p.normal) * offset[line]);
 					tracks[line][i].size     = _linesInterval;
 					tracks[line][i].normal   = points[i].normal;
 				}
@@ -295,21 +324,25 @@ left turn	right turn	up turn	down turn
 			{
 				var go = new GameObject($"Line_{i}");
 				go.transform.parent = spline.gameObject.transform;
+
 				var s = go.AddComponent<SplineComputer>();
 				splines.Add(s);
+
 				s.space = SplineComputer.Space.Local;
 				s.SetPoints(tracks[i]);
 				s.type = Spline.Type.BSpline;
 				s.RebuildImmediate();
+
 				var sm = go.AddComponent<SplineMesh>();
 				sm.computer = s;
 				sm.RemoveChannel(0);
+
 				var divider = int.MaxValue;
 				foreach (var interval in trackSurfaces[i])
-				{
-					if (divider > interval.segments) divider = interval.segments;
-				}
+					if (divider > interval.segments)
+						divider = interval.segments;
 				divider = _simplifyTrackMeshes ? divider : 1;
+
 				for (var index = 0; index < trackSurfaces[i].Count; index++)
 				{
 					EditorUtility.DisplayProgressBar("Create lines & road bake", $"Line #{i + 1} of {_lines} :: Interval: {index} of {trackSurfaces[i].Count - 1}", index / (float)(trackSurfaces[i].Count - 1));
@@ -336,9 +369,15 @@ left turn	right turn	up turn	down turn
 			levelHolder.boosters = new List<GameObject>();
 			levelHolder.enemies  = new List<GameObject>();
 			levelHolder.money    = new List<GameObject>();
+			CreateObjects(levelHolder);
+		}
 
-			// create track objects
-			List<RoadEntityData> allEntities = new List<RoadEntityData>();
+		private void CreateObjects(LevelHolder levelHolder)
+		{
+			var allEntities = new List<RoadEntityData>();
+			var splines     = levelHolder._lines;
+			var points      = levelHolder.GetComputer().GetPoints();
+
 			for (var i = 0; i < points.Length; i++)
 			{
 				for (var j = 0; j < _track[i].Lines.Length; j++)
@@ -448,49 +487,61 @@ left turn	right turn	up turn	down turn
 			}
 		}
 
+
 		private TrackSlot ParseSlotItem(string data)
 		{
-			var result = new TrackSlot {
-				values = new TrackItem[data.Length]
-			};
-			var i = 0;
+			var items = new List<TrackItem>();
+			var dirs  = new List<TrackDir>();
+			var i     = 0;
 			foreach (var d in data)
 			{
 				switch (d)
 				{
 					case 'M':
-						result.values[i++] = TrackItem.Magnet;
+						items.Add(TrackItem.Magnet);
 						break;
 					case 'O':
-						result.values[i++] = TrackItem.Obstacle;
+						items.Add(TrackItem.Obstacle);
 						break;
 					case 'P':
-						result.values[i++] = TrackItem.ObstacleHard;
+						items.Add(TrackItem.ObstacleHard);
 						break;
 					case 'X':
-						result.values[i++] = TrackItem.EnemyGround;
+						items.Add(TrackItem.EnemyGround);
 						break;
 					case '+':
-						result.values[i++] = TrackItem.EnemyAir;
+						items.Add(TrackItem.EnemyAir);
 						break;
 					case 'S':
-						result.values[i++] = TrackItem.Shield;
+						items.Add(TrackItem.Shield);
 						break;
 					case 'A':
-						result.values[i++] = TrackItem.Accelerator;
+						items.Add(TrackItem.Accelerator);
 						break;
 					case '1':
-						result.values[i++] = TrackItem.CoinLow;
+						items.Add(TrackItem.CoinLow);
 						break;
 					case '2':
-						result.values[i++] = TrackItem.CoinMiddle;
+						items.Add(TrackItem.CoinMiddle);
 						break;
 					case '3':
-						result.values[i++] = TrackItem.CoinHigh;
+						items.Add(TrackItem.CoinHigh);
+						break;
+					case 'l':
+						dirs.Add(TrackDir.ShiftLeft);
+						break;
+					case 'r':
+						dirs.Add(TrackDir.ShiftRight);
+						break;
+					case 'u':
+						dirs.Add(TrackDir.ShiftUp);
+						break;
+					case 'd':
+						dirs.Add(TrackDir.ShiftDown);
 						break;
 				}
 			}
-			return result;
+			return new TrackSlot(items.ToArray(), dirs.ToArray());
 		}
 		private TrackSurface ParseSlotSurface(string data)
 		{
@@ -526,6 +577,12 @@ left turn	right turn	up turn	down turn
 						break;
 					case 'r':
 						res[i] = TrackDir.ShiftRight;
+						break;
+					case 'u':
+						res[i] = TrackDir.ShiftUp;
+						break;
+					case 'd':
+						res[i] = TrackDir.ShiftDown;
 						break;
 					default:
 						res[i] = TrackDir.None;
