@@ -29,7 +29,7 @@ MonoBehaviour:
     FinishLine:
       prefab: {fileID: 6158137469767189023, guid: 6ebe312bbf744ba4fb307d720361b9da,
         type: 3}
-      offset: {x: 0, y: 2.8, z: -14}
+      offset: {x: 0, y: 2.8, z: -4}
     finishAdd: 50
     Magnet:
       prefab: {fileID: 542659991630719771, guid: db220430852f80f448275d4b14a63a1e,

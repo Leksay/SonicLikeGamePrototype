@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using Dreamteck.Splines;
+using Internal;
 using Players;
 using UnityEngine;
 namespace Level
 {
-	public class LevelHolder : MonoBehaviour
+	public class LevelHolder : MonoBehaviour, IRegistrable
 	{
 		[Header("Computer")]
 		[SerializeField] private SplineComputer computer;
@@ -129,5 +130,10 @@ namespace Level
 				}
 			}
 		}
+
+		private void Awake()      => Register();
+		public  void Register()   => Locator.Register(typeof(LevelHolder), this);
+		public  void Unregister() => Locator.Unregister(typeof(LevelHolder));
+		private void OnDestroy()  => Locator.Unregister(typeof(LevelHolder));
 	}
 }

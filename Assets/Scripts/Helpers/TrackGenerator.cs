@@ -4,10 +4,14 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using Dreamteck.Splines;
+
+#if UNITY_EDITOR
 using EasyEditorGUI;
-using Level;
 using UnityEditor;
+#endif
+using Level;
 using UnityEngine;
+using UnityEngine.Rendering;
 namespace Helpers
 {
 	[CreateAssetMenu(fileName = "TrackGenerator", menuName = "Generators/Track generator", order = 0)]
@@ -360,7 +364,12 @@ left turn	right turn	up turn	down turn
 				EditorUtility.DisplayProgressBar("Create lines & road bake", $"Line #{i + 1} of {_lines} :: Build mesh", 0);
 				sm.RebuildImmediate(true);
 				sm.Rebuild(true);
-				sm.gameObject.GetComponent<MeshRenderer>().sharedMaterial = _prefabs.RoadMaterial;
+				var mr = sm.gameObject.GetComponent<MeshRenderer>(); 
+				mr.sharedMaterial       = _prefabs.RoadMaterial;
+				mr.shadowCastingMode    = ShadowCastingMode.Off;
+				mr.receiveShadows       = false;
+				mr.lightProbeUsage      = LightProbeUsage.Off;
+				mr.reflectionProbeUsage = ReflectionProbeUsage.Off;
 			}
 			levelHolder.Init(spline);
 			levelHolder.Init(splines.ToArray(), _linesInterval);

@@ -317,7 +317,6 @@ namespace Enemy.Opponents
 
 		private void ChangePath2(SwipeInput.SwipeType swipeType)
 		{
-			Debug.Log($"[OpponentMover] [{this.gameObject.name}] {swipeType}");
 			var targetLine = currentRoadId;
 			switch (swipeType)
 			{

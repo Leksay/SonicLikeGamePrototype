@@ -20823,7 +20823,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 5474253543698582377}
-  defaultSpeed: 13
+  defaultSpeed: 26
   changeRoadTime: 0.3
   changeRoadTreshold: 0.1
   accelerationSpeed: 20

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12b56744a0d0e0543b5df05120db216a, type: 3}
   m_Name: OpponentsData
   m_EditorClassIdentifier: 
-  defaultSpeed: 13
+  defaultSpeed: 26
   changeRoadTime: 0.4
   changeRoadTreshold: 0.1
   accelerationSpeed: 20

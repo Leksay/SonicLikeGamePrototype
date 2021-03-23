@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Dreamteck.Splines;
+using Internal;
 using Level;
 using UnityEngine;
 namespace Players
@@ -89,11 +90,10 @@ namespace Players
 				player = GetComponent<Player>();
 			if (follower == null)
 				follower = GetComponent<SplineFollower>();
-			if (levelHolder == null)
-				levelHolder = FindObjectOfType<LevelHolder>();
-			_animator = GetComponent<PlayerAnimator>();
-			_collider = GetComponent<CapsuleCollider>();
-			_boosters = new List<IBoostable>();
+			levelHolder = Locator.GetObject<LevelHolder>();
+			_animator   = GetComponent<PlayerAnimator>();
+			_collider   = GetComponent<CapsuleCollider>();
+			_boosters   = new List<IBoostable>();
 			_boosters.AddRange(GetComponents<IBoostable>());
 		}
 
@@ -325,9 +325,9 @@ namespace Players
 		{
 			var p1 = dest.Evaluate(dest.Project(pos.position)); // closest point on side line
 			var d  = pos.position - p1.position;
-			var v  = Vector3.Project(d,            pos.right * lineWidth); // project vector RIGHT from current on vector between points on lines
+			var v  = Vector3.Project(d, pos.right * lineWidth); // project vector RIGHT from current on vector between points on lines
 			var v2 = Vector3.Dot(d.normalized, pos.normal);
-			return (v.magnitude <= lineWidth * 1.1f) && (Mathf.Abs(v2) <=0.01f);
+			return (v.magnitude <= lineWidth * 1.1f) && (Mathf.Abs(v2) <= 0.01f);
 		}
 		private void ChangePath2(SwipeInput.SwipeType swipeType)
 		{
@@ -343,16 +343,16 @@ namespace Players
 					break;
 			}
 			if (targetLine == currentRoadId) return;
-			
+
 			var p0 = follower.result;                                                                              // point on current spline
 			var p1 = levelHolder._lines[targetLine].Evaluate(levelHolder._lines[targetLine].Project(p0.position)); // closest point on side line
 			var d  = p0.position - p1.position;
 			if (!CheckLineSwap(levelHolder._lines[targetLine], p0, levelHolder._lineWidth)) return;
 			currentRoadId = targetLine;
 			d.Normalize();
-			var d2 = new Vector2(Vector3.Dot(d,p1.right), Vector3.Dot(d,p1.normal)); // offset is [X * point.right + Y * point.normal]
-			follower.computer      = levelHolder._lines[currentRoadId];
-			_changeRoadCoroutine   = StartCoroutine(SwitchLine(d2));
+			var d2 = new Vector2(Vector3.Dot(d, p1.right), Vector3.Dot(d, p1.normal)); // offset is [X * point.right + Y * point.normal]
+			follower.computer    = levelHolder._lines[currentRoadId];
+			_changeRoadCoroutine = StartCoroutine(SwitchLine(d2));
 		}
 		private IEnumerator SwitchLine(Vector3 baseOffset)
 		{
