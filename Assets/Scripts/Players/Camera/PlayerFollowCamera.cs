@@ -82,8 +82,9 @@ namespace Players.Camera
 			PlayerMover.OnSlide             -= OnSlide;
 			PlayerMover.OnSpeedBoost        -= BoostSpeed;
 			PlayerMover.OnSpeedBoostStopped -= SpeedBoostStopped;
-			DeathLoop.OnEnterDeathLoop      -= StartDeathLoop;
-			DeathLoop.OnExitDeathLoop       -= ExitDeathLoop;
+
+			//DeathLoop.OnEnterDeathLoop      -= StartDeathLoop;
+			//DeathLoop.OnExitDeathLoop       -= ExitDeathLoop;
 		}
 
 		private void OnDestroy()
@@ -101,23 +102,21 @@ namespace Players.Camera
 			PlayerMover.OnSlide             += OnSlide;
 			PlayerMover.OnSpeedBoost        += BoostSpeed;
 			PlayerMover.OnSpeedBoostStopped += SpeedBoostStopped;
-			DeathLoop.OnEnterDeathLoop      += StartDeathLoop;
-			DeathLoop.OnExitDeathLoop       += ExitDeathLoop;
-			PlayerMover.OnSlideBreak        += StopSlideAction;
-			_transform                      =  transform;
-			_defaultSpeed                   =  mover.GetDefaultSpeed();
-			_actualHeight                   =  defaultHeight;
-			defaultFOV                      =  _cam.fieldOfView;
-			_isWorking                      =  true;
-			_isStarting                     =  true;
-			StartLine.OnCrossStartLine      += OnPlayerCrossLine;
-			_transform.parent               =  cameraPointT;
+
+			//DeathLoop.OnEnterDeathLoop      += StartDeathLoop;
+			//DeathLoop.OnExitDeathLoop       += ExitDeathLoop;
+			PlayerMover.OnSlideBreak   += StopSlideAction;
+			_transform                 =  transform;
+			_defaultSpeed              =  mover.GetDefaultSpeed();
+			_actualHeight              =  defaultHeight;
+			defaultFOV                 =  _cam.fieldOfView;
+			_isWorking                 =  true;
+			_isStarting                =  true;
+			StartLine.OnCrossStartLine += OnPlayerCrossLine;
+			_transform.parent          =  cameraPointT;
 		}
 
-		private void OnPlayerCrossLine()
-		{
-			StartCoroutine(MoveToPlayer(1));
-		}
+		private void OnPlayerCrossLine() => StartCoroutine(MoveToPlayer(1));
 
 		private IEnumerator MoveToPlayer(float moveTime)
 		{
@@ -168,13 +167,13 @@ namespace Players.Camera
 				}
 			}
 		}
+
 		private void BoostSpeed()
 		{
 			isSpeedBoosted   = true;
 			isSpeedReturning = false;
 			_desiredFOV      = speedBoostedFOV;
 		}
-
 		private void SpeedBoostStopped(float desiredSpeed, bool justStop)
 		{
 			if (desiredSpeed > _defaultSpeed && !justStop) return;
@@ -182,10 +181,11 @@ namespace Players.Camera
 			isSpeedReturning = true;
 			_desiredFOV      = defaultFOV;
 		}
+
+
 		private void MoveAndRotateCamera()
 		{
-			_transform.rotation = Quaternion.Lerp(_transform.rotation, _isStarting ? cameraStartT.rotation : cameraPointT.rotation, rotateSmooth);
-
+			_transform.rotation = Quaternion.Lerp(_transform.rotation, _isStarting ? cameraStartT.rotation : cameraPointT.rotation, rotateSmooth * Time.deltaTime);
 			Vector3 position;
 			if (isSliding)
 			{
@@ -198,7 +198,7 @@ namespace Players.Camera
 				if ((_transform.position - (cameraPointT.position + cameraPointT.up * _actualHeight)).magnitude < .15f)
 					isReturning = false;
 			}
-			else if (_isLoopReturning)
+			/*else if (_isLoopReturning)
 			{
 				_deathLoopTimer     += Time.deltaTime / 3;
 				position            =  Vector3.Lerp(_transform.position, Vector3.Lerp(_transform.position, cameraPointT.position, _deathLoopTimer), _deathLoopTimer);
@@ -209,47 +209,45 @@ namespace Players.Camera
 					if (_deathLoopTimer > 1.1f)
 						_isLoopReturning = false;
 				}
-
+			} /**/
+			else if (_isStarting)
+			{
+				position =  cameraStartT.position;
+				position += cameraStartT.up * _actualHeight;
 			}
+			/* else if (_isOnDeathLoop)
+			{
+				_deathLoopTimer += Time.deltaTime / 11;
+				position        =  Vector3.Lerp(_transform.position, deathLoopT.position, _deathLoopTimer);
+				if (_deathLoopTimer < 0.35)
+					_transform.rotation = Quaternion.Lerp(_transform.rotation, Quaternion.LookRotation(playerT.position + cameraPointT.up * (_actualHeight + 0.25f) - _transform.position, Vector3.up), rotateSmooth);
+				else
+					_transform.rotation = Quaternion.LookRotation(playerT.position + cameraPointT.up * (_actualHeight + 0.25f) - _transform.position, Vector3.up);
+			} /**/
 			else
 			{
-				if (_isStarting)
-				{
-					position =  cameraStartT.position;
-					position += cameraStartT.up * _actualHeight;
-				}
-				else
-				{
-					if (_isOnDeathLoop)
-					{
-						_deathLoopTimer += Time.deltaTime / 11;
-						position        =  Vector3.Lerp(_transform.position, deathLoopT.position, _deathLoopTimer);
-						if (_deathLoopTimer < 0.35)
-							_transform.rotation = Quaternion.Lerp(_transform.rotation, Quaternion.LookRotation(playerT.position + cameraPointT.up * (_actualHeight + 0.25f) - _transform.position, Vector3.up), rotateSmooth);
-						else
-							_transform.rotation = Quaternion.LookRotation(playerT.position + cameraPointT.up * (_actualHeight + 0.25f) - _transform.position, Vector3.up);
-					}
-					else
-					{
-						// normal movement 
-						position =  cameraPointT.position;
-						position += cameraPointT.up * _actualHeight;
-					}
-
-				}
+				// normal movement 
+				position =  cameraPointT.position;
+				position += cameraPointT.up * _actualHeight;
 			}
-			_transform.position = position;
+			_transform.position = Vector3.Lerp(_transform.position, position, rotateSmooth * Time.deltaTime);
 		}
 
+		/*
 		private SplineResult GetSplineResult(float percent)
 		{
 			return roadSpline.Evaluate(percent);
 		}
-
 		private float GetPercent(Vector3 playerPosition)
 		{
 			return (float)roadSpline.Project(playerPosition);
 		}
+		private float DistanceToPercent(float distance)
+		{
+			var length = roadSpline.CalculateLength();
+			return distance / length;
+		}
+		/**/
 
 		private void Raycast()
 		{
@@ -266,19 +264,12 @@ namespace Players.Camera
 			}
 		}
 
-		private float DistanceToPercent(float distance)
-		{
-			var length = roadSpline.CalculateLength();
-			return distance / length;
-		}
-
 		private void OnSlide()
 		{
 			isSliding   = true;
 			isReturning = false;
 			StartCoroutine(WaitAndDoAction(SlideTime, StopSlideAction));
 		}
-
 
 		private IEnumerator WaitAndDoAction(float time, Action action)
 		{
@@ -292,6 +283,7 @@ namespace Players.Camera
 			isReturning = true;
 		}
 
+		/*
 		private void StartDeathLoop()
 		{
 			_isOnDeathLoop   = true;
@@ -299,7 +291,6 @@ namespace Players.Camera
 			_deathLoopTimer  = 0;
 			ControllManager.RemoveControl();
 		}
-
 		private void ExitDeathLoop()
 		{
 			_isOnDeathLoop   = false;
@@ -307,11 +298,10 @@ namespace Players.Camera
 			_deathLoopTimer  = 0;
 			ControllManager.GiveControl();
 		}
-
+		/**/
 		public void InitializePlayerCamera(PlayerCameraData data)
 		{
-			playerT = data.playerT;
-			;
+			playerT      = data.playerT;
 			cameraPointT = data.cameraPositionT;
 			cameSlideT   = data.slidePositionT;
 			mover        = data.mover;

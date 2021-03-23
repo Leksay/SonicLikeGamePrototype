@@ -8,6 +8,7 @@ namespace Helpers
 	public class SplineVisualHelp : MonoBehaviour
 	{
 		private SplineComputer _spline;
+		public  float          _length = 1f;
 
 		private void OnDrawGizmos() => OnDrawGizmosSelected();
 		private void OnDrawGizmosSelected()
@@ -19,10 +20,15 @@ namespace Helpers
 				var point = _spline.Evaluate(i);
 				Gizmos.color = Color.black;
 				Gizmos.DrawSphere(point.position, 0.1f);
-				Gizmos.color = Color.red;
-				Gizmos.DrawLine(point.position, point.position + point.normal * 0.5f);
+				Gizmos.color = Color.green;
+				Gizmos.DrawLine(point.position, point.position + point.normal * _length);
 				Gizmos.color = Color.blue;
-				Gizmos.DrawLine(point.position, point.position + point.direction * 0.5f);
+				Gizmos.DrawLine(point.position, point.position + point.direction * _length);
+				Gizmos.color = Color.red;
+				Gizmos.DrawLine(point.position, point.position + point.right * _length);
+				var r = point.right;
+				r.y = 0f;
+				Gizmos.DrawLine(point.position, point.position + r * _length);
 			}
 		}
 	}

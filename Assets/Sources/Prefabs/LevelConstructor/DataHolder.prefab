@@ -25,7 +25,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4285104504983912504}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -25.41479, y: -13.322229, z: -35.147686}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -43,13 +43,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 371302aa62795264da2b9a9b6f0fd872, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  spline: {fileID: 0}
   spawnedObjects: {fileID: 11400000, guid: 9930871e6f6124641bd52509b6d4021a, type: 2}
   opponentsData: {fileID: 11400000, guid: fc128448bccce0449a5ba9adc3e33b26, type: 2}
   soundsData: {fileID: 11400000, guid: e4682676ea918574ea5cff4dad1f443d, type: 2}
   levelData:
     levelHolder: {fileID: 0}
-    generator: {fileID: 0}
-    moneyCounter: {fileID: 0}
-    finishTab: {fileID: 0}
-  gameProcess: {fileID: 0}
   currentPlayer: {fileID: 0}

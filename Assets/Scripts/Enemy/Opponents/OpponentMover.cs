@@ -231,7 +231,7 @@ namespace Enemy.Opponents
 		{
 			while (_isPaused)
 				yield return null;
-			Debug.Log($"[OpponentMover] [{this.gameObject.name}] Slide");
+			//Debug.Log($"[OpponentMover] [{this.gameObject.name}] Slide");
 			float timer = 0;
 			while (timer < slideTime)
 			{
@@ -276,7 +276,7 @@ namespace Enemy.Opponents
 		}
 		private IEnumerator HandleJump()
 		{
-			Debug.Log($"[OpponentMover] [{this.gameObject.name}] Jump");
+			//Debug.Log($"[OpponentMover] [{this.gameObject.name}] Jump");
 			float upJumpTimer = 0;
 			while (upJumpTimer < upJumpTime)
 			{

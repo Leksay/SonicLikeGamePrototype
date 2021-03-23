@@ -159,12 +159,11 @@ left turn	right turn	up turn	down turn
 			var f  = t.forward;
 			var r  = t.right;
 			var r2 = r;
-			r.y = 0f;
+			r2.y = 0f;
 
-			//var u   = t.up;
-			var a = Vector3.SignedAngle(r2, r, f);
-			a = Mathf.Min(Mathf.Abs(a), _stepHorizontalRotate) * Mathf.Sign(a);
-			t.Rotate(t.forward, a, Space.World);
+			//var a = Vector3.SignedAngle(r2, r, f);
+			var a = Mathf.Asin(r.y) * Mathf.Rad2Deg; 
+			t.Rotate(t.forward, -a, Space.World);
 		}
 
 		private void ParseTrack()
@@ -206,17 +205,38 @@ left turn	right turn	up turn	down turn
 
 			var points = new List<SplinePoint>(_track.Length);
 			var point  = new GameObject().transform;
-			foreach (var t in _track)
+			for (var i = 0; i < _track.Length; i++)
 			{
+				var t = _track[i];
 				var p = new SplinePoint(point.position);
 				p.normal = point.up;
 				foreach (var dir in t.dir)
-					if (dir == TrackDir.ShiftLeft || dir == TrackDir.ShiftRight)
-						point.position += point.right * ((dir == TrackDir.ShiftLeft ? -1f : 1f) * _stepHorizontalShift);
-					else
-						point.Rotate(_directions2[(int)dir]);
-
-				//PatchRotation(point);
+					switch (dir)
+					{
+						case TrackDir.None:
+							break;
+						case TrackDir.Left:
+						case TrackDir.Right:
+						case TrackDir.Up:
+						case TrackDir.Down:
+							point.Rotate(_directions2[(int)dir]);
+							break;
+						case TrackDir.ShiftLeft:
+							point.position += point.right * (-1f * _stepHorizontalShift);
+							break;
+						case TrackDir.ShiftRight:
+							point.position += point.right * _stepHorizontalShift;
+							break;
+						case TrackDir.ShiftUp:
+							point.position += point.up * _stepVerticalShift;
+							break;
+						case TrackDir.ShiftDown:
+							point.position += point.up * (-1f * _stepVerticalShift);
+							break;
+						default:
+							throw new ArgumentOutOfRangeException();
+					}
+				PatchRotation(point);
 				point.position += point.forward * _stepLength;
 				points.Add(p);
 			}
