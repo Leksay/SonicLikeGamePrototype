@@ -69,6 +69,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: model_polytope_snow_wall
       objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 7916fc6d9c575284f9be291bb5005783, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 7916fc6d9c575284f9be291bb5005783, type: 3}
       propertyPath: m_RootOrder
       value: 0

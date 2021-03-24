@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 6064107163102821317}
   - component: {fileID: 6087833732544952094}
   - component: {fileID: 6087833732544952093}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: EA_Plant_01b
   m_TagString: Untagged
   m_Icon: {fileID: 0}

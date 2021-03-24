@@ -2,8 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using Dreamteck.Splines;
+using Game;
 using Internal;
 using Level;
+using Players.Camera;
 using UnityEngine;
 namespace Players
 {
@@ -15,21 +17,17 @@ namespace Players
 	[RequireComponent(typeof(IBoostable))]
 	public class PlayerMover : MonoBehaviour, IPausable, IBarrierAffected, IMover, IPlayerControllable, IDefendable
 	{
-		public delegate void             UAction();
-		public delegate void             UActionFloat(float desiredSpeed, bool justStop);
-		public static event UAction      OnSlide;
-		public static event UAction      OnSpeedBoost;
-		public static event UActionFloat OnSpeedBoostStopped;
-		public static event Action       OnSwipeAction;
-		public static event Action       OnJumpAction;
-		public static event Action       OnSlideBreak;
+		public delegate void        UAction();
+		public static event UAction OnSlide;
+		public static event UAction OnSpeedBoost;
+		public static event Action  OnSwipeAction;
+		public static event Action  OnJumpAction;
 
 		[SerializeField] private Player player;
 
 		[Header("Move")]
 		[SerializeField] private float defaultSpeed;
 		[SerializeField] private float changeRoadTime;
-		[SerializeField] private float changeRoadTreshold;
 		[SerializeField] private float accelerationSpeed;
 		[SerializeField] private float maxSpeed;
 		[SerializeField] private bool  isAccelerating;
@@ -71,15 +69,16 @@ namespace Players
 		private float _playerSlideOffset = 0.5f;
 		private bool  _isSliding;
 
-		private PlayerAnimator _animator;
-		private float          _jumpY;
-		private bool           _isJump;
-		private bool           _isPaused;
-		private bool           _isUnderControl;
-		private float          _actualSpeed;
-		private bool           _defended;
-		private bool           _inDeathLoop;
-		private bool           _slideBreak;
+		private PlayerAnimator     _animator;
+		private float              _jumpY;
+		private bool               _isJump;
+		private bool               _isPaused;
+		private bool               _isUnderControl;
+		private float              _actualSpeed;
+		private bool               _defended;
+		private bool               _inDeathLoop;
+		private bool               _slideBreak;
+		private PlayerFollowCamera _followCamera;
 
 #region UNITY EVENTS
 		private void Awake()
@@ -107,6 +106,8 @@ namespace Players
 			SetupSkills();
 			RegisterPausable();
 			RegisterControllable();
+			_followCamera = Locator.GetObject<PlayerFollowCamera>();
+			_followCamera.SetFollowType(PlayerFollowCamera.FollowType.StartTrack, true);
 			if (GameProcess.isTutorial)
 			{
 				TutorialController.OnTutorialFakeInput += OnSwipe;
@@ -131,6 +132,18 @@ namespace Players
 			DeathLoop.OnEnterDeathLoop -= DeathLoopEnter;
 			DeathLoop.OnExitDeathLoop  -= DeathLoopExit;
 		}
+
+		private void OnTriggerEnter(Collider other)
+		{
+			if (other.TryGetComponent<StartLine>(out var startLine))
+			{
+				_followCamera.SetFollowType(PlayerFollowCamera.FollowType.Normal);
+			}
+			else if (other.TryGetComponent<Finish>(out var finishLine))
+			{
+				_followCamera.SetFollowType(PlayerFollowCamera.FollowType.FinishTrack);
+			}
+		}
   #endregion
 
 		private void SetupSkills()
@@ -142,6 +155,7 @@ namespace Players
 			accelerationSpeed += accelerationSkill;
 		}
 
+		
 		private void Accelerate()
 		{
 			if (_isPaused) return;
@@ -151,10 +165,10 @@ namespace Players
 				_actualSpeed   = _desiredSpeed;
 				isAccelerating = false;
 				_isDamping     = false;
+				_followCamera.SetSpeedType(PlayerFollowCamera.SpeedType.None);
 			}
 			ChangeSpeed();
 		}
-
 		private void Damping()
 		{
 			if (_isPaused) return;
@@ -163,10 +177,10 @@ namespace Players
 			{
 				_actualSpeed = _desiredSpeed;
 				_isDamping   = false;
+				_followCamera.SetSpeedType(PlayerFollowCamera.SpeedType.None);
 			}
 			ChangeSpeed();
 		}
-
 		private void ChangeSpeed()
 		{
 			if (_isPaused)
@@ -186,30 +200,33 @@ namespace Players
 			_animator.SetAnimatorSpeed(_actualSpeed);
 		}
 
+		
 		private void OnSwipe(SwipeInput.SwipeType swipeType)
 		{
-			if (_isUnderControl == false && _inDeathLoop == false) return;
 			if (_isUnderControl == false) return;
-			if (_changeRoadCoroutine == null)
+
+			//if (_inDeathLoop == false) return;
+			Debug.Log($"[PlayerMove] OnSwipe: ({swipeType})");
+			switch (swipeType)
 			{
-				ChangePath2(swipeType);
-			}
-			else
-			{
-				switch (swipeType)
-				{
-					case SwipeInput.SwipeType.Up:
-						StartJump();
-						break;
-					case SwipeInput.SwipeType.Down:
-						StartSlide();
-						break;
-					case SwipeInput.SwipeType.Tap:
-						break;
-				}
+				case SwipeInput.SwipeType.Up:
+					StartJump();
+					break;
+				case SwipeInput.SwipeType.Down:
+					StartSlide();
+					break;
+				case SwipeInput.SwipeType.Tap:
+					break;
+				case SwipeInput.SwipeType.Left:
+				case SwipeInput.SwipeType.Right:
+					ChangePath(swipeType);
+					break;
+				default:
+					throw new ArgumentOutOfRangeException(nameof(swipeType), swipeType, null);
 			}
 		}
 
+		
 		private void StartSlide()
 		{
 			if ( /*!isJump && */!_isSliding)
@@ -227,6 +244,7 @@ namespace Players
 				SetPlayerMovementType(MovementType.Slide);
 				OnSlide?.Invoke();
 				StartCoroutine(Slide());
+				_followCamera.SetFollowType(PlayerFollowCamera.FollowType.Slide);
 			}
 		}
 		private IEnumerator Slide()
@@ -258,6 +276,7 @@ namespace Players
 			SetupOffset();
 			SetPlayerMovementType(MovementType.Run);
 			_animator.SetSlideAnimation(false);
+			_followCamera.SetFollowType(PlayerFollowCamera.FollowType.Normal);
 		}
 
 
@@ -271,7 +290,6 @@ namespace Players
 				if (_isSliding)
 				{
 					_slideBreak = true;
-					OnSlideBreak?.Invoke();
 					_animator.SetSlideAnimation(false);
 				}
 				_jumpY           = 0;
@@ -279,6 +297,7 @@ namespace Players
 				_animator.SetJumpAnimation(true);
 				SetPlayerMovementType(MovementType.Jump);
 				StartCoroutine(HandleJump());
+				_followCamera.SetFollowType(PlayerFollowCamera.FollowType.Jump);
 			}
 		}
 		private IEnumerator HandleJump()
@@ -318,6 +337,7 @@ namespace Players
 			SetupOffset();
 			SetPlayerMovementType(MovementType.Run);
 			_isJump = false;
+			_followCamera.SetFollowType(PlayerFollowCamera.FollowType.Normal);
 		}
 
 
@@ -329,9 +349,9 @@ namespace Players
 			var v2 = Vector3.Dot(d.normalized, pos.normal);
 			return (v.magnitude <= lineWidth * 1.1f) && (Mathf.Abs(v2) <= 0.01f);
 		}
-		private void ChangePath2(SwipeInput.SwipeType swipeType)
+		private void ChangePath(SwipeInput.SwipeType swipeType)
 		{
-			Debug.Log($"[Swipe] {swipeType}");
+			if (_changeRoadCoroutine != null) return;
 			var targetLine = currentRoadId;
 			switch (swipeType)
 			{
@@ -367,39 +387,7 @@ namespace Players
 			_changeRoadCoroutine   = null;
 		}
 
-		/*
-		private bool ChangePath(SwipeInput.SwipeType swipeType)
-		{
-			if (levelHolder.TryChangePathId(ref currentRoadId, swipeType))
-			{
-				_nextRoadOffset = levelHolder.GetOffsetById(currentRoadId);
-				OnSwipeAction?.Invoke();
-				_startOffset         = _currentOffset;
-				_changeRoadCoroutine = StartCoroutine(MoveNextRoad());
-				_animator.SetRotation(swipeType);
-				return true;
-			}
-			return false;
-		}
-		private IEnumerator MoveNextRoad()
-		{
-			var changeRoadTimer = 0f;
-			while (Mathf.Abs(_nextRoadOffset - _currentOffset) > changeRoadTreshold)
-			{
-				_currentOffset  =  Mathf.Lerp(_startOffset, _nextRoadOffset, changeRoadTimer / changeRoadTime);
-				changeRoadTimer += Time.deltaTime;
-				SetupOffset();
-				yield return null;
-			}
-			SetupOffset();
-			_currentOffset = _nextRoadOffset;
-			StopCoroutine(_changeRoadCoroutine);
-			_changeRoadCoroutine = null;
-			yield return new WaitForSeconds(Time.deltaTime);
-		}
-		/**/
 
-		public float GetDefaultSpeed() => defaultSpeed;
 		private void SetupOffset()
 		{
 			if (_isPaused) return;
@@ -428,13 +416,12 @@ namespace Players
 		{
 			if (_defended)
 			{
-				_boosters.ForEach(b => b.StopShild());
+				_boosters.ForEach(b => b.StopShield());
 				_defended = false;
 				return;
 			}
-			_desiredSpeed = defaultSpeed;
+			_desiredSpeed = Mathf.Min(defaultSpeed, defaultSpeed);
 			_actualSpeed  = 0;
-			OnSpeedBoostStopped?.Invoke(_desiredSpeed, true);
 			_boosters.ForEach(b => b.StopAllBoosters());
 			ChangeSpeed();
 		}
@@ -445,12 +432,13 @@ namespace Players
 		{
 			OnSpeedBoost?.Invoke();
 			_desiredSpeed = Mathf.Clamp(_desiredSpeed + speed, defaultSpeed, maxSpeed);
+			_followCamera.SetSpeedType(PlayerFollowCamera.SpeedType.Accel);
 			ChangeSpeed();
 		}
 		public void ReduceSpeed(float speed)
 		{
 			_desiredSpeed = Mathf.Clamp(_desiredSpeed - speed, defaultSpeed, maxSpeed);
-			OnSpeedBoostStopped?.Invoke(_desiredSpeed, _desiredSpeed == defaultSpeed);
+			_followCamera.SetSpeedType(PlayerFollowCamera.SpeedType.Deaccel);
 			ChangeSpeed();
 		}
 		public void SetStartRoad(int roadId)

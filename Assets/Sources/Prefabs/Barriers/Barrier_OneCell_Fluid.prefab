@@ -44,7 +44,7 @@ GameObject:
   - component: {fileID: 3285639509982885387}
   - component: {fileID: 3299879533775821748}
   - component: {fileID: 3299879533775821749}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: EA_Puddle_01c
   m_TagString: Untagged
   m_Icon: {fileID: 0}

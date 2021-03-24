@@ -29,6 +29,24 @@ namespace Level
 		public SplineComputer[] _lines;
 		public float            _lineWidth;
 
+		public enum ObjectType
+		{
+			Barrier = 0,
+			Enemy = 1,
+			Coin = 2,
+			Booster = 3,
+			Unknown = 255
+		}
+
+		public ObjectType GetType(GameObject go)
+		{
+			if (barriers.Contains(go)) return ObjectType.Barrier;
+			if (enemies.Contains(go)) return ObjectType.Enemy;
+			if (money.Contains(go)) return ObjectType.Coin;
+			if (boosters.Contains(go)) return ObjectType.Booster;
+			return ObjectType.Unknown;
+		}
+		
 		public SplineComputer GetComputer() => computer;
 
 		public void Init(SplineComputer spline) => computer = spline;

@@ -77,13 +77,13 @@ AnimatorStateMachine:
     m_Position: {x: 390, y: 90, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 7254607348558016245}
-    m_Position: {x: 610, y: -80, z: 0}
+    m_Position: {x: 530, y: -40, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 3624326538061167112}
-    m_Position: {x: 300, y: -90, z: 0}
+    m_Position: {x: 300, y: -40, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -5232689173928364223}
-    m_Position: {x: 680, y: 90, z: 0}
+    m_Position: {x: 390, y: 180, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
   m_EntryTransitions: []
@@ -330,6 +330,9 @@ AnimatorStateTransition:
   m_PrefabAsset: {fileID: 0}
   m_Name: 
   m_Conditions:
+  - m_ConditionMode: 2
+    m_ConditionEvent: jump
+    m_EventTreshold: 0
   - m_ConditionMode: 1
     m_ConditionEvent: slide
     m_EventTreshold: 0

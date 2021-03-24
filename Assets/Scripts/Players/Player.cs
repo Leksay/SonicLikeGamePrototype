@@ -32,7 +32,7 @@ public class Player : MonoBehaviour, IEnemyAffected, INamedRacer
         }
         moneyCounter = Locator.GetObject<MoneyCounterUI>();
         playerCameraFollow = FindObjectOfType<PlayerFollowCamera>();
-        playerCameraFollow.InitializePlayerCamera(cameraData);
+        playerCameraFollow.InitializePlayerCamera(cameraData, this.transform);
         DataHolder.SetCurrentPlayer(this);
         playerWallet.OnGetMoney += UpdateBalance;
         SetCoinsMultiplier();
@@ -49,10 +49,7 @@ public class Player : MonoBehaviour, IEnemyAffected, INamedRacer
         playerWallet.OnGetMoney -= UpdateBalance;
     }
 
-    private void UpdateBalance(int balance)
-    {
-        moneyCounter?.SetText(balance);
-    }
+    private void UpdateBalance(int balance) => moneyCounter?.SetText(balance);
 
     public bool HitedByEnemy(EnemyType enemyType)
     {

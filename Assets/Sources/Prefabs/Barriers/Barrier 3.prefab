@@ -68,6 +68,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: model_concrete_barrier
       objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: e6631f5a38e6c77469898ee2b8811756, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: e6631f5a38e6c77469898ee2b8811756, type: 3}
       propertyPath: m_RootOrder
       value: 0

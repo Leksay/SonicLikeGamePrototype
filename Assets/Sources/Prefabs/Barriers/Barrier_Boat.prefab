@@ -69,6 +69,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: model_polytope_snow_old_boat
       objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: b36098408fdf65f4088550e382086cc0, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: b36098408fdf65f4088550e382086cc0, type: 3}
       propertyPath: m_RootOrder
       value: 0

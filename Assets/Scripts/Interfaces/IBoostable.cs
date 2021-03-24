@@ -2,8 +2,8 @@
 {
     void BoostSpeed(float time, float value);
     void StopAllBoosters();
-    void ShildBoost(float time);
-    void StopShild();
+    void ShieldBoost(float time);
+    void StopShield();
     void MagnetFieldBoost(float time);
     void StopMagnetField();
 }

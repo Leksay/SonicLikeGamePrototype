@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using System;
+using UI.MainMenu;
 public class LoadingUI : MonoBehaviour
 {
     public static event Action OnLevelStart;
@@ -36,7 +37,8 @@ public class LoadingUI : MonoBehaviour
         }
         else
         {
-            int levelToLoad = UnityEngine.Random.Range(1, 4);
+            int levelToLoad = 1;
+            //int levelToLoad = UnityEngine.Random.Range(1, 4);
             for (int i = 0; i < 10; i++)
             {
                 if (levelToLoad == PreviousLevelData.previousLevel)

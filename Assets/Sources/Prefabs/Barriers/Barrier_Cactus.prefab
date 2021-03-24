@@ -68,6 +68,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: model_tree_cactus
       objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 629b2b73f8a3c3f4e953e60d22f1ecc3, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 629b2b73f8a3c3f4e953e60d22f1ecc3, type: 3}
       propertyPath: m_RootOrder
       value: 0

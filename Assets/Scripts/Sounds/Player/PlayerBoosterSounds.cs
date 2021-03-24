@@ -24,14 +24,14 @@ public class PlayerBoosterSounds : MonoBehaviour
         speedBoosterSound = DataHolder.GetSoundsData().Acceleration;
         PlayerMover.OnSpeedBoost += AccelerateBoost;
         myBooster.OnMagnetBoost += MagnetFieldBoost;
-        myBooster.OnShildBoost += ShildBBoost;
+        myBooster.OnShieldBoost += ShieldBBoost;
     }
 
     private void OnDestroy()
     {
         PlayerMover.OnSpeedBoost -= AccelerateBoost;
         myBooster.OnMagnetBoost -= MagnetFieldBoost;
-        myBooster.OnShildBoost -= ShildBBoost;
+        myBooster.OnShieldBoost -= ShieldBBoost;
     }
 
     private void AccelerateBoost()
@@ -39,7 +39,7 @@ public class PlayerBoosterSounds : MonoBehaviour
         source.PlayOneShot(speedBoosterSound, .5f);
     }
 
-    private void ShildBBoost()
+    private void ShieldBBoost()
     {
         source.PlayOneShot(shildBoosterSound, .7f);
     }

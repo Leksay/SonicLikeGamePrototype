@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6592882447506308903}
   - component: {fileID: 6497912692890981977}
   - component: {fileID: 6497912692890981976}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: model_polytope_log_tree
   m_TagString: Untagged
   m_Icon: {fileID: 0}

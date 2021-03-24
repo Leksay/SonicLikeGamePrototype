@@ -67,13 +67,13 @@ public class VisualEffecter : MonoBehaviour, IBarrierAffected, IBoostable, IDefe
     {
     }
 
-    public void ShildBoost(float time)
+    public void ShieldBoost(float time)
     {
         defended = true;
         shildObject.SetActive(true);
     }
 
-    public void StopShild()
+    public void StopShield()
     {
         StartCoroutine(NextFrameShildOff());
         shildObject.SetActive(false);
@@ -99,7 +99,7 @@ public class VisualEffecter : MonoBehaviour, IBarrierAffected, IBoostable, IDefe
     {
         if(isDefended == false)
         {
-            StopShild();
+            StopShield();
         }
     }
 }

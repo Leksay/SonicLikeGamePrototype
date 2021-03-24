@@ -44,7 +44,7 @@ GameObject:
   - component: {fileID: 8150074609429872437}
   - component: {fileID: 6053320289008126743}
   - component: {fileID: 6053320289008126742}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: model_cargo_container_red
   m_TagString: Untagged
   m_Icon: {fileID: 0}

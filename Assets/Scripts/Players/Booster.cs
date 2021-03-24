@@ -7,106 +7,99 @@ using System;
 [RequireComponent(typeof(MagnetField))]
 public class Booster : MonoBehaviour, IBoostable
 {
-    public IMover mover;
-    public List<IDefendable> defendables;
+	private IMover            _mover;
+	private List<IDefendable> _defendables;
 
-    public event Action OnShildBoost;
-    public event Action OnMagnetBoost;
+	public event Action OnShieldBoost;
+	public event Action OnMagnetBoost;
 
-    [SerializeField] private MagnetField field;
-    private List<BoosterData> boosters;
-    private Coroutine shildCorutine;
-    private void Awake()
-    {
-        boosters = new List<BoosterData>();
-        defendables = new List<IDefendable>();
-        defendables.AddRange(GetComponents<IDefendable>());
-        mover = GetComponent<IMover>();
-        field = GetComponent<MagnetField>();
-    }
+	[SerializeField] private MagnetField       field;
+	private                  List<BoosterData> _boosters;
+	private                  Coroutine         _shieldCoroutine;
+	private void Awake()
+	{
+		_boosters    = new List<BoosterData>();
+		_defendables = new List<IDefendable>();
+		_defendables.AddRange(GetComponents<IDefendable>());
+		_mover = GetComponent<IMover>();
+		field  = GetComponent<MagnetField>();
+	}
 
-    public void BoostSpeed(float time, float value)
-    {
-        BoosterData booster = new BoosterData();
-        booster.value = value;
-        booster.time= time;
-        StartBooster(booster);
-    }
+	public void BoostSpeed(float time, float value) => StartBooster(new BoosterData { value = value, time = time });
 
-    private void StartBooster(BoosterData booster)
-    {
-        boosters.Add(booster);
-        mover.AddSpeed(booster.value);
-        booster.corutine = StartCoroutine( WaitAndReduceSpeed(booster));
-    }
+	private void StartBooster(BoosterData booster)
+	{
+		_boosters.Add(booster);
+		_mover.AddSpeed(booster.value);
+		booster.corutine = StartCoroutine(WaitAndReduceSpeed(booster));
+	}
 
-    private IEnumerator WaitAndReduceSpeed(BoosterData booster)
-    {
-        yield return new WaitForSeconds(booster.time);
-        StopBooster(booster);
-    }
+	private IEnumerator WaitAndReduceSpeed(BoosterData booster)
+	{
+		yield return new WaitForSeconds(booster.time);
+		StopBooster(booster);
+	}
 
-    public void StopAllBoosters()
-    {
-        for (int i = 0; i < boosters.Count; i++)
-            StopBooster(boosters[i]);
-    }
+	public void StopAllBoosters()
+	{
+		for (var i = 0; i < _boosters.Count; i++)
+			StopBooster(_boosters[i]);
+	}
 
-    private void StopBooster(BoosterData booster)
-    {
-        mover.ReduceSpeed(booster.value);
-        StopCoroutine(booster.corutine);
-        boosters.Remove(booster);
-    }
+	private void StopBooster(BoosterData booster)
+	{
+		_mover.ReduceSpeed(booster.value);
+		StopCoroutine(booster.corutine);
+		_boosters.Remove(booster);
+	}
 
-    public void ShildBoost(float time)
-    {
-        defendables.ForEach(d => d.SetDefend(true));
-        BoosterData shildData = new BoosterData() { stopped = false, time = time, value = 0 };
-        shildCorutine = StartCoroutine(WaitAndRemoveShild(shildData));
-        shildData.corutine = shildCorutine;
-        boosters.Add(shildData);
-        OnShildBoost?.Invoke();
-    }
+	public void ShieldBoost(float time)
+	{
+		_defendables.ForEach(d => d.SetDefend(true));
+		BoosterData shildData = new BoosterData() { stopped = false, time = time, value = 0 };
+		_shieldCoroutine   = StartCoroutine(WaitAndRemoveShild(shildData));
+		shildData.corutine = _shieldCoroutine;
+		_boosters.Add(shildData);
+		OnShieldBoost?.Invoke();
+	}
 
-    public void StopShild()
-    {
-        boosters.ForEach(b =>
-        {
-            if(b.corutine.Equals(shildCorutine))
-            {
-                b.stopped = true;
-                StopCoroutine(shildCorutine);
-            }
-        });
-        defendables.ForEach(d => d.SetDefend(false));
-    }
+	public void StopShield()
+	{
+		_boosters.ForEach(b => {
+			if (b.corutine.Equals(_shieldCoroutine))
+			{
+				b.stopped = true;
+				StopCoroutine(_shieldCoroutine);
+			}
+		});
+		_defendables.ForEach(d => d.SetDefend(false));
+	}
 
-    private IEnumerator WaitAndRemoveShild(BoosterData data)
-    {
-        data.time = Time.time + data.time;
-        while (Time.time <= data.time && data.stopped == false)
-        {
-            yield return null;
-        }
-        StopShild();
-    }
+	private IEnumerator WaitAndRemoveShild(BoosterData data)
+	{
+		data.time = Time.time + data.time;
+		while (Time.time <= data.time && data.stopped == false)
+		{
+			yield return null;
+		}
+		StopShield();
+	}
 
-    public void MagnetFieldBoost(float time)
-    {
-        OnMagnetBoost?.Invoke();
-        field.SetMagnetSphereActive(true, time);
-    }
+	public void MagnetFieldBoost(float time)
+	{
+		OnMagnetBoost?.Invoke();
+		field.SetMagnetSphereActive(true, time);
+	}
 
-    public void StopMagnetField()
-    {
-        field.SetMagnetSphereActive(false, 0);
-    }
+	public void StopMagnetField()
+	{
+		field.SetMagnetSphereActive(false, 0);
+	}
 }
 public class BoosterData
 {
-    public Coroutine corutine;
-    public float value;
-    public float time;
-    public bool stopped;
+	public Coroutine corutine;
+	public float     value;
+	public float     time;
+	public bool      stopped;
 }

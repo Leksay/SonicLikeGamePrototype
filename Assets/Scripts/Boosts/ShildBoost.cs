@@ -13,7 +13,7 @@ public class ShildBoost : MonoBehaviour
         {
             for (int i = 0; i < boostable.Length; i++)
             {
-                boostable[i].ShildBoost(boostTime);
+                boostable[i].ShieldBoost(boostTime);
             }
             Destroy(gameObject);
         }

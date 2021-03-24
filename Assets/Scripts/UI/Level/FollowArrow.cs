@@ -32,8 +32,8 @@ public class FollowArrow : MonoBehaviour
         playerT = DataHolder.GetCurrentPlayer().transform;
         myImage = GetComponent<Image>();
         spline = DataHolder.GetSplineComputer();
-        cam = PlayerFollowCamera.followCamera;
-        camT = PlayerFollowCamera.followCamera.transform;
+        //cam = PlayerFollowCamera.followCamera;
+        //camT = PlayerFollowCamera.followCamera.transform;
         canvas = GetComponentInParent<Canvas>().GetComponent<RectTransform>();
         renderer = followTransform.GetComponentInChildren<Renderer>();
         Finish.OnPlayerCrossFinish += DisableArrow;

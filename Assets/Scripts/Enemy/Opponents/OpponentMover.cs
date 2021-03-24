@@ -167,7 +167,7 @@ namespace Enemy.Opponents
 		{
 			if (_defended)
 			{
-				_boosters.ForEach(b => b.StopShild());
+				_boosters.ForEach(b => b.StopShield());
 				return;
 			}
 			_desiredSpeed = defaultSpeed;
