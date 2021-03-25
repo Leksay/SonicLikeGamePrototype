@@ -8,7 +8,7 @@ namespace Game
 		{
 			if (other.TryGetComponent<Player>(out var player))
 			{
-				if (PlayerDataHolder.GetTutorial() != 0) ControllManager.GiveControl();
+				if (PlayerDataHolder.GetTutorial() != 0) ControllManager.Instance.GiveControl();
 			}
 		}
 	}

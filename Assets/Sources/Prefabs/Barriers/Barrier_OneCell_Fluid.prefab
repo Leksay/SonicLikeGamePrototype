@@ -138,3 +138,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   barrierType: 1
+  time: 2
+  speedSlow: -10

@@ -151,7 +151,10 @@ namespace Enemy.Opponents
 			_actualSpeed  = 2;
 			_desiredSpeed = defaultSpeed;
 
-			_follower.autoFollow = true;
+			_follower.autoFollow   = true;
+			_follower.followSpeed  = defaultSpeed;
+			_follower.physicsMode  = SplineTracer.PhysicsMode.Transform;
+			_follower.updateMethod = SplineUser.UpdateMethod.LateUpdate;
 			SetupOffset();
 			ChangeSpeed();
 			_initialized = true;
@@ -163,16 +166,17 @@ namespace Enemy.Opponents
 			ChangeSpeed();
 		}
 
-		public void BarrierHit()
+		public void BarrierHit(float value, float time)
 		{
 			if (_defended)
 			{
 				_boosters.ForEach(b => b.StopShield());
 				return;
 			}
-			_desiredSpeed = defaultSpeed;
-			_actualSpeed  = 0;
+			//_desiredSpeed = defaultSpeed;
+			//_actualSpeed  = 0;
 			_boosters.ForEach(b => b.StopAllBoosters());
+			_boosters[0]?.BoostSpeed(time, value);
 			ChangeSpeed();
 		}
 
@@ -231,8 +235,7 @@ namespace Enemy.Opponents
 		{
 			while (_isPaused)
 				yield return null;
-			//Debug.Log($"[OpponentMover] [{this.gameObject.name}] Slide");
-			float timer = 0;
+			var timer = 0f;
 			while (timer < slideTime)
 			{
 				_jumpY =  Mathf.Lerp(0, -slideOffset, (timer) / slideTime);
@@ -276,7 +279,6 @@ namespace Enemy.Opponents
 		}
 		private IEnumerator HandleJump()
 		{
-			//Debug.Log($"[OpponentMover] [{this.gameObject.name}] Jump");
 			float upJumpTimer = 0;
 			while (upJumpTimer < upJumpTime)
 			{
@@ -351,40 +353,7 @@ namespace Enemy.Opponents
 			_changeRoadCoroutine    = null;
 		}
 
-		/*
-	private bool ChangePath(SwipeInput.SwipeType swipeType)
-	{
-		if (_isPaused) return false;
-		if (levelHolder.TryChangePathId(ref _currenOffsetId, swipeType))
-		{
-			_nextRoadOffset      = levelHolder.GetOffsetById(_currenOffsetId);
-			_changeRoadTimer     = 0;
-			_startOffset         = currentOffset;
-			_changeRoadCoroutine = StartCoroutine(MoveNextRoad());
-			_animator.SetRotation(swipeType);
-			return true;
-		}
-		return false;
-	}
-	private IEnumerator MoveNextRoad()
-	{
-		if (_isPaused) yield return null;
-		while (Mathf.Abs(_nextRoadOffset - currentOffset) > changeRoadTreshold)
-		{
-			currentOffset    =  Mathf.Lerp(_startOffset, _nextRoadOffset, _changeRoadTimer / changeRoadTime);
-			_changeRoadTimer += Time.deltaTime;
-			SetupOffset();
-			yield return null;
-		}
-		currentOffset = _nextRoadOffset;
-		SetupOffset();
-		if (_changeRoadCoroutine != null)
-			StopCoroutine(_changeRoadCoroutine);
-		_changeRoadCoroutine = null;
-		yield return new WaitForSeconds(Time.deltaTime);
-	}
-	/**/
-
+		
 		private void SetMovementType(MovementType newMovementType) => _opponent.SetMovementType(newMovementType);
 
 		void IOpponentMover.ChangePath(SwipeInput.SwipeType swipeType) => ChangePath2(swipeType);

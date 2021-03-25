@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Enemy.Opponents;
+using Players;
 
 [RequireComponent(typeof(AudioSource))]
 public class PlayerHitedSounds : MonoBehaviour
@@ -17,18 +18,18 @@ public class PlayerHitedSounds : MonoBehaviour
         onBarrierHitedClip = DataHolder.GetSoundsData().BarrierHited;
         onEnemyHitedClip = DataHolder.GetSoundsData().EnemyHited;
         onHitEnemyClip = DataHolder.GetSoundsData().HitEnemy;
-        AffectorsHolder.OnBarrierHited += BarrierHited;
+        AffectorsHolder.OnBarrierHit += BarrierHit;
         Player.OnEnemyHited += PlayerHited;
         Enemy.Opponents.Enemy.OnAnyEnemyDying += HitEnemy;
     }
 
     private void OnDestroy()
     {
-        AffectorsHolder.OnBarrierHited        -= BarrierHited;
+        AffectorsHolder.OnBarrierHit        -= BarrierHit;
         Player.OnEnemyHited                   -= PlayerHited;
         Enemy.Opponents.Enemy.OnAnyEnemyDying -= HitEnemy;
     }
-    private void BarrierHited()
+    private void BarrierHit()
     {
         source.clip = onBarrierHitedClip;
         source.Play();

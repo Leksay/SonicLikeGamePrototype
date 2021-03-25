@@ -26,10 +26,11 @@ namespace Players
 		[SerializeField] private Player player;
 
 		[Header("Move")]
-		[SerializeField] private float defaultSpeed;
+		[SerializeField] private float defaultSpeed = 26f;
 		[SerializeField] private float changeRoadTime;
 		[SerializeField] private float accelerationSpeed;
-		[SerializeField] private float maxSpeed;
+		[SerializeField] private float minSpeed = 10f;
+		[SerializeField] private float maxSpeed = 50f;
 		[SerializeField] private bool  isAccelerating;
 
 		[Header("Jump")]
@@ -46,7 +47,7 @@ namespace Players
 		[SerializeField] private int currentRoadId;
 
 		[Header("Dreamteck")]
-		[SerializeField] private SplineFollower follower;
+		[SerializeField] private SplineFollower _follower;
 
 		[Header("Skills")]
 		[SerializeField] private float speedSkill;
@@ -87,12 +88,17 @@ namespace Players
 			_defaultColliderHeight = _collider.height;
 			if (player == null)
 				player = GetComponent<Player>();
-			if (follower == null)
-				follower = GetComponent<SplineFollower>();
-			levelHolder = Locator.GetObject<LevelHolder>();
-			_animator   = GetComponent<PlayerAnimator>();
-			_collider   = GetComponent<CapsuleCollider>();
-			_boosters   = new List<IBoostable>();
+			if (_follower == null)
+				_follower = GetComponent<SplineFollower>();
+			_actualSpeed           = defaultSpeed;
+			_desiredSpeed          = defaultSpeed;
+			_follower.followSpeed  = defaultSpeed;
+			_follower.physicsMode  = SplineTracer.PhysicsMode.Transform;
+			_follower.updateMethod = SplineUser.UpdateMethod.LateUpdate;
+			levelHolder            = Locator.GetObject<LevelHolder>();
+			_animator              = GetComponent<PlayerAnimator>();
+			_collider              = GetComponent<CapsuleCollider>();
+			_boosters              = new List<IBoostable>();
 			_boosters.AddRange(GetComponents<IBoostable>());
 		}
 
@@ -144,6 +150,25 @@ namespace Players
 				_followCamera.SetFollowType(PlayerFollowCamera.FollowType.FinishTrack);
 			}
 		}
+
+		private void OnDrawGizmos()
+		{
+			var p = _follower.result;
+			var i = currentRoadId - 1;
+			if (i >= 0)
+			{
+				var pL = levelHolder._lines[i].EvaluatePosition(levelHolder._lines[i].Project(p.position));
+				Gizmos.color = CheckLineSwap(levelHolder._lines[currentRoadId - 1], p, levelHolder._lineWidth) ? Color.green : Color.red;
+				Gizmos.DrawLine(p.position, pL);
+			}
+			i = currentRoadId + 1;
+			if (i < levelHolder._lines.Length)
+			{
+				var pL = levelHolder._lines[i].EvaluatePosition(levelHolder._lines[i].Project(p.position));
+				Gizmos.color = CheckLineSwap(levelHolder._lines[i], p, levelHolder._lineWidth) ? Color.green : Color.red;
+				Gizmos.DrawLine(p.position, pL);
+			}
+		}
   #endregion
 
 		private void SetupSkills()
@@ -155,14 +180,14 @@ namespace Players
 			accelerationSpeed += accelerationSkill;
 		}
 
-		
+
 		private void Accelerate()
 		{
 			if (_isPaused) return;
 			_actualSpeed += accelerationSpeed * Time.deltaTime;
 			if (_actualSpeed >= _desiredSpeed)
 			{
-				_actualSpeed   = _desiredSpeed;
+				_actualSpeed   = Mathf.Clamp(_actualSpeed, minSpeed, maxSpeed);
 				isAccelerating = false;
 				_isDamping     = false;
 				_followCamera.SetSpeedType(PlayerFollowCamera.SpeedType.None);
@@ -175,7 +200,7 @@ namespace Players
 			_actualSpeed -= accelerationSpeed * Time.deltaTime;
 			if (_actualSpeed <= _desiredSpeed)
 			{
-				_actualSpeed = _desiredSpeed;
+				_actualSpeed = Mathf.Clamp(_actualSpeed, minSpeed, maxSpeed);
 				_isDamping   = false;
 				_followCamera.SetSpeedType(PlayerFollowCamera.SpeedType.None);
 			}
@@ -185,7 +210,7 @@ namespace Players
 		{
 			if (_isPaused)
 			{
-				follower.followSpeed = 0;
+				_follower.followSpeed = 0;
 				return;
 			}
 			if (_actualSpeed < _desiredSpeed)
@@ -196,17 +221,14 @@ namespace Players
 			{
 				_isDamping = true;
 			}
-			follower.followSpeed = _actualSpeed;
+			_follower.followSpeed = _actualSpeed;
 			_animator.SetAnimatorSpeed(_actualSpeed);
 		}
 
-		
+
 		private void OnSwipe(SwipeInput.SwipeType swipeType)
 		{
 			if (_isUnderControl == false) return;
-
-			//if (_inDeathLoop == false) return;
-			Debug.Log($"[PlayerMove] OnSwipe: ({swipeType})");
 			switch (swipeType)
 			{
 				case SwipeInput.SwipeType.Up:
@@ -226,7 +248,7 @@ namespace Players
 			}
 		}
 
-		
+
 		private void StartSlide()
 		{
 			if ( /*!isJump && */!_isSliding)
@@ -364,34 +386,40 @@ namespace Players
 			}
 			if (targetLine == currentRoadId) return;
 
-			var p0 = follower.result;                                                                              // point on current spline
-			var p1 = levelHolder._lines[targetLine].Evaluate(levelHolder._lines[targetLine].Project(p0.position)); // closest point on side line
-			var d  = p0.position - p1.position;
-			if (!CheckLineSwap(levelHolder._lines[targetLine], p0, levelHolder._lineWidth)) return;
-			currentRoadId = targetLine;
-			d.Normalize();
-			var d2 = new Vector2(Vector3.Dot(d, p1.right), Vector3.Dot(d, p1.normal)); // offset is [X * point.right + Y * point.normal]
-			follower.computer    = levelHolder._lines[currentRoadId];
-			_changeRoadCoroutine = StartCoroutine(SwitchLine(d2));
+			var p0 = _follower.result; // point on current spline
+			if (CheckLineSwap(levelHolder._lines[targetLine], p0, levelHolder._lineWidth))
+			{
+				var p1 = levelHolder._lines[targetLine].Evaluate(levelHolder._lines[targetLine].Project(p0.position)); // closest point on side line
+				var d  = p0.position - p1.position;
+				d.Normalize();
+				currentRoadId = targetLine;
+				var d2 = new Vector2(Vector3.Dot(d, p1.right), Vector3.Dot(d, p1.normal)); // offset is [X * point.right + Y * point.normal]
+				_follower.computer   = levelHolder._lines[currentRoadId];
+				_changeRoadCoroutine = StartCoroutine(SwitchLine(d2));
+			}
+			else
+			{
+			}
 		}
 		private IEnumerator SwitchLine(Vector3 baseOffset)
 		{
+			_follower.motion.offset = baseOffset;
 			var changeRoadTimer = 0f;
 			while (changeRoadTimer < changeRoadTime)
 			{
-				follower.motion.offset = Vector3.Lerp(baseOffset, Vector3.zero, changeRoadTimer / changeRoadTime);
+				_follower.motion.offset = Vector3.Lerp(baseOffset, Vector3.zero, changeRoadTimer / changeRoadTime);
 				yield return null;
 				changeRoadTimer += Time.deltaTime;
 			}
-			follower.motion.offset = Vector3.zero;
-			_changeRoadCoroutine   = null;
+			_follower.motion.offset = Vector3.zero;
+			_changeRoadCoroutine    = null;
 		}
 
 
 		private void SetupOffset()
 		{
 			if (_isPaused) return;
-			follower.motion.offset = new Vector2(follower.motion.offset.x, _jumpY);
+			_follower.motion.offset = new Vector2(_follower.motion.offset.x, _jumpY);
 		}
 		public  void SetPlayerMovementType(MovementType newMovementType) => player.SetMovementType(newMovementType);
 		private void DeathLoopEnter()                                    => _inDeathLoop = true;
@@ -400,19 +428,19 @@ namespace Players
 #region IPausable
 		public void Pause()
 		{
-			follower.followSpeed = 0;
-			_isPaused            = true;
+			_follower.followSpeed = 0;
+			_isPaused             = true;
 		}
 		public void Resume()
 		{
-			follower.followSpeed = _actualSpeed;
-			_isPaused            = false;
+			_follower.followSpeed = _actualSpeed;
+			_isPaused             = false;
 		}
 		public void RegisterPausable() => PauseController.RegisterPausable(this);
   #endregion
 
 #region IBarrierAffected
-		public void BarrierHit()
+		public void BarrierHit(float value, float time)
 		{
 			if (_defended)
 			{
@@ -420,9 +448,10 @@ namespace Players
 				_defended = false;
 				return;
 			}
-			_desiredSpeed = Mathf.Min(defaultSpeed, defaultSpeed);
-			_actualSpeed  = 0;
 			_boosters.ForEach(b => b.StopAllBoosters());
+			_boosters.ForEach(b => b.BoostSpeed(time, value));
+
+			//_actualSpeed  = 0;
 			ChangeSpeed();
 		}
   #endregion
@@ -431,29 +460,31 @@ namespace Players
 		public void AddSpeed(float speed)
 		{
 			OnSpeedBoost?.Invoke();
-			_desiredSpeed = Mathf.Clamp(_desiredSpeed + speed, defaultSpeed, maxSpeed);
-			_followCamera.SetSpeedType(PlayerFollowCamera.SpeedType.Accel);
+			_desiredSpeed = defaultSpeed + speed;
+			Debug.Log($"Add ({speed}) -> {_desiredSpeed}");
+			_followCamera.SetSpeedType(speed > 0 ? PlayerFollowCamera.SpeedType.Accel : PlayerFollowCamera.SpeedType.Deaccel);
 			ChangeSpeed();
 		}
 		public void ReduceSpeed(float speed)
 		{
-			_desiredSpeed = Mathf.Clamp(_desiredSpeed - speed, defaultSpeed, maxSpeed);
-			_followCamera.SetSpeedType(PlayerFollowCamera.SpeedType.Deaccel);
+			_desiredSpeed = defaultSpeed - speed;
+			Debug.Log($"Remove ({speed}) -> {_desiredSpeed}");
+			_followCamera.SetSpeedType(speed > 0 ? PlayerFollowCamera.SpeedType.Accel : PlayerFollowCamera.SpeedType.Deaccel);
 			ChangeSpeed();
 		}
 		public void SetStartRoad(int roadId)
 		{
-			currentRoadId     = roadId;
-			follower.computer = levelHolder._lines[currentRoadId];
+			currentRoadId      = roadId;
+			_follower.computer = levelHolder._lines[currentRoadId];
 			SetupOffset();
 		}
-		public float GetPercent() => (float)follower.clampedPercent;
+		public float GetPercent() => (float)_follower.clampedPercent;
   #endregion
 
 #region IPlayerControllable
 		public void StartPlayerControl()   => _isUnderControl = true;
 		public void StopPlayerControl()    => _isUnderControl = false;
-		public void RegisterControllable() => ControllManager.RegisterControllable(this);
+		public void RegisterControllable() => ControllManager.Instance.RegisterControllable(this);
   #endregion
 
 #region IDefenable

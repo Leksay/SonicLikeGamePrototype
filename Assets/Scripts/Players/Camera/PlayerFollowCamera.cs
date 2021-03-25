@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using Internal;
+using Level;
 using UnityEngine;
 namespace Players.Camera
 {
@@ -34,36 +35,43 @@ namespace Players.Camera
 		[SerializeField] private float fadeDistance;
 
 		[Header("---")]
-		[SerializeField] private Vector3 _offsetNormal;
-		[SerializeField] private Vector3   _offsetSlide;
-		[SerializeField] private Vector3   _offsetJump;
-		[SerializeField] private Transform _target;
-		[SerializeField] private float     _smoothOffset = 1f;
-		[SerializeField] private float     _smoothRotate = 1f;
+		[SerializeField] private Vector3 _offsetStart;
+		[SerializeField]                             private Vector3   _offsetNormal;
+		[SerializeField]                             private Vector3   _offsetSlide;
+		[SerializeField]                             private Vector3   _offsetJump;
+		[SerializeField]                             private Vector3   _lookOffsetStart;
+		[SerializeField]                             private Vector3   _lookOffsetNormal;
+		[SerializeField]                             private Vector3   _lookOffsetSlide;
+		[SerializeField]                             private Vector3   _lookOffsetJump;
+		[SerializeField]                             private Transform _target;
+		[Tooltip("Higher - faster")][SerializeField] private float     _smoothOffset = 1f;
+		[Tooltip("Higher - faster")][SerializeField] private float     _smoothRotate = 1f;
 
 		[Header("FOV settings")]
 		[SerializeField] private float _accelFov = 75f;
-		[SerializeField] private float _normalFov       = 60f;
-		[SerializeField] private float _slowFov         = 40f;
-		[SerializeField] private float _accelFovSpeed   = 25f;
-		[SerializeField] private float _deaccelFovSpeed = 10f;
+		[SerializeField]                             private float _normalFov       = 60f;
+		[SerializeField]                             private float _slowFov         = 40f;
+		[Tooltip("Higher - faster")][SerializeField] private float _accelFovSpeed   = 25f;
+		[Tooltip("Higher - faster")][SerializeField] private float _deaccelFovSpeed = 10f;
 
 		[Header("---")]
 		[SerializeField] private FollowType _followType;
 		[SerializeField] private SpeedType _speedType;
 
-		private UnityEngine.Camera _camera;
-		private float              _currentFOV;
-		private float              _desiredFOV;
-		private bool               _isActive;
-		private Transform          _transform;
+		private                  UnityEngine.Camera _camera;
+		private                  float              _currentFOV;
+		private                  float              _desiredFOV;
+		private                  bool               _isActive;
+		private                  Transform          _transform;
+		[SerializeField] private bool               _instant = false;
 
 		private void Awake()
 		{
 			Register();
 
-			_camera    = UnityEngine.Camera.main;
-			_transform = transform;
+			_camera     = UnityEngine.Camera.main;
+			_currentFOV = _normalFov;
+			_transform  = transform;
 		}
 		private void OnEnable()  => Register();
 		private void OnDisable() => Unregister();
@@ -94,7 +102,7 @@ namespace Players.Camera
 			if (type == SpeedType.Accel)
 			{
 				if (_speedType      == SpeedType.Deaccel) _speedType = SpeedType.None;
-				else if (_speedType == SpeedType.None) _speedType  = SpeedType.Accel;
+				else if (_speedType == SpeedType.None) _speedType    = SpeedType.Accel;
 			}
 			if (type == SpeedType.Deaccel)
 			{
@@ -119,38 +127,48 @@ namespace Players.Camera
 
 		private void MoveAndRotateCamera()
 		{
-			var        offset = Vector3.zero;
-			Quaternion rotate;
+			var offset     = Vector3.zero;
+			var lookOffset = Vector3.zero;
+			var time       = _instant ? 10000f : Time.deltaTime;
 			switch (_followType)
 			{
 				case FollowType.None:
 					break;
 				case FollowType.Normal:
-					offset = _offsetNormal;
+					offset     = _offsetNormal;
+					lookOffset = _lookOffsetNormal;
 					break;
 				case FollowType.Jump:
-					offset = _offsetJump;
+					offset     = _offsetJump;
+					lookOffset = _lookOffsetJump;
 					break;
 				case FollowType.Slide:
-					offset = _offsetSlide;
+					offset     = _offsetSlide;
+					lookOffset = _lookOffsetSlide;
 					break;
 				case FollowType.DeathLoop:
 					break;
 				case FollowType.StartTrack:
+					offset     = _offsetStart;
+					lookOffset = _lookOffsetStart;
 					break;
 				case FollowType.FinishTrack:
 					_target = null;
 					return;
-					break;
 				default:
 					throw new ArgumentOutOfRangeException(nameof(_followType), _followType, null);
 			}
-			_transform.rotation = Quaternion.Slerp(_transform.rotation, _target.rotation, _smoothRotate * Time.deltaTime);
 
-			_transform.position = Vector3.Lerp(_transform.position, _target.position + _transform.rotation * offset, _smoothOffset * Time.deltaTime);
+			var targetPos = _target.position;
+			var currPos   = _transform.position;
+			var targetRot = _target.rotation;
 
-			//_transform.position = Vector3.Lerp(_transform.position, _target.position + _target.rotation * offset, _smoothOffset * Time.deltaTime);
+			var tp = targetPos + targetRot * offset;
+			var d  = Mathf.Clamp(Vector3.Distance(tp, currPos) /10f, 1f, 1000f);
+			_transform.position = Vector3.Lerp(currPos, tp, _smoothOffset * time * d);
 
+			var q = Quaternion.LookRotation(targetPos + targetRot * lookOffset - currPos, _target.up);
+			_transform.rotation = Quaternion.Slerp(_transform.rotation, q, _smoothRotate * time);
 
 		}
 

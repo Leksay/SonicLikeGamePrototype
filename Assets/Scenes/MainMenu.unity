@@ -7933,6 +7933,7 @@ MonoBehaviour:
   LoadImage: {fileID: 240085529}
   loadAnimator: {fileID: 240085533}
   loadSlider: {fileID: 1821568617}
+  _scenesContainer: {fileID: 11400000, guid: a7a85476aba718f4ea1d5640dc67046d, type: 2}
 --- !u!1 &723105273
 GameObject:
   m_ObjectHideFlags: 0

@@ -22,10 +22,6 @@ namespace Level
 		[SerializeField] private bool enableOffsetDebug;
 		[SerializeField] private SplineFollower follower;
 
-		//[SerializeField] private float           currentOffset;
-		//[SerializeField] private List<float>     pathOffsets = new List<float>();
-		//[SerializeField] private List<DeathLoop> deathLoops;
-
 		public SplineComputer[] _lines;
 		public float            _lineWidth;
 

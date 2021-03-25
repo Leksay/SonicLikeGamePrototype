@@ -26,6 +26,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   barrierType: 1
+  time: 3
+  speedSlow: -10
 --- !u!1 &7306404836748552877
 GameObject:
   m_ObjectHideFlags: 0

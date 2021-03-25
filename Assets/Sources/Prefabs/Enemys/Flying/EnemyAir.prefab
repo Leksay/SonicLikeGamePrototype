@@ -43,6 +43,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: FlyingEnemyHolder
       objectReference: {fileID: 0}
+    - target: {fileID: 7725209896655450086, guid: c5a9c3e96e9efd14b9942beec452bad7,
+        type: 3}
+      propertyPath: time
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7725209896655450086, guid: c5a9c3e96e9efd14b9942beec452bad7,
+        type: 3}
+      propertyPath: speedSlow
+      value: -10
+      objectReference: {fileID: 0}
     - target: {fileID: 7725209896655614913, guid: c5a9c3e96e9efd14b9942beec452bad7,
         type: 3}
       propertyPath: m_RootOrder

@@ -4,36 +4,21 @@ using UnityEngine;
 
 public class ControllManager : MonoBehaviour
 {
-    private static ControllManager instance;
-    private static List<IPlayerControllable> _controllables = new List<IPlayerControllable>();
-    private void Awake()
-    {
-        if (instance == null)
-        {
-            instance = this;
-        }
-        else
-        {
-            DestroyMe();
-            Destroy(this.gameObject);
-        }
-    }
+	public static ControllManager           Instance { get; private set; }
+	private       List<IPlayerControllable> _controllables = new List<IPlayerControllable>();
+	private void Awake()
+	{
+		if (Instance == null)
+			Instance = this;
+		else
+			Destroy(this);
+	}
 
-    public static void GiveControl()
-    {
-        _controllables.ForEach(c => c.StartPlayerControl());
-    }
+	public void GiveControl() => _controllables.ForEach(c => c.StartPlayerControl());
 
-    public static void RemoveControl()
-    {
-        _controllables.ForEach(c => c.StopPlayerControl());
-    }
+	public void RemoveControl() => _controllables.ForEach(c => c.StopPlayerControl());
 
-    public static void RegisterControllable(IPlayerControllable controllable) => _controllables.Add(controllable);
+	public void RegisterControllable(IPlayerControllable controllable) => _controllables.Add(controllable);
 
-    public static void DestroyMe()
-    {
-        _controllables = null;
-        Destroy(instance?.gameObject);
-    }
+	public void Destroy() => Destroy(gameObject);
 }

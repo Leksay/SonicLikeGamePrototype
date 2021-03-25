@@ -56,7 +56,7 @@ public class TutorialController : MonoBehaviour
         expectedSwipeType = expectedType;
         SwipeInput.OnPlayerSwiped += WaitForSwipe;
         PauseController.SetPause();
-        ControllManager.RemoveControl();
+        ControllManager.Instance.RemoveControl();
         isFinishTutorial = finishTutorial;
     }
 
@@ -71,12 +71,12 @@ public class TutorialController : MonoBehaviour
         {
             SwipeInput.OnPlayerSwiped -= WaitForSwipe;
             PauseController.Resume();
-            ControllManager.GiveControl();
+            ControllManager.Instance.GiveControl();
             OnTutorialFakeInput?.Invoke(swipeType);
             swipe.Deactivate();
             if(isFinishTutorial == false)
             {
-                ControllManager.RemoveControl();
+                ControllManager.Instance.RemoveControl();
             }
         }
     }

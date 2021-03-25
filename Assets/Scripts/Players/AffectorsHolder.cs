@@ -1,48 +1,39 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
+using Level;
 using UnityEngine;
-using System;
-using Players;
-public class AffectorsHolder : MonoBehaviour
+namespace Players
 {
-    [SerializeField] private GameObject effectedObject;
-    private List<IBarrierAffected> barrierEffected;
-    private List<IEnemyAffected> enemyEffected;
-    public static event Action OnBarrierHited;
-    private void Start()
-    {
-        barrierEffected = new List<IBarrierAffected>();
-        enemyEffected = new List<IEnemyAffected>();
+	public class AffectorsHolder : MonoBehaviour
+	{
+		[SerializeField] private GameObject             effectedObject;
+		private                  List<IBarrierAffected> _barrierEffected;
+		private                  List<IEnemyAffected>   _enemyEffected;
+		public static event Action                      OnBarrierHit;
+		private void Start()
+		{
+			_barrierEffected = new List<IBarrierAffected>();
+			_enemyEffected   = new List<IEnemyAffected>();
 
-        barrierEffected.AddRange(effectedObject.GetComponents<IBarrierAffected>());
-        enemyEffected.AddRange(effectedObject.GetComponents<IEnemyAffected>());
-    }
+			_barrierEffected.AddRange(effectedObject.GetComponents<IBarrierAffected>());
+			_enemyEffected.AddRange(effectedObject.GetComponents<IEnemyAffected>());
+		}
 
-    private void OnTriggerEnter(Collider other)
-    {
-        var barrier = other.GetComponent<Barrier>();
-        var enemy = other.GetComponent<Enemy.Opponents.Enemy>();
-        if(barrier != null)
-        {
-            barrierEffected.ForEach(e =>
-            {
-                e.BarrierHit();
-                if(e.GetType() == typeof(PlayerMover))
-                {
-                    OnBarrierHited?.Invoke();
-                }
-            });
-        }
-        if(enemy != null)
-        {
-            enemyEffected.ForEach(e =>
-            {
-                // попадание срабатывает
-                if (e.HitedByEnemy(enemy.enemyType))
-                {
-                    barrierEffected.ForEach(b => b.BarrierHit());
-                }
-            });
-        }
-    }
+		private void OnTriggerEnter(Collider other)
+		{
+			if (other.TryGetComponent<Barrier>(out var barrier))
+			{
+				_barrierEffected.ForEach(e => {
+					e.BarrierHit(barrier.speedSlow, barrier.time);
+					if (e.GetType() == typeof(PlayerMover)) OnBarrierHit?.Invoke();
+				});
+			}
+			else if (other.TryGetComponent<Enemy.Opponents.Enemy>(out var enemy))
+			{
+				_enemyEffected.ForEach(e => {
+					if (e.HitedByEnemy(enemy.enemyType)) _barrierEffected.ForEach(b => b.BarrierHit(enemy.speedSlow, enemy.time));
+				});
+			}
+		}
+	}
 }

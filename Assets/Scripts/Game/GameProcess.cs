@@ -47,7 +47,7 @@ public class GameProcess : MonoBehaviour, IRegistrable
 	}
 	private void StaticDestroyer()
 	{
-		ControllManager.DestroyMe();
+		ControllManager.Instance.Destroy();
 		PauseController.DestroyMe();
 	}
 

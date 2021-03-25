@@ -9,6 +9,8 @@ namespace Enemy.Opponents
 		public                   EnemyType  enemyType;
 		[SerializeField] private GameObject dieEffect;
 		[SerializeField] private float      dieEffectTime;
+		public                   float      time      = 1f;
+		public                   float      speedSlow = -20f;
 		private                  Transform  _effectPoint;
 
 		private void Awake()

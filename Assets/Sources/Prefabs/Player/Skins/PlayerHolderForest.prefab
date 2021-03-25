@@ -17123,7 +17123,7 @@ MonoBehaviour:
       _startPoint: 0
       _endPoint: -1
   subscribers: []
-  updateMethod: 1
+  updateMethod: 2
   _user: {fileID: 0}
   _resolution: 1
   _clipTo: 1
@@ -30367,7 +30367,7 @@ MonoBehaviour:
   buildOnEnable: 0
   applyDirectionRotation: 1
   _direction: 1
-  _physicsMode: 1
+  _physicsMode: 0
   _motion:
     _offset: {x: 0, y: 3.6}
     _rotationOffset: {x: 0, y: 0, z: 0}
@@ -30444,10 +30444,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 5991259849460688672}
-  defaultSpeed: 26
+  defaultSpeed: 20
   changeRoadTime: 0.3
-  changeRoadTreshold: 0.1
   accelerationSpeed: 20
+  minSpeed: 10
   maxSpeed: 50
   isAccelerating: 0
   jumpHeigh: 2
@@ -30457,7 +30457,7 @@ MonoBehaviour:
   slideTime: 0.6
   levelHolder: {fileID: 0}
   currentRoadId: 0
-  follower: {fileID: 0}
+  _follower: {fileID: 0}
   speedSkill: 0
   accelerationSkill: 0
   slideEffect: {fileID: 2753151253748238326}
@@ -30557,6 +30557,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   field: {fileID: 0}
+  _booster:
+    value: 0
+    time: 0
+    stopped: 0
 --- !u!114 &5991259849460688674
 MonoBehaviour:
   m_ObjectHideFlags: 0
