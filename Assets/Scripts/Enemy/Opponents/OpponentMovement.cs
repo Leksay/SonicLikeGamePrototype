@@ -5,7 +5,7 @@ namespace Enemy.Opponents
     {
         [SerializeField] private MovementType movementType;
 
-        public bool HitedByEnemy(EnemyType enemyType)
+        public bool HitByEnemy(EnemyType enemyType)
         {
             if (movementType == MovementType.Run)
                 return true;

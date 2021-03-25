@@ -1,4 +1,4 @@
 ﻿public interface IEnemyAffected
 {
-    bool HitedByEnemy(EnemyType enemyType);
+    bool HitByEnemy(EnemyType enemyType);
 }

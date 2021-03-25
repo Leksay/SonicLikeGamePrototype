@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 using Enemy;
 using Enemy.Opponents;
+using Players;
 public class Finish : MonoBehaviour
 {
 	public static event Action                          OnCrossFinishLine;

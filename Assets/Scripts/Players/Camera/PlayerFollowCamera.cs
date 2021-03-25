@@ -25,10 +25,6 @@ namespace Players.Camera
 			Deaccel
 		}
 
-		[Space]
-		[SerializeField] private float defaultHeight;
-		[SerializeField] private float rotateSmooth;
-
 		[Header("Raycast settings")]
 		[SerializeField] private LayerMask barrierLayer;
 		[SerializeField] private float raycastDistance;
@@ -37,7 +33,7 @@ namespace Players.Camera
 		[Header("---")]
 		[SerializeField] private Vector3 _offsetStart;
 		[SerializeField] private Vector3 _lookOffsetStart;
-[Space]
+		[Space]
 		[SerializeField] private Vector3 _offsetNormal;
 		[SerializeField] private Vector3 _lookOffsetNormal;
 		[Space]
@@ -50,13 +46,13 @@ namespace Players.Camera
 		[SerializeField] private Vector3 _offsetDeathloop;
 		[SerializeField] private Vector3 _lookOffsetDeathloop;
 		[Space]
-		[SerializeField]                             private Transform _target;
-		[Tooltip("Higher - faster")][SerializeField] private float     _smoothOffset = 1f;
-		[Tooltip("Higher - faster")][SerializeField] private float     _smoothRotate = 1f;
-		private                                              Vector3   _currOffset;
-		private                                              Vector3   _currOffsetNeed;
-		private                                              Vector3   _currOffsetLook;
-		private                                              Vector3   _currOffsetLookNeed;
+		[SerializeField] private Transform _target;
+		[Tooltip("Higher - faster")][SerializeField] private float   _smoothOffset = 1f;
+		[Tooltip("Higher - faster")][SerializeField] private float   _smoothRotate = 1f;
+		private                                              Vector3 _currOffset;
+		private                                              Vector3 _currOffsetNeed;
+		private                                              Vector3 _currOffsetLook;
+		private                                              Vector3 _currOffsetLookNeed;
 
 		[Header("FOV settings")]
 		[SerializeField] private float _accelFov = 75f;
@@ -72,7 +68,7 @@ namespace Players.Camera
 		private                  UnityEngine.Camera _camera;
 		private                  float              _currentFOV;
 		private                  float              _desiredFOV;
-		private                  bool               _isActive;
+		public                   bool               _isActive;
 		private                  Transform          _transform;
 		[SerializeField] private bool               _instant = false;
 
@@ -99,7 +95,7 @@ namespace Players.Camera
 
 		private void OnDestroy() => SetFollowType(FollowType.None, true);
 
-		public void InitializePlayerCamera(PlayerCameraData data, Transform target)
+		public void InitializePlayerCamera(Transform target)
 		{
 			_target   = target;
 			_isActive = true;
@@ -222,7 +218,7 @@ namespace Players.Camera
 			_currOffsetLook = Vector3.Lerp(_currOffsetLook, _currOffsetLookNeed, time);
 
 			var tp = targetPos + targetRot * _currOffset;
-			var d  = Mathf.Clamp(Vector3.Distance(tp, currPos) / 10f, 1f, 100f);
+			var d  = Mathf.Clamp(Vector3.Distance(tp, currPos) / 10f, .1f, 100f);
 			_transform.position = Vector3.Slerp(currPos, tp, _smoothOffset * time * d);
 
 			var q = Quaternion.LookRotation(targetPos + targetRot * _currOffsetLook - currPos, _target.up);

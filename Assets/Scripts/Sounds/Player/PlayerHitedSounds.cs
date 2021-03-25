@@ -19,14 +19,14 @@ public class PlayerHitedSounds : MonoBehaviour
         onEnemyHitedClip = DataHolder.GetSoundsData().EnemyHited;
         onHitEnemyClip = DataHolder.GetSoundsData().HitEnemy;
         AffectorsHolder.OnBarrierHit += BarrierHit;
-        Player.OnEnemyHited += PlayerHited;
+        Player.OnEnemyHit += PlayerHit;
         Enemy.Opponents.Enemy.OnAnyEnemyDying += HitEnemy;
     }
 
     private void OnDestroy()
     {
         AffectorsHolder.OnBarrierHit        -= BarrierHit;
-        Player.OnEnemyHited                   -= PlayerHited;
+        Player.OnEnemyHit                   -= PlayerHit;
         Enemy.Opponents.Enemy.OnAnyEnemyDying -= HitEnemy;
     }
     private void BarrierHit()
@@ -35,7 +35,7 @@ public class PlayerHitedSounds : MonoBehaviour
         source.Play();
     }
 
-    private void PlayerHited()
+    private void PlayerHit()
     {
         source.clip = onEnemyHitedClip;
         source.Play();

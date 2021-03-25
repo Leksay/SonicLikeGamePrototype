@@ -396,28 +396,30 @@ namespace Players
 			var p0 = _follower.result; // point on current spline
 			if (CheckLineSwap(levelHolder._lines[targetLine], p0, levelHolder._lineWidth))
 			{
+				_followCamera._isActive = false;
 				var p1 = levelHolder._lines[targetLine].Evaluate(levelHolder._lines[targetLine].Project(p0.position)); // closest point on side line
 				var d  = p0.position - p1.position;
 				d.Normalize();
-				currentRoadId      = targetLine;
-				_follower.enabled  = false;
-				_follower.computer = levelHolder._lines[currentRoadId];
+				currentRoadId           = targetLine;
+				_follower.enabled       = false;
+				_follower.computer      = levelHolder._lines[currentRoadId];
 				var d2 = new Vector2(Vector3.Dot(d, p1.right), Vector3.Dot(d, p1.normal)); // offset is [X * point.right + Y * point.normal]
 				_follower.motion.offset = d2;
-				_follower.enabled       = true;
 				_changeRoadCoroutine    = StartCoroutine(SwitchLine(d2));
 			}
 		}
 		private IEnumerator SwitchLine(Vector3 baseOffset)
 		{
 			_follower.motion.offset = baseOffset;
+			_follower.enabled       = true;
 			var changeRoadTimer = 0f;
 			while (changeRoadTimer < changeRoadTime)
 			{
 				var t = changeRoadTimer / changeRoadTime;
 				_follower.motion.offset = Vector3.Lerp(baseOffset, Vector3.zero, t * t);
 				yield return null;
-				changeRoadTimer += Time.deltaTime;
+				_followCamera._isActive =  true;
+				changeRoadTimer         += Time.deltaTime;
 			}
 			_follower.motion.offset = Vector3.zero;
 			_changeRoadCoroutine    = null;

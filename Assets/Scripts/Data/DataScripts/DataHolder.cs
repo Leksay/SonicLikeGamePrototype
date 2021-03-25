@@ -2,6 +2,7 @@
 using UnityEngine;
 using Dreamteck.Splines;
 using Internal;
+using Players;
 public class DataHolder : MonoBehaviour, IRegistrable
 {
 	private static DataHolder instance;

@@ -31,7 +31,7 @@ namespace Players
 			else if (other.TryGetComponent<Enemy.Opponents.Enemy>(out var enemy))
 			{
 				_enemyEffected.ForEach(e => {
-					if (e.HitedByEnemy(enemy.enemyType)) _barrierEffected.ForEach(b => b.BarrierHit(enemy.speedSlow, enemy.time));
+					if (e.HitByEnemy(enemy.enemyType)) _barrierEffected.ForEach(b => b.BarrierHit(enemy.speedSlow, enemy.time));
 				});
 			}
 		}
