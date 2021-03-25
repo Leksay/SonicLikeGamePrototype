@@ -52,7 +52,7 @@ GameObject:
   - component: {fileID: 238741848576855413}
   - component: {fileID: 5213024561870948038}
   - component: {fileID: 8870538368816722792}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: PlayerHolder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -19471,6 +19471,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: CFX_ElectricityField
       objectReference: {fileID: 0}
+    - target: {fileID: 6133338991644336402, guid: 76ba4dfe44de3db418b81b878f1023b7,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6133338991644441906, guid: 76ba4dfe44de3db418b81b878f1023b7,
         type: 3}
       propertyPath: m_RootOrder
@@ -19484,7 +19489,7 @@ PrefabInstance:
     - target: {fileID: 6133338991644441906, guid: 76ba4dfe44de3db418b81b878f1023b7,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1
+      value: 0.762
       objectReference: {fileID: 0}
     - target: {fileID: 6133338991644441906, guid: 76ba4dfe44de3db418b81b878f1023b7,
         type: 3}

@@ -102,7 +102,7 @@ GameObject:
   - component: {fileID: 2901871320679097148}
   - component: {fileID: 4295694545384079303}
   - component: {fileID: 4484060533587369134}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: OpponentHolder_Gold
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -13549,6 +13549,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   field: {fileID: 0}
+  _booster:
+    value: 0
+    time: 0
+    stopped: 0
 --- !u!114 &2901871320679097151
 MonoBehaviour:
   m_ObjectHideFlags: 0

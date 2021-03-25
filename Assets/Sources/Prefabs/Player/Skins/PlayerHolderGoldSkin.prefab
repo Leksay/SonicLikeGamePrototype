@@ -225,7 +225,7 @@ GameObject:
   - component: {fileID: 2244394137056112466}
   - component: {fileID: 6065782285598663905}
   - component: {fileID: 7453427989507232079}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: PlayerHolderGoldSkin
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -19529,7 +19529,7 @@ PrefabInstance:
     - target: {fileID: 6133338991644441906, guid: 76ba4dfe44de3db418b81b878f1023b7,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1
+      value: 0.762
       objectReference: {fileID: 0}
     - target: {fileID: 6133338991644441906, guid: 76ba4dfe44de3db418b81b878f1023b7,
         type: 3}

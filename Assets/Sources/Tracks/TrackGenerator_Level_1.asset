@@ -29,7 +29,7 @@ MonoBehaviour:
     FinishLine:
       prefab: {fileID: 6158137469767189023, guid: 6ebe312bbf744ba4fb307d720361b9da,
         type: 3}
-      offset: {x: 0, y: 3.3, z: -4}
+      offset: {x: 0, y: 3.3, z: 0}
     finishAdd: 50
     Magnet:
       prefab: {fileID: 542659991630719771, guid: db220430852f80f448275d4b14a63a1e,
@@ -64,13 +64,13 @@ MonoBehaviour:
         type: 3}
       offset: {x: 0, y: 0.1, z: 0}
     CoinMiddle:
-      prefab: {fileID: 3978206949454726411, guid: f6f3905ae2a4df845b349ab6a6a7606e,
+      prefab: {fileID: 3860823586787003211, guid: d1786164d70a0a440804122c766c55b9,
         type: 3}
-      offset: {x: 0, y: 0, z: 0}
+      offset: {x: 0, y: 1.6, z: 0}
     CoinHigh:
-      prefab: {fileID: 8858498933852328836, guid: 8228f2d0a49f64141a4e6c5ce96ca318,
+      prefab: {fileID: 3860823586787003211, guid: d1786164d70a0a440804122c766c55b9,
         type: 3}
-      offset: {x: 0, y: 0, z: 0}
+      offset: {x: 0, y: 3.1, z: 0}
   _stepLength: 1
   _stepHorizontalRotate: 4
   _stepVerticalRotate: 3.33333
@@ -2063,61 +2063,61 @@ MonoBehaviour:
   - fold: 0
     Lines:
     - values: 
-      dirs: 0500000008000000
-      surface: 0
-    - values: 
       dirs: 
       surface: 0
     - values: 
       dirs: 
       surface: 0
     - values: 
-      dirs: 0600000008000000
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
       surface: 0
     dir: 
   - fold: 0
     Lines:
     - values: 
-      dirs: 0500000008000000
-      surface: 0
-    - values: 
       dirs: 
       surface: 0
     - values: 
       dirs: 
       surface: 0
     - values: 
-      dirs: 0600000008000000
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
       surface: 0
     dir: 
   - fold: 0
     Lines:
     - values: 
-      dirs: 08000000
-      surface: 0
-    - values: 
       dirs: 
       surface: 0
     - values: 
       dirs: 
       surface: 0
     - values: 
-      dirs: 08000000
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
       surface: 0
     dir: 
   - fold: 0
     Lines:
     - values: 
-      dirs: 08000000
-      surface: 0
-    - values: 
       dirs: 
       surface: 0
     - values: 
       dirs: 
       surface: 0
     - values: 
-      dirs: 08000000
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
       surface: 0
     dir: 
   - fold: 0
@@ -2149,22 +2149,7 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
-  - fold: 0
-    Lines:
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -2194,22 +2179,7 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
-  - fold: 0
-    Lines:
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -2239,22 +2209,7 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
-  - fold: 0
-    Lines:
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -2284,22 +2239,7 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
-  - fold: 0
-    Lines:
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -2329,7 +2269,7 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -2344,7 +2284,67 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
+    dir: 0300000006000000
+  - fold: 0
+    Lines:
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    dir: 0300000006000000
+  - fold: 0
+    Lines:
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    dir: 0300000006000000
+  - fold: 0
+    Lines:
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    dir: 0300000006000000
+  - fold: 0
+    Lines:
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -2374,22 +2374,7 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
-  - fold: 0
-    Lines:
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -2419,22 +2404,7 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
-  - fold: 0
-    Lines:
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -2464,22 +2434,7 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
-  - fold: 0
-    Lines:
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -2509,7 +2464,7 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -2524,7 +2479,52 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
+    dir: 0300000006000000
+  - fold: 0
+    Lines:
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    dir: 0300000006000000
+  - fold: 0
+    Lines:
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    dir: 0300000006000000
+  - fold: 0
+    Lines:
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -2554,7 +2554,7 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 1
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -2569,7 +2569,7 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 1
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 01000000
@@ -2599,7 +2599,7 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 1
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -2614,7 +2614,7 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 1
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -2644,7 +2644,7 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -2659,7 +2659,7 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -2689,7 +2689,7 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -2704,7 +2704,7 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -2734,7 +2734,7 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -2749,7 +2749,7 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -2779,7 +2779,7 @@ MonoBehaviour:
     - values: 06000000
       dirs: 
       surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -2794,7 +2794,7 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -2824,7 +2824,7 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 01000000
@@ -2839,7 +2839,7 @@ MonoBehaviour:
     - values: 04000000
       dirs: 
       surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -2869,22 +2869,7 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
-  - fold: 0
-    Lines:
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -2914,7 +2899,7 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -2929,7 +2914,22 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
+    dir: 0300000006000000
+  - fold: 0
+    Lines:
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 06000000
@@ -2959,7 +2959,7 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -2974,7 +2974,7 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -3004,7 +3004,7 @@ MonoBehaviour:
     - values: 08000000
       dirs: 
       surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -3019,7 +3019,7 @@ MonoBehaviour:
     - values: 08000000
       dirs: 
       surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 08000000
@@ -3049,22 +3049,7 @@ MonoBehaviour:
     - values: 08000000
       dirs: 
       surface: 0
-    dir: 06000000
-  - fold: 0
-    Lines:
-    - values: 08000000
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 08000000
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 08000000
@@ -3094,22 +3079,22 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
-    - values: 
+    - values: 08000000
       dirs: 
       surface: 0
     - values: 
       dirs: 
       surface: 0
-    - values: 
+    - values: 08000000
       dirs: 
       surface: 0
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -3139,22 +3124,7 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
-  - fold: 0
-    Lines:
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -3184,22 +3154,7 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
-  - fold: 0
-    Lines:
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -3229,7 +3184,7 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -3244,7 +3199,52 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
+    dir: 0300000006000000
+  - fold: 0
+    Lines:
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    dir: 0300000006000000
+  - fold: 0
+    Lines:
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    dir: 0300000006000000
+  - fold: 0
+    Lines:
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -3274,7 +3274,7 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -3289,7 +3289,7 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 03000000
@@ -3319,7 +3319,7 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -3334,7 +3334,7 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -3364,7 +3364,7 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -3379,7 +3379,7 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -3409,7 +3409,7 @@ MonoBehaviour:
     - values: 07000000
       dirs: 
       surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -3424,7 +3424,7 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -3454,22 +3454,7 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
-  - fold: 0
-    Lines:
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 0800000008000000
-      dirs: 
-      surface: 0
-    - values: 0800000008000000
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -3499,7 +3484,22 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
+    dir: 0300000006000000
+  - fold: 0
+    Lines:
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 0800000008000000
+      dirs: 
+      surface: 0
+    - values: 0800000008000000
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -3514,7 +3514,7 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -3544,22 +3544,7 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
-  - fold: 0
-    Lines:
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 07000000
-      dirs: 
-      surface: 0
-    - values: 07000000
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -3589,7 +3574,22 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
+    dir: 0300000006000000
+  - fold: 0
+    Lines:
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 07000000
+      dirs: 
+      surface: 0
+    - values: 07000000
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 07000000
@@ -3604,7 +3604,7 @@ MonoBehaviour:
     - values: 07000000
       dirs: 
       surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 07000000
@@ -3634,22 +3634,7 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
-  - fold: 0
-    Lines:
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 07000000
-      dirs: 
-      surface: 0
-    - values: 07000000
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -3679,7 +3664,7 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -3694,7 +3679,22 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 06000000
+    dir: 0300000006000000
+  - fold: 0
+    Lines:
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 07000000
+      dirs: 
+      surface: 0
+    - values: 07000000
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    dir: 0300000006000000
   - fold: 0
     Lines:
     - values: 
@@ -3743,76 +3743,76 @@ MonoBehaviour:
   - fold: 0
     Lines:
     - values: 
-      dirs: 0600000007000000
+      dirs: 05000000
       surface: 0
     - values: 07000000
-      dirs: 
+      dirs: 05000000
       surface: 0
     - values: 07000000
-      dirs: 
+      dirs: 06000000
       surface: 0
     - values: 
-      dirs: 0500000007000000
+      dirs: 06000000
       surface: 0
     dir: 
   - fold: 0
     Lines:
     - values: 
-      dirs: 0600000007000000
+      dirs: 0500000005000000
       surface: 0
     - values: 07000000
-      dirs: 
+      dirs: 0500000005000000
       surface: 0
     - values: 07000000
-      dirs: 
+      dirs: 0600000006000000
       surface: 0
     - values: 
-      dirs: 0500000007000000
+      dirs: 0600000006000000
       surface: 0
     dir: 
   - fold: 0
     Lines:
     - values: 
-      dirs: 07000000
+      dirs: 050000000500000005000000
       surface: 0
     - values: 07000000
-      dirs: 
+      dirs: 050000000500000005000000
       surface: 0
     - values: 07000000
-      dirs: 
+      dirs: 060000000600000006000000
       surface: 0
     - values: 
-      dirs: 07000000
+      dirs: 060000000600000006000000
       surface: 0
     dir: 
   - fold: 0
     Lines:
     - values: 
-      dirs: 07000000
+      dirs: 0500000005000000
       surface: 0
     - values: 07000000
-      dirs: 
+      dirs: 0500000005000000
       surface: 0
     - values: 07000000
-      dirs: 
+      dirs: 0600000006000000
       surface: 0
     - values: 
-      dirs: 07000000
+      dirs: 0600000006000000
       surface: 0
     dir: 
   - fold: 0
     Lines:
     - values: 
-      dirs: 
+      dirs: 05000000
       surface: 0
     - values: 
-      dirs: 
+      dirs: 05000000
       surface: 0
     - values: 
-      dirs: 
+      dirs: 06000000
       surface: 0
     - values: 
-      dirs: 
+      dirs: 06000000
       surface: 0
     dir: 
   - fold: 0
@@ -4474,11 +4474,14 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 
+    dir: 04000000
   - fold: 0
     Lines:
     - values: 
-      dirs: 080000000800000008000000
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
       surface: 0
     - values: 
       dirs: 
@@ -4486,14 +4489,14 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    - values: 
-      dirs: 080000000800000008000000
-      surface: 0
-    dir: 
+    dir: 04000000
   - fold: 0
     Lines:
     - values: 
-      dirs: 080000000800000008000000
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
       surface: 0
     - values: 
       dirs: 
@@ -4501,14 +4504,14 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    - values: 
-      dirs: 080000000800000008000000
-      surface: 0
-    dir: 
+    dir: 04000000
   - fold: 0
     Lines:
     - values: 
-      dirs: 080000000800000008000000
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
       surface: 0
     - values: 
       dirs: 
@@ -4516,14 +4519,14 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    - values: 
-      dirs: 080000000800000008000000
-      surface: 0
-    dir: 
+    dir: 04000000
   - fold: 0
     Lines:
     - values: 
-      dirs: 08000000080000000800000005000000
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
       surface: 0
     - values: 
       dirs: 
@@ -4531,29 +4534,11 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    - values: 
-      dirs: 08000000080000000800000006000000
-      surface: 0
-    dir: 
+    dir: 04000000
   - fold: 0
     Lines:
     - values: 
-      dirs: 080000000500000005000000
-      surface: 0
-    - values: 
       dirs: 
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 080000000600000006000000
-      surface: 0
-    dir: 
-  - fold: 0
-    Lines:
-    - values: 
-      dirs: 08000000050000000500000005000000
       surface: 0
     - values: 
       dirs: 
@@ -4562,13 +4547,16 @@ MonoBehaviour:
       dirs: 
       surface: 0
     - values: 
-      dirs: 08000000060000000600000006000000
+      dirs: 
       surface: 0
     dir: 
   - fold: 0
     Lines:
     - values: 
-      dirs: 0500000005000000
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
       surface: 0
     - values: 
       dirs: 
@@ -4576,8 +4564,20 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
+    dir: 
+  - fold: 0
+    Lines:
     - values: 
-      dirs: 0600000006000000
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
       surface: 0
     dir: 
   - fold: 0
@@ -4901,10 +4901,10 @@ MonoBehaviour:
       dirs: 
       surface: 0
     - values: 
-      dirs: 07000000
+      dirs: 
       surface: 0
     - values: 
-      dirs: 08000000
+      dirs: 
       surface: 0
     - values: 
       dirs: 
@@ -4916,10 +4916,10 @@ MonoBehaviour:
       dirs: 
       surface: 0
     - values: 
-      dirs: 0700000007000000
+      dirs: 
       surface: 0
     - values: 
-      dirs: 0800000008000000
+      dirs: 
       surface: 0
     - values: 
       dirs: 
@@ -4931,10 +4931,10 @@ MonoBehaviour:
       dirs: 
       surface: 0
     - values: 
-      dirs: 07000000
+      dirs: 
       surface: 0
     - values: 
-      dirs: 08000000
+      dirs: 
       surface: 0
     - values: 
       dirs: 
@@ -4991,10 +4991,10 @@ MonoBehaviour:
       dirs: 
       surface: 0
     - values: 
-      dirs: 08000000
+      dirs: 
       surface: 0
     - values: 
-      dirs: 07000000
+      dirs: 
       surface: 0
     - values: 
       dirs: 
@@ -5006,10 +5006,10 @@ MonoBehaviour:
       dirs: 
       surface: 0
     - values: 
-      dirs: 0800000008000000
+      dirs: 
       surface: 0
     - values: 
-      dirs: 0700000007000000
+      dirs: 
       surface: 0
     - values: 
       dirs: 
@@ -5021,10 +5021,10 @@ MonoBehaviour:
       dirs: 
       surface: 0
     - values: 
-      dirs: 08000000
+      dirs: 
       surface: 0
     - values: 
-      dirs: 07000000
+      dirs: 
       surface: 0
     - values: 
       dirs: 
@@ -5081,10 +5081,10 @@ MonoBehaviour:
       dirs: 
       surface: 0
     - values: 
-      dirs: 07000000
+      dirs: 
       surface: 0
     - values: 
-      dirs: 08000000
+      dirs: 
       surface: 0
     - values: 
       dirs: 
@@ -5096,10 +5096,10 @@ MonoBehaviour:
       dirs: 
       surface: 0
     - values: 
-      dirs: 0700000007000000
+      dirs: 
       surface: 0
     - values: 
-      dirs: 0800000008000000
+      dirs: 
       surface: 0
     - values: 
       dirs: 
@@ -5111,10 +5111,10 @@ MonoBehaviour:
       dirs: 
       surface: 0
     - values: 
-      dirs: 07000000
+      dirs: 
       surface: 0
     - values: 
-      dirs: 08000000
+      dirs: 
       surface: 0
     - values: 
       dirs: 
@@ -5171,10 +5171,10 @@ MonoBehaviour:
       dirs: 
       surface: 0
     - values: 
-      dirs: 08000000
+      dirs: 
       surface: 0
     - values: 
-      dirs: 07000000
+      dirs: 
       surface: 0
     - values: 
       dirs: 
@@ -5186,100 +5186,10 @@ MonoBehaviour:
       dirs: 
       surface: 0
     - values: 
-      dirs: 0800000008000000
-      surface: 0
-    - values: 
-      dirs: 0700000007000000
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    dir: 01000000
-  - fold: 0
-    Lines:
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 08000000
-      surface: 0
-    - values: 
-      dirs: 07000000
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    dir: 01000000
-  - fold: 0
-    Lines:
-    - values: 
       dirs: 
       surface: 0
     - values: 
       dirs: 
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 0800000008000000
-      dirs: 
-      surface: 0
-    dir: 01000000
-  - fold: 0
-    Lines:
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 0800000008000000
-      dirs: 
-      surface: 0
-    dir: 01000000
-  - fold: 0
-    Lines:
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 07000000
-      surface: 0
-    - values: 
-      dirs: 08000000
-      surface: 0
-    - values: 0800000008000000
-      dirs: 
-      surface: 0
-    dir: 01000000
-  - fold: 0
-    Lines:
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 0700000007000000
-      surface: 0
-    - values: 
-      dirs: 0800000008000000
-      surface: 0
-    - values: 0800000008000000
-      dirs: 
-      surface: 0
-    dir: 01000000
-  - fold: 0
-    Lines:
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 07000000
-      surface: 0
-    - values: 
-      dirs: 08000000
       surface: 0
     - values: 
       dirs: 
@@ -5305,13 +5215,88 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    - values: 0800000008000000
+    - values: 
       dirs: 
       surface: 0
     - values: 
       dirs: 
       surface: 0
     - values: 0800000008000000
+      dirs: 
+      surface: 0
+    dir: 01000000
+  - fold: 0
+    Lines:
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 0800000008000000
+      dirs: 
+      surface: 0
+    dir: 01000000
+  - fold: 0
+    Lines:
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 0800000008000000
+      dirs: 
+      surface: 0
+    dir: 01000000
+  - fold: 0
+    Lines:
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 0800000008000000
+      dirs: 
+      surface: 0
+    dir: 01000000
+  - fold: 0
+    Lines:
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    dir: 01000000
+  - fold: 0
+    Lines:
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
+      surface: 0
+    - values: 
       dirs: 
       surface: 0
     dir: 01000000
@@ -5332,9 +5317,6 @@ MonoBehaviour:
     dir: 01000000
   - fold: 0
     Lines:
-    - values: 0800000008000000
-      dirs: 
-      surface: 0
     - values: 
       dirs: 
       surface: 0
@@ -5342,6 +5324,9 @@ MonoBehaviour:
       dirs: 
       surface: 0
     - values: 
+      dirs: 
+      surface: 0
+    - values: 0800000008000000
       dirs: 
       surface: 0
     dir: 01000000
@@ -5365,13 +5350,13 @@ MonoBehaviour:
     - values: 0800000008000000
       dirs: 
       surface: 0
-    - values: 0800000008000000
+    - values: 
       dirs: 
       surface: 0
     - values: 0800000008000000
       dirs: 
       surface: 0
-    - values: 0800000008000000
+    - values: 
       dirs: 
       surface: 0
     dir: 01000000
@@ -5407,6 +5392,21 @@ MonoBehaviour:
     dir: 01000000
   - fold: 0
     Lines:
+    - values: 0800000008000000
+      dirs: 
+      surface: 0
+    - values: 0800000008000000
+      dirs: 
+      surface: 0
+    - values: 0800000008000000
+      dirs: 
+      surface: 0
+    - values: 0800000008000000
+      dirs: 
+      surface: 0
+    dir: 01000000
+  - fold: 0
+    Lines:
     - values: 
       dirs: 
       surface: 0
@@ -5441,10 +5441,10 @@ MonoBehaviour:
       dirs: 
       surface: 0
     - values: 
-      dirs: 08000000
+      dirs: 
       surface: 0
     - values: 
-      dirs: 07000000
+      dirs: 
       surface: 0
     - values: 
       dirs: 
@@ -5456,10 +5456,10 @@ MonoBehaviour:
       dirs: 
       surface: 0
     - values: 
-      dirs: 0800000008000000
+      dirs: 
       surface: 0
     - values: 
-      dirs: 0700000007000000
+      dirs: 
       surface: 0
     - values: 
       dirs: 
@@ -5471,10 +5471,10 @@ MonoBehaviour:
       dirs: 
       surface: 0
     - values: 
-      dirs: 08000000
+      dirs: 
       surface: 0
     - values: 
-      dirs: 07000000
+      dirs: 
       surface: 0
     - values: 
       dirs: 
@@ -5708,106 +5708,106 @@ MonoBehaviour:
   - fold: 0
     Lines:
     - values: 
-      dirs: 0600000006000000
-      surface: 0
-    - values: 
       dirs: 
       surface: 0
     - values: 
       dirs: 
       surface: 0
     - values: 
-      dirs: 0500000005000000
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
       surface: 0
     dir: 
   - fold: 0
     Lines:
     - values: 
-      dirs: 07000000060000000600000006000000
-      surface: 0
-    - values: 
       dirs: 
       surface: 0
     - values: 
       dirs: 
       surface: 0
     - values: 
-      dirs: 07000000050000000500000005000000
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
       surface: 0
     dir: 
   - fold: 0
     Lines:
     - values: 
-      dirs: 070000000600000006000000
-      surface: 0
-    - values: 
       dirs: 
       surface: 0
     - values: 
       dirs: 
       surface: 0
     - values: 
-      dirs: 070000000500000005000000
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
       surface: 0
     dir: 
   - fold: 0
     Lines:
     - values: 
-      dirs: 07000000070000000700000006000000
-      surface: 0
-    - values: 
       dirs: 
       surface: 0
     - values: 
       dirs: 
       surface: 0
     - values: 
-      dirs: 07000000070000000700000005000000
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
       surface: 0
     dir: 
   - fold: 0
     Lines:
     - values: 
-      dirs: 070000000700000007000000
-      surface: 0
-    - values: 
       dirs: 
       surface: 0
     - values: 
       dirs: 
       surface: 0
     - values: 
-      dirs: 070000000700000007000000
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
       surface: 0
     dir: 
   - fold: 0
     Lines:
     - values: 
-      dirs: 070000000700000007000000
-      surface: 0
-    - values: 
       dirs: 
       surface: 0
     - values: 
       dirs: 
       surface: 0
     - values: 
-      dirs: 070000000700000007000000
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
       surface: 0
     dir: 
   - fold: 0
     Lines:
     - values: 
-      dirs: 070000000700000007000000
-      surface: 0
-    - values: 
       dirs: 
       surface: 0
     - values: 
       dirs: 
       surface: 0
     - values: 
-      dirs: 070000000700000007000000
+      dirs: 
+      surface: 0
+    - values: 
+      dirs: 
       surface: 0
     dir: 
   - fold: 0
@@ -5963,76 +5963,76 @@ MonoBehaviour:
   - fold: 0
     Lines:
     - values: 
-      dirs: 
+      dirs: 06000000
       surface: 0
     - values: 
-      dirs: 
+      dirs: 06000000
       surface: 0
     - values: 
-      dirs: 
+      dirs: 05000000
       surface: 0
     - values: 
-      dirs: 
-      surface: 0
-    dir: 
-  - fold: 0
-    Lines:
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 
+      dirs: 05000000
       surface: 0
     dir: 
   - fold: 0
     Lines:
     - values: 
-      dirs: 
+      dirs: 0600000006000000
       surface: 0
     - values: 
-      dirs: 
+      dirs: 0600000006000000
       surface: 0
     - values: 
-      dirs: 
+      dirs: 0500000005000000
       surface: 0
     - values: 
-      dirs: 
-      surface: 0
-    dir: 
-  - fold: 0
-    Lines:
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 
-      surface: 0
-    - values: 
-      dirs: 
+      dirs: 0500000005000000
       surface: 0
     dir: 
   - fold: 0
     Lines:
     - values: 
-      dirs: 
+      dirs: 060000000600000006000000
       surface: 0
     - values: 
-      dirs: 
+      dirs: 060000000600000006000000
       surface: 0
     - values: 
-      dirs: 
+      dirs: 050000000500000005000000
       surface: 0
     - values: 
-      dirs: 
+      dirs: 050000000500000005000000
+      surface: 0
+    dir: 
+  - fold: 0
+    Lines:
+    - values: 
+      dirs: 0600000006000000
+      surface: 0
+    - values: 
+      dirs: 0600000006000000
+      surface: 0
+    - values: 
+      dirs: 0500000005000000
+      surface: 0
+    - values: 
+      dirs: 0500000005000000
+      surface: 0
+    dir: 
+  - fold: 0
+    Lines:
+    - values: 
+      dirs: 06000000
+      surface: 0
+    - values: 
+      dirs: 06000000
+      surface: 0
+    - values: 
+      dirs: 05000000
+      surface: 0
+    - values: 
+      dirs: 05000000
       surface: 0
     dir: 
   - fold: 0

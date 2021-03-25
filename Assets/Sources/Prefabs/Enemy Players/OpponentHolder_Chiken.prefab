@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 176617918550357802}
   - component: {fileID: 1273290493851233233}
   - component: {fileID: 1444644844432771256}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: OpponentHolder_Chiken
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -13469,6 +13469,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   field: {fileID: 0}
+  _booster:
+    value: 0
+    time: 0
+    stopped: 0
 --- !u!114 &176617918550357801
 MonoBehaviour:
   m_ObjectHideFlags: 0

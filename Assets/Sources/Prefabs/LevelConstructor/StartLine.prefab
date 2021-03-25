@@ -135,6 +135,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: BoostRing
       objectReference: {fileID: 0}
+    - target: {fileID: 4391843425018444964, guid: 143798230a7ef824fb78dc947f80ce37,
+        type: 3}
+      propertyPath: m_Layer
+      value: 12
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 3473295120967057910, guid: 143798230a7ef824fb78dc947f80ce37, type: 3}
     - {fileID: 3473295120967057911, guid: 143798230a7ef824fb78dc947f80ce37, type: 3}

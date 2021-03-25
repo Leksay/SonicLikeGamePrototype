@@ -469,14 +469,12 @@ namespace Players
 		{
 			OnSpeedBoost?.Invoke();
 			_desiredSpeed = defaultSpeed + speed;
-			Debug.Log($"Add ({speed}) -> {_desiredSpeed}");
 			_followCamera.SetSpeedType(speed > 0 ? PlayerFollowCamera.SpeedType.Accel : PlayerFollowCamera.SpeedType.Deaccel);
 			ChangeSpeed();
 		}
 		public void ReduceSpeed(float speed)
 		{
 			_desiredSpeed = defaultSpeed - speed;
-			Debug.Log($"Remove ({speed}) -> {_desiredSpeed}");
 			_followCamera.SetSpeedType(speed > 0 ? PlayerFollowCamera.SpeedType.Accel : PlayerFollowCamera.SpeedType.Deaccel);
 			ChangeSpeed();
 		}

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Bonus;
 using Level;
 using UnityEngine;
 

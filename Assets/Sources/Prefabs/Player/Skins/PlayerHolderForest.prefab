@@ -12315,7 +12315,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5342794567514301652}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: 0}
+  m_LocalPosition: {x: 0, y: 0.762, z: 0}
   m_LocalScale: {x: 1.2291199, y: 1.2291199, z: 1.2291199}
   m_Children:
   - {fileID: 5342794567514339568}
@@ -17075,7 +17075,7 @@ GameObject:
   - component: {fileID: 5991259849460688674}
   - component: {fileID: 1742179873636478097}
   - component: {fileID: 3129842040155707711}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: PlayerHolderForest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
