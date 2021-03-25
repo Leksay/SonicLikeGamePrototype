@@ -19283,6 +19283,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: SphereMagnet
       objectReference: {fileID: 0}
+    - target: {fileID: 3429563877500947311, guid: 813bcee6e3c0d53449fd0235703606cc,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 813bcee6e3c0d53449fd0235703606cc, type: 3}
 --- !u!1 &888001084954414406 stripped

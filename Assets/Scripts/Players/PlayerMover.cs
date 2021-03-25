@@ -115,9 +115,7 @@ namespace Players
 			_followCamera = Locator.GetObject<PlayerFollowCamera>();
 			_followCamera.SetFollowType(PlayerFollowCamera.FollowType.StartTrack, true);
 			if (GameProcess.isTutorial)
-			{
 				TutorialController.OnTutorialFakeInput += OnSwipe;
-			}
 		}
 
 		private void Update()
@@ -149,10 +147,19 @@ namespace Players
 			{
 				_followCamera.SetFollowType(PlayerFollowCamera.FollowType.FinishTrack);
 			}
+			else if (other.TryGetComponent<DeathLoopStart>(out var deathloopstart))
+			{
+				_followCamera.SetFollowType(PlayerFollowCamera.FollowType.DeathLoop);
+			}
+			else if (other.TryGetComponent<DeathLoopEnd>(out var deathloopend))
+			{
+				_followCamera.SetFollowType(PlayerFollowCamera.FollowType.Normal);
+			}
 		}
 
 		private void OnDrawGizmos()
 		{
+			if (_follower == null) return;
 			var p = _follower.result;
 			var i = currentRoadId - 1;
 			if (i >= 0)
@@ -399,9 +406,6 @@ namespace Players
 				_follower.motion.offset = d2;
 				_follower.enabled       = true;
 				_changeRoadCoroutine    = StartCoroutine(SwitchLine(d2));
-			}
-			else
-			{
 			}
 		}
 		private IEnumerator SwitchLine(Vector3 baseOffset)

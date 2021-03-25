@@ -6,25 +6,7 @@ using UnityEngine;
 
 public class DeathLoopEnd : MonoBehaviour
 {
-    [SerializeField] private DeathLoop myDeathLoop;
+	[SerializeField] private DeathLoop myDeathLoop;
 
-    private void Start()
-    {
-        myDeathLoop = GetComponentInParent<DeathLoop>();
-        GetComponent<MeshRenderer>().enabled = false;
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        var player = other.GetComponent<Player>();
-        if (player != null)
-        {
-            myDeathLoop.OnEndTriggerEnter();
-        }
-        var enemyBrain = other.GetComponent<OpponentBarin>();
-        if(enemyBrain != null)
-        {
-            enemyBrain.DeathLoopSetup(false);
-        }
-    }
+	private void Start() => GetComponent<MeshRenderer>().enabled = false;
 }

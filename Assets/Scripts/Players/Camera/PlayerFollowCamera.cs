@@ -36,16 +36,27 @@ namespace Players.Camera
 
 		[Header("---")]
 		[SerializeField] private Vector3 _offsetStart;
-		[SerializeField]                             private Vector3   _offsetNormal;
-		[SerializeField]                             private Vector3   _offsetSlide;
-		[SerializeField]                             private Vector3   _offsetJump;
-		[SerializeField]                             private Vector3   _lookOffsetStart;
-		[SerializeField]                             private Vector3   _lookOffsetNormal;
-		[SerializeField]                             private Vector3   _lookOffsetSlide;
-		[SerializeField]                             private Vector3   _lookOffsetJump;
+		[SerializeField] private Vector3 _lookOffsetStart;
+[Space]
+		[SerializeField] private Vector3 _offsetNormal;
+		[SerializeField] private Vector3 _lookOffsetNormal;
+		[Space]
+		[SerializeField] private Vector3 _offsetSlide;
+		[SerializeField] private Vector3 _lookOffsetSlide;
+		[Space]
+		[SerializeField] private Vector3 _offsetJump;
+		[SerializeField] private Vector3 _lookOffsetJump;
+		[Space]
+		[SerializeField] private Vector3 _offsetDeathloop;
+		[SerializeField] private Vector3 _lookOffsetDeathloop;
+		[Space]
 		[SerializeField]                             private Transform _target;
 		[Tooltip("Higher - faster")][SerializeField] private float     _smoothOffset = 1f;
 		[Tooltip("Higher - faster")][SerializeField] private float     _smoothRotate = 1f;
+		private                                              Vector3   _currOffset;
+		private                                              Vector3   _currOffsetNeed;
+		private                                              Vector3   _currOffsetLook;
+		private                                              Vector3   _currOffsetLookNeed;
 
 		[Header("FOV settings")]
 		[SerializeField] private float _accelFov = 75f;
@@ -97,6 +108,49 @@ namespace Players.Camera
 		public void SetFollowType(FollowType type, bool instant = false)
 		{
 			_followType = type;
+			if (instant)
+			{
+				switch (type)
+				{
+					case FollowType.None:
+						break;
+					case FollowType.Normal:
+						_currOffsetNeed     = _offsetNormal;
+						_currOffsetLookNeed = _lookOffsetNormal;
+						_currOffset         = _offsetNormal;
+						_currOffsetLook     = _lookOffsetNormal;
+						break;
+					case FollowType.Jump:
+						_currOffsetNeed     = _offsetJump;
+						_currOffsetLookNeed = _lookOffsetJump;
+						_currOffset         = _offsetJump;
+						_currOffsetLook     = _lookOffsetJump;
+						break;
+					case FollowType.Slide:
+						_currOffsetNeed     = _offsetSlide;
+						_currOffsetLookNeed = _lookOffsetSlide;
+						_currOffset         = _offsetSlide;
+						_currOffsetLook     = _lookOffsetSlide;
+						break;
+					case FollowType.DeathLoop:
+						_currOffsetNeed     = _offsetDeathloop;
+						_currOffsetLookNeed = _lookOffsetDeathloop;
+						_currOffset         = _offsetDeathloop;
+						_currOffsetLook     = _lookOffsetDeathloop;
+						break;
+					case FollowType.StartTrack:
+						_currOffsetNeed     = _offsetStart;
+						_currOffsetLookNeed = _lookOffsetStart;
+						_currOffset         = _offsetStart;
+						_currOffsetLook     = _lookOffsetStart;
+						break;
+					case FollowType.FinishTrack:
+						_target = null;
+						return;
+					default:
+						throw new ArgumentOutOfRangeException(nameof(_followType), _followType, null);
+				}
+			}
 		}
 		public void SetSpeedType(SpeedType type)
 		{
@@ -128,30 +182,30 @@ namespace Players.Camera
 
 		private void MoveAndRotateCamera()
 		{
-			var offset     = Vector3.zero;
-			var lookOffset = Vector3.zero;
-			var time       = _instant ? 10000f : Time.deltaTime;
+			var time = Time.deltaTime;
 			switch (_followType)
 			{
 				case FollowType.None:
 					break;
 				case FollowType.Normal:
-					offset     = _offsetNormal;
-					lookOffset = _lookOffsetNormal;
+					_currOffsetNeed     = _offsetNormal;
+					_currOffsetLookNeed = _lookOffsetNormal;
 					break;
 				case FollowType.Jump:
-					offset     = _offsetJump;
-					lookOffset = _lookOffsetJump;
+					_currOffsetNeed     = _offsetJump;
+					_currOffsetLookNeed = _lookOffsetJump;
 					break;
 				case FollowType.Slide:
-					offset     = _offsetSlide;
-					lookOffset = _lookOffsetSlide;
+					_currOffsetNeed     = _offsetSlide;
+					_currOffsetLookNeed = _lookOffsetSlide;
 					break;
 				case FollowType.DeathLoop:
+					_currOffsetNeed     = _offsetDeathloop;
+					_currOffsetLookNeed = _lookOffsetDeathloop;
 					break;
 				case FollowType.StartTrack:
-					offset     = _offsetStart;
-					lookOffset = _lookOffsetStart;
+					_currOffsetNeed     = _offsetStart;
+					_currOffsetLookNeed = _lookOffsetStart;
 					break;
 				case FollowType.FinishTrack:
 					_target = null;
@@ -164,13 +218,15 @@ namespace Players.Camera
 			var currPos   = _transform.position;
 			var targetRot = _target.rotation;
 
-			var tp = targetPos + targetRot * offset;
-			var d  = Mathf.Clamp(Vector3.Distance(tp, currPos) /10f, 1f, 1000f);
-			_transform.position = Vector3.Lerp(currPos, tp, _smoothOffset * time * d);
+			_currOffset     = Vector3.Lerp(_currOffset,     _currOffsetNeed,     time);
+			_currOffsetLook = Vector3.Lerp(_currOffsetLook, _currOffsetLookNeed, time);
 
-			var q = Quaternion.LookRotation(targetPos + targetRot * lookOffset - currPos, _target.up);
+			var tp = targetPos + targetRot * _currOffset;
+			var d  = Mathf.Clamp(Vector3.Distance(tp, currPos) / 10f, 1f, 100f);
+			_transform.position = Vector3.Slerp(currPos, tp, _smoothOffset * time * d);
+
+			var q = Quaternion.LookRotation(targetPos + targetRot * _currOffsetLook - currPos, _target.up);
 			_transform.rotation = Quaternion.Slerp(_transform.rotation, q, _smoothRotate * time);
-
 		}
 
 		private void ChangeFOV()
