@@ -392,10 +392,13 @@ namespace Players
 				var p1 = levelHolder._lines[targetLine].Evaluate(levelHolder._lines[targetLine].Project(p0.position)); // closest point on side line
 				var d  = p0.position - p1.position;
 				d.Normalize();
-				currentRoadId = targetLine;
+				currentRoadId      = targetLine;
+				_follower.enabled  = false;
+				_follower.computer = levelHolder._lines[currentRoadId];
 				var d2 = new Vector2(Vector3.Dot(d, p1.right), Vector3.Dot(d, p1.normal)); // offset is [X * point.right + Y * point.normal]
-				_follower.computer   = levelHolder._lines[currentRoadId];
-				_changeRoadCoroutine = StartCoroutine(SwitchLine(d2));
+				_follower.motion.offset = d2;
+				_follower.enabled       = true;
+				_changeRoadCoroutine    = StartCoroutine(SwitchLine(d2));
 			}
 			else
 			{
@@ -407,7 +410,8 @@ namespace Players
 			var changeRoadTimer = 0f;
 			while (changeRoadTimer < changeRoadTime)
 			{
-				_follower.motion.offset = Vector3.Lerp(baseOffset, Vector3.zero, changeRoadTimer / changeRoadTime);
+				var t = changeRoadTimer / changeRoadTime;
+				_follower.motion.offset = Vector3.Lerp(baseOffset, Vector3.zero, t * t);
 				yield return null;
 				changeRoadTimer += Time.deltaTime;
 			}

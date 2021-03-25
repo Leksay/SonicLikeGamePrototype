@@ -76,12 +76,13 @@ namespace Players.Camera
 		private void OnEnable()  => Register();
 		private void OnDisable() => Unregister();
 
-		private void LateUpdate()
+		public void UpdateCamera()
 		{
 			if (!_isActive || _target == null) return;
 			MoveAndRotateCamera();
 			ChangeFOV();
 		}
+		private void LateUpdate() => UpdateCamera();
 
 		private void FixedUpdate() => CheckBarrierTransparency();
 
