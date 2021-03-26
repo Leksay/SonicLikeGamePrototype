@@ -124,6 +124,8 @@ left turn	right turn	up turn	down turn
 				public Mesh    mesh;
 				[Tooltip("Масштаб меша")]
 				public Vector3 scale = Vector3.one;
+				[Tooltip("Смещение меша")]
+				public Vector2 offset = Vector2.zero;
 			}
 			[Serializable] public class TrackObject
 			{
@@ -438,8 +440,10 @@ left turn	right turn	up turn	down turn
 					var md       = interval.type == TrackSurface.Railroad ? _prefabs.Rails : _prefabs.Normal;
 
 					var channel = sm.AddChannel($"{interval.type}");
-					channel.minScale = md.scale;
-					channel.maxScale = md.scale;
+					channel.minScale  = md.scale;
+					channel.maxScale  = md.scale;
+					channel.minOffset = md.offset;
+					channel.maxOffset = md.offset;
 					channel.AddMesh(md.mesh);
 					channel.count    = interval.segments / divider;
 					channel.clipFrom = interval.start;
