@@ -6,17 +6,16 @@ public class MagnetField : MonoBehaviour
 {
     [SerializeField] private GameObject magnetSphere;
     [SerializeField] private GameObject magnetSphereEffect;
-    public void SetMagnetSphereActive(bool isActive, float time)
+    public void SetMagnetSphereActive()
     {
-        magnetSphere.SetActive(isActive);
-        magnetSphereEffect.SetActive(isActive);
-        if(isActive)
-            StartCoroutine(WaitAndOffField(time));
+        magnetSphere.SetActive(true);
+        magnetSphereEffect.SetActive(true);
+    }
+    public void SetMagnetSphereInactive()
+    {
+        magnetSphere.SetActive(false);
+        magnetSphereEffect.SetActive(false);
     }
 
-    private IEnumerator WaitAndOffField(float time)
-    {
-        yield return new WaitForSeconds(time);
-        SetMagnetSphereActive(false,0);
-    }
+
 }

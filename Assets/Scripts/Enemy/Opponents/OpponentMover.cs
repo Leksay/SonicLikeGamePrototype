@@ -172,8 +172,8 @@ namespace Enemy.Opponents
 				_boosters.ForEach(b => b.StopShield());
 				return;
 			}
-			_boosters.ForEach(b => b.StopAllBoosters());
-			_boosters[0]?.BoostSpeed(time, value);
+			_boosters?.ForEach(b => b.StopAllBoosters());
+			_boosters?.ForEach(t=>t.BoostSpeed(time, value));
 			ChangeSpeed();
 		}
 

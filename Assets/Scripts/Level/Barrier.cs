@@ -15,8 +15,7 @@ namespace Level
 
 		private void Start()
 		{
-			if (myMaterial == null)
-				myMaterial = GetComponent<MeshRenderer>().material;
+			if (myMaterial == null) myMaterial = GetComponent<MeshRenderer>().material;
 			if (LayerMask.NameToLayer("Barrier") == 0)
 			{
 				Debug.LogError("Wrong name of barrier layer in Barrier scrips");

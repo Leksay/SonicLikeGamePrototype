@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Runtime.Serialization;
 using Data.DataScripts;
 using Dreamteck.Splines;
 #if UNITY_EDITOR
 using EasyEditorGUI;
 using UnityEditor;
-using UnityEditorInternal;
 #endif
 using Level;
 using UnityEngine;
@@ -18,16 +15,6 @@ namespace Helpers
 	[CreateAssetMenu(fileName = "TrackGenerator", menuName = "Generators/Track generator", order = 0)]
 	public class TrackGenerator : ScriptableObject
 	{
-		/*
-		 Track details										
-M		R			O			P				X				+			S		A			1			2			3
-magnet	railroad	obstacle	obstacle block	enemy ground	enemy air	shield	accelerator	coin down	coin middle	coin up
-										
-Road directions										
-L			R			U		D							
-left turn	right turn	up turn	down turn							
-
-		 */
 		public enum TrackItem
 		{
 			None,
@@ -78,9 +65,6 @@ left turn	right turn	up turn	down turn
 
 		[Serializable] public class TrackStep
 		{
-#if UNITY_EDITOR
-			public bool fold = false;
-#endif
 			public TrackSlot[] Lines;
 			public TrackDir[]  dir;
 			public TrackStep(int lines) => Lines = new TrackSlot[lines];
@@ -88,10 +72,10 @@ left turn	right turn	up turn	down turn
 
 		[Serializable] public class TrackInterval
 		{
-			public          double       start = 0d;
-			public          double       end   = 0d;
+			public          double       start;
+			public          double       end;
 			public          TrackSurface type;
-			public          int          segments = 0;
+			public          int          segments = 1;
 			public override string       ToString() => $"{start:F3}-{end:F3} ({segments}):{type}";
 		}
 
@@ -182,7 +166,7 @@ left turn	right turn	up turn	down turn
 #if UNITY_EDITOR
 		private void CreateRotations()
 		{
-			_directions2 = new Vector3[] {
+			_directions2 = new[] {
 				Vector3.zero,
 				new Vector3(0f,                   -_stepHorizontalRotate, 0f), // L
 				new Vector3(0f,                   _stepHorizontalRotate,  0f), // R
@@ -196,12 +180,7 @@ left turn	right turn	up turn	down turn
 		}
 		private void PatchRotation(Transform t)
 		{
-			var f  = t.forward;
 			var r  = t.right;
-			var r2 = r;
-			r2.y = 0f;
-
-			//var a = Vector3.SignedAngle(r2, r, f);
 			var a = Mathf.Asin(r.y) * Mathf.Rad2Deg;
 			t.Rotate(t.forward, -a, Space.World);
 		}
@@ -592,7 +571,6 @@ left turn	right turn	up turn	down turn
 		{
 			var items = new List<TrackItem>();
 			var dirs  = new List<TrackDir>();
-			var i     = 0;
 			foreach (var d in data)
 			{
 				switch (d)

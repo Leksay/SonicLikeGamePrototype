@@ -15,7 +15,6 @@ namespace Players
 			public Coroutine coroutine;
 			public float     value;
 			public float     time;
-			public bool      stopped;
 		}
 
 		private IMover            _mover;
@@ -25,8 +24,9 @@ namespace Players
 		public event Action OnMagnetBoost;
 
 		[SerializeField] private MagnetField field;
+		private                  Coroutine   _magnetFieldCor;
 		[SerializeField] private BoosterData _booster = new BoosterData();
-		private                  Coroutine   _shieldCoroutine;
+		private                  Coroutine   _shieldCor;
 		private void Awake()
 		{
 			_defendables = new List<IDefendable>();
@@ -39,8 +39,7 @@ namespace Players
 
 		private void StartBooster(float value, float time)
 		{
-			if (_booster.coroutine != null)
-				StopBooster(_booster);
+			if (_booster.coroutine != null) StopBooster(_booster);
 			_booster.value = value;
 			_booster.time  = time;
 			_mover.AddSpeed(value);
@@ -53,7 +52,12 @@ namespace Players
 			StopBooster(booster);
 		}
 
-		public void StopAllBoosters() => StopBooster(_booster);
+		public void StopAllBoosters()
+		{
+			if (_shieldCor      != null) StopShield();
+			if (_magnetFieldCor != null) StopMagnetField();
+			StopBooster(_booster);
+		}
 
 		private void StopBooster(BoosterData booster)
 		{
@@ -61,45 +65,46 @@ namespace Players
 			{
 				_mover.ReduceSpeed(booster.value);
 				StopCoroutine(booster.coroutine);
+				booster.coroutine = null;
 			}
-			booster.coroutine = null;
 		}
 
-		public void ShieldBoost(float time)
+
+		public void ShieldBoost(float time) => StartShield(time);
+		private void StartShield(float time)
 		{
+			_shieldCor = this.InvokeDelegate(StopShield, time);
 			_defendables.ForEach(d => d.SetDefend(true));
-			var shildData = new BoosterData() { stopped = false, time = time, value = 0 };
-			_shieldCoroutine    = StartCoroutine(WaitAndRemoveShild(shildData));
-			shildData.coroutine = _shieldCoroutine;
-			_booster            = shildData;
 			OnShieldBoost?.Invoke();
 		}
-
 		public void StopShield()
 		{
-			StopCoroutine(_shieldCoroutine);
-			_defendables.ForEach(d => d.SetDefend(false));
+			if (_shieldCor != null)
+			{
+				StopCoroutine(_shieldCor);
+				_shieldCor = null;
+				_defendables.ForEach(d => d.SetDefend(false));
+			}
 		}
 
-		private IEnumerator WaitAndRemoveShild(BoosterData data)
-		{
-			data.time = Time.time + data.time;
-			while (Time.time <= data.time && data.stopped == false)
-			{
-				yield return null;
-			}
-			StopShield();
-		}
 
 		public void MagnetFieldBoost(float time)
 		{
 			OnMagnetBoost?.Invoke();
-			field.SetMagnetSphereActive(true, time);
+			field.SetMagnetSphereActive();
+			_magnetFieldCor = this.InvokeDelegate(() => {
+				field.SetMagnetSphereInactive();
+				_magnetFieldCor = null;
+			}, time);
 		}
-
 		public void StopMagnetField()
 		{
-			field.SetMagnetSphereActive(false, 0);
+			if (_magnetFieldCor != null)
+			{
+				StopCoroutine(_magnetFieldCor);
+				field.SetMagnetSphereInactive();
+				_magnetFieldCor = null;
+			}
 		}
 	}
 }

@@ -247,57 +247,6 @@ namespace Players.Camera
 			_camera.fieldOfView = _currentFOV;
 		}
 
-		/*
-		private void MoveAndRotateCamera()
-		{
-			_transform.rotation = Quaternion.Lerp(_transform.rotation, _isStarting ? cameraStartT.rotation : cameraPointT.rotation, rotateSmooth * Time.deltaTime);
-			Vector3 position;
-			if (isSliding)
-			{
-				position = Vector3.Lerp(_transform.position, cameSlideT.position, slideSmooth * Time.deltaTime);
-			}
-			else if (isReturning)
-			{
-				position   = cameraPointT.position;
-				position.y = Mathf.Lerp(_transform.position.y, (cameraPointT.position + cameraPointT.up * _actualHeight).y, slideSmooth * Time.deltaTime);
-				if ((_transform.position - (cameraPointT.position + cameraPointT.up * _actualHeight)).magnitude < .15f)
-					isReturning = false;
-			}
-			/*else if (_isLoopReturning)
-			{
-				_deathLoopTimer     += Time.deltaTime / 3;
-				position            =  Vector3.Lerp(_transform.position, Vector3.Lerp(_transform.position, cameraPointT.position, _deathLoopTimer), _deathLoopTimer);
-				_transform.rotation =  Quaternion.LookRotation(playerT.position + cameraPointT.up * (_actualHeight + 0.35f) - _transform.position, cameraPointT.up);
-				if (_deathLoopTimer >= 9f)
-				{
-					_transform.rotation = Quaternion.Lerp(_transform.rotation, cameraPointT.rotation, rotateSmooth);
-					if (_deathLoopTimer > 1.1f)
-						_isLoopReturning = false;
-				}
-			} 
-			else if (_isStarting)
-			{
-				position =  cameraStartT.position;
-				position += cameraStartT.up * _actualHeight;
-			}
-			/* else if (_isOnDeathLoop)
-			{
-				_deathLoopTimer += Time.deltaTime / 11;
-				position        =  Vector3.Lerp(_transform.position, deathLoopT.position, _deathLoopTimer);
-				if (_deathLoopTimer < 0.35)
-					_transform.rotation = Quaternion.Lerp(_transform.rotation, Quaternion.LookRotation(playerT.position + cameraPointT.up * (_actualHeight + 0.25f) - _transform.position, Vector3.up), rotateSmooth);
-				else
-					_transform.rotation = Quaternion.LookRotation(playerT.position + cameraPointT.up * (_actualHeight + 0.25f) - _transform.position, Vector3.up);
-			} 
-			else
-			{
-				// normal movement 
-				position =  cameraPointT.position;
-				position += cameraPointT.up * _actualHeight;
-			}
-			_transform.position = Vector3.Lerp(_transform.position, position, rotateSmooth * Time.deltaTime);
-		} /**/
-
 		private void CheckBarrierTransparency()
 		{
 			var camForward = _transform.forward;
