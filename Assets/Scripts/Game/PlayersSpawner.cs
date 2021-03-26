@@ -7,39 +7,40 @@ using System;
 public class PlayersSpawner : MonoBehaviour
 {
 
-    private GameObject playerPrefab;
-    private List<GameObject> opponents;
-    private int roadCount;
+    private GameObject _playerPrefab;
+    private List<GameObject> _opponents;
+    private int _roadCount;
 
-    private void Start()
+    private IEnumerator Start()
     {
-        playerPrefab = SkinDataHolder.GetPlayerSkinData().players[SkinnController.currentSkin].PlayerHolder;
-        opponents = new List<GameObject>();
+        _playerPrefab = SkinDataHolder.GetPlayerSkinData().players[SkinnController.currentSkin].PlayerHolder;
+        _opponents = new List<GameObject>();
         for (int i = 0; i < SkinDataHolder.GetPlayerSkinData().opponents.Count; i++)
         {
-            opponents.Add(SkinDataHolder.GetPlayerSkinData().opponents[i].PlayerHolder);
+            _opponents.Add(SkinDataHolder.GetPlayerSkinData().opponents[i].PlayerHolder);
         }
-        roadCount = DataHolder.GetRoadCount();
+        yield return null;
+        _roadCount = DataHolder.GetRoadCount();
         GeneratePlayerAndOpponents();
         PauseController.SetPause();
     }
 
     public void GeneratePlayerAndOpponents()
     {
-        var roads = new int[roadCount];
-        for (int i = 0; i < roads.Length; i++)
+        var roads = new int[_roadCount];
+        for (var i = 0; i < roads.Length; i++)
             roads[i] = i;
         roads = roads.Shuffle();
-        bool isTutorial = PlayerDataHolder.GetTutorial() == 0;
-        int playerRoadId = isTutorial ? 2 : roads[UnityEngine.Random.Range(0, roadCount)];
+        var isTutorial = PlayerDataHolder.GetTutorial() == 0;
+        var playerRoadId = isTutorial ? 2 : roads[UnityEngine.Random.Range(0, _roadCount)];
         SpawnPlayer(playerRoadId);
-        List<int> opponentsSkinsId = new List<int>();
-        for (int i = 0; i < SkinDataHolder.GetPlayerSkinData().opponents.Count; i++)
+        var opponentsSkinsId = new List<int>();
+        for (var i = 0; i < SkinDataHolder.GetPlayerSkinData().opponents.Count; i++)
         {
             if (i != SkinnController.currentSkin)
                 opponentsSkinsId.Add(i);
         }
-        for (int i = 0; i < roadCount; i++)
+        for (var i = 0; i < _roadCount; i++)
         {
             if (i != playerRoadId)
             {
@@ -50,14 +51,14 @@ public class PlayersSpawner : MonoBehaviour
 
     private void SpawnEnemy(int road, List<int> ids)
     {
-        var enemy = GameObject.Instantiate(opponents[ids[0]]);
+        var enemy = Instantiate(_opponents[ids[0]]);
         ids.RemoveAt(0);
         enemy.GetComponent<IOpponentMover>().SetRoad(road);
     }
 
     private void SpawnPlayer(int roadId)
     {
-        var player = GameObject.Instantiate(playerPrefab).GetComponent<IMover>();
+        var player = Instantiate(_playerPrefab).GetComponent<IMover>();
         player.SetStartRoad(roadId);
     }
 }

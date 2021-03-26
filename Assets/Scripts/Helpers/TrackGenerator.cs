@@ -7,6 +7,7 @@ using Dreamteck.Splines;
 #if UNITY_EDITOR
 using EasyEditorGUI;
 using UnityEditor;
+using UnityEditorInternal;
 #endif
 using Level;
 using UnityEngine;
@@ -49,15 +50,17 @@ left turn	right turn	up turn	down turn
 
 		public enum TrackDir
 		{
-			None       = 0,
-			Left       = 1, // L
-			Right      = 2, // R
-			Up         = 3, // U
-			Down       = 4, // D
-			ShiftLeft  = 5, // l
-			ShiftRight = 6, // r
-			ShiftUp    = 7, // u
-			ShiftDown  = 8, // d
+			None           = 0,
+			Left           = 1,  // L
+			Right          = 2,  // R
+			Up             = 3,  // U
+			Down           = 4,  // D
+			ShiftLeft      = 5,  // l
+			ShiftRight     = 6,  // r
+			ShiftUp        = 7,  // u
+			ShiftDown      = 8,  // d
+			DeathloopStart = 9,  // S
+			DeathloopEnd   = 10, // E
 		}
 
 		[Serializable] public class TrackSlot
@@ -116,8 +119,10 @@ left turn	right turn	up turn	down turn
 			}
 			[Header("Line")]
 			public MeshData Normal;
-			public MeshData Rails;
-			public Material RoadMaterial;
+			public MeshData   Rails;
+			public Material   RoadMaterial;
+			public GameObject DeathLoopStart;
+			public GameObject DeathLoopEnd;
 			[Header("On track objects")]
 			public TrackObject StartLine;
 			public int         startPointIndex = 3;
@@ -165,6 +170,7 @@ left turn	right turn	up turn	down turn
 			t.Rotate(t.forward, -a, Space.World);
 		}
 
+		
 		private void ParseTrack()
 		{
 			if (_inputFile == null) return;
@@ -232,6 +238,28 @@ left turn	right turn	up turn	down turn
 						case TrackDir.ShiftDown:
 							point.position += point.up * (-1f * _stepVerticalShift);
 							break;
+						case TrackDir.DeathloopStart:
+						{
+							var rot = Quaternion.LookRotation(p.position - points[points.Count - 1].position, p.normal);
+							var dl  =  (GameObject)PrefabUtility.InstantiatePrefab(_prefabs.DeathLoopStart);
+							var dlt = dl.transform;
+							dlt.position   = p.position;
+							dlt.rotation   = rot;
+							dlt.parent     = spline.transform.parent;
+							dlt.localScale = new Vector3(_lines * _linesInterval, dlt.localScale.y, dlt.localScale.z);
+							break;
+						}
+						case TrackDir.DeathloopEnd:
+						{
+							var rot = Quaternion.LookRotation(p.position - points[points.Count - 1].position, p.normal);
+							var dl  =  (GameObject)PrefabUtility.InstantiatePrefab(_prefabs.DeathLoopEnd);
+							var dlt = dl.transform;
+							dlt.position   = p.position;
+							dlt.rotation   = rot;
+							dlt.parent     = spline.transform.parent;
+							dlt.localScale = new Vector3(_lines * _linesInterval, dlt.localScale.y, dlt.localScale.z);
+							break;
+						}
 						default:
 							throw new ArgumentOutOfRangeException();
 					}
@@ -253,6 +281,9 @@ left turn	right turn	up turn	down turn
 			finish.transform.rotation = pos.rotation;
 			finish.transform.position = pos.position + pos.rotation * _prefabs.FinishLine.offset;
 			finish.transform.parent   = spline.transform.parent;
+			var dataHolder = FindObjectOfType<DataHolder>();
+			dataHolder.SetInternals(spline, levelHolder);
+			eGUI.SetDirty(dataHolder);
 			CreateLines(levelHolder);
 		}
 
@@ -614,6 +645,12 @@ left turn	right turn	up turn	down turn
 						break;
 					case 'd':
 						res[i] = TrackDir.ShiftDown;
+						break;
+					case 'S':
+						res[i] = TrackDir.DeathloopStart;
+						break;
+					case 'E':
+						res[i] = TrackDir.DeathloopEnd;
 						break;
 					default:
 						res[i] = TrackDir.None;

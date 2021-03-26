@@ -2,6 +2,7 @@
 using UnityEngine;
 using Dreamteck.Splines;
 using Internal;
+using Level;
 using Players;
 public class DataHolder : MonoBehaviour, IRegistrable
 {
@@ -11,7 +12,7 @@ public class DataHolder : MonoBehaviour, IRegistrable
 	[SerializeField] private SpawnedObjects spawnedObjects;
 	[SerializeField] private OpponentsData  opponentsData;
 	[SerializeField] private SoundsData     soundsData;
-	[SerializeField] private LevelData      levelData;
+	[SerializeField] private LevelData      levelData = new LevelData();
 	private                  GameProcess    gameProcess => Locator.GetObject<GameProcess>();
 	[SerializeField] private Player         currentPlayer;
 
@@ -32,6 +33,12 @@ public class DataHolder : MonoBehaviour, IRegistrable
 			throw new System.Exception("spawned Objects in DataHolder is null");
 	}
 
+	public void SetInternals(SplineComputer spline, LevelHolder levelHolder)
+	{
+		this.spline = spline;
+		levelData.levelHolder = levelHolder;
+	}
+	
 	public static List<GameObject> GetBarriersList() => instance.spawnedObjects.barriers;
 	public static List<GameObject> GetEnemiesList()  => instance.spawnedObjects.enemys;
 	public static List<GameObject> GetMoneyList()    => instance.spawnedObjects.money;

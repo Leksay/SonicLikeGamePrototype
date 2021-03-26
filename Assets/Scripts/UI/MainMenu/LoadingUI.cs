@@ -73,6 +73,8 @@ public class LoadingUI : MonoBehaviour
 	{
 		yield return new WaitForSeconds(time);
 		loadAnimator.SetTrigger("close");
+		yield return new WaitForSeconds(time);
+		PauseController.Resume();
 	}
 	
 	private void Update()

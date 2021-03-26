@@ -85,6 +85,7 @@ namespace Players
 #region UNITY EVENTS
 		private void Awake()
 		{
+			RegisterPausable();
 			_collider              = GetComponent<CapsuleCollider>();
 			_defaultColliderHeight = _collider.height;
 			if (player == null)
@@ -111,7 +112,6 @@ namespace Players
 			SetPlayerMovementType(MovementType.Run);
 			ChangeSpeed();
 			SetupSkills();
-			RegisterPausable();
 			RegisterControllable();
 			_followCamera = Locator.GetObject<PlayerFollowCamera>();
 			_followCamera.SetFollowType(PlayerFollowCamera.FollowType.StartTrack, true);
@@ -444,11 +444,13 @@ namespace Players
 #region IPausable
 		public void Pause()
 		{
+			Debug.Log($"[OpponentMover] ({gameObject.name}) paused");
 			_follower.followSpeed = 0;
 			_isPaused             = true;
 		}
 		public void Resume()
 		{
+			Debug.Log($"[OpponentMover] ({gameObject.name}) resumed");
 			_follower.followSpeed = _actualSpeed;
 			_isPaused             = false;
 		}

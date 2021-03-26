@@ -21,6 +21,10 @@ MonoBehaviour:
       mesh: {fileID: 4300000, guid: 311d320ec6aded547bd1987f55ebf614, type: 3}
       scale: {x: 0.012, y: 0.01, z: 1}
     RoadMaterial: {fileID: 2100000, guid: 87d2215b0b73e85429deecaafc3c57d0, type: 2}
+    DeathLoopStart: {fileID: 303497185935006804, guid: 95591e99f1d23724b944b9f2ffeb9252,
+      type: 3}
+    DeathLoopEnd: {fileID: 6326690352024794235, guid: 1eb43518f9616554ca4a822a5730f11b,
+      type: 3}
     StartLine:
       prefab: {fileID: 8291550927873293769, guid: 2673207d8eb6b884eb03d7f71ca65693,
         type: 3}
@@ -6069,241 +6073,241 @@ MonoBehaviour:
     Lines:
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     dir: 
   - fold: 0
     Lines:
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     dir: 
   - fold: 0
     Lines:
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     dir: 
   - fold: 0
     Lines:
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     dir: 
   - fold: 0
     Lines:
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     dir: 
   - fold: 0
     Lines:
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     dir: 
   - fold: 0
     Lines:
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 0800000008000000
       dirs: 
-      surface: 0
+      surface: 1
     - values: 0800000008000000
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     dir: 
   - fold: 0
     Lines:
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 0800000008000000
       dirs: 
-      surface: 0
+      surface: 1
     - values: 0800000008000000
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     dir: 
   - fold: 0
     Lines:
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 0800000008000000
       dirs: 
-      surface: 0
+      surface: 1
     - values: 0800000008000000
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     dir: 
   - fold: 0
     Lines:
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 0800000008000000
       dirs: 
-      surface: 0
+      surface: 1
     - values: 0800000008000000
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     dir: 
   - fold: 0
     Lines:
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 0800000008000000
       dirs: 
-      surface: 0
+      surface: 1
     - values: 0800000008000000
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     dir: 
   - fold: 0
     Lines:
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     dir: 
   - fold: 0
     Lines:
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     dir: 
   - fold: 0
     Lines:
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     dir: 
   - fold: 0
     Lines:
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     dir: 
   - fold: 0
     Lines:
     - values: 05000000
       dirs: 
-      surface: 0
+      surface: 1
     - values: 04000000
       dirs: 
-      surface: 0
+      surface: 1
     - values: 04000000
       dirs: 
-      surface: 0
+      surface: 1
     - values: 05000000
       dirs: 
-      surface: 0
+      surface: 1
     dir: 
   - fold: 0
     Lines:
@@ -6414,166 +6418,166 @@ MonoBehaviour:
     Lines:
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     dir: 
   - fold: 0
     Lines:
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     dir: 
   - fold: 0
     Lines:
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     dir: 
   - fold: 0
     Lines:
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     dir: 
   - fold: 0
     Lines:
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     dir: 
   - fold: 0
     Lines:
     - values: 02000000
       dirs: 
-      surface: 0
+      surface: 1
     - values: 0200000005000000
       dirs: 
-      surface: 0
+      surface: 1
     - values: 0200000005000000
       dirs: 
-      surface: 0
+      surface: 1
     - values: 02000000
       dirs: 
-      surface: 0
+      surface: 1
     dir: 
   - fold: 0
     Lines:
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     dir: 
   - fold: 0
     Lines:
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     dir: 
   - fold: 0
     Lines:
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     dir: 
   - fold: 0
     Lines:
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     dir: 
   - fold: 0
     Lines:
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     - values: 
       dirs: 
-      surface: 0
+      surface: 1
     dir: 
   - fold: 0
     Lines:

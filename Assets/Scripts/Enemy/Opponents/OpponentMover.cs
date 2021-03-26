@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Dreamteck.Splines;
+using Helpers;
 using Level;
 using Players;
 using UnityEngine;
@@ -65,19 +66,18 @@ namespace Enemy.Opponents
 		private bool      _initialized;
 		private bool      _defended;
 
-		void Start()
+		void Awake()
 		{
-			if (levelHolder == null)
-				levelHolder = FindObjectOfType<LevelHolder>();
 			_follower              = GetComponent<SplineFollower>();
+			_follower.autoFollow   = true;
+			_follower.physicsMode  = SplineTracer.PhysicsMode.Transform;
+			_follower.updateMethod = SplineUser.UpdateMethod.LateUpdate;
 			_animator              = GetComponent<PlayerAnimator>();
 			_collider              = GetComponent<CapsuleCollider>();
 			_opponent              = GetComponent<OpponentMovement>();
-			_follower.computer     = levelHolder._lines[currentRoadId];
 			_defaultColliderHeight = _collider.height;
 			_boosters              = new List<IBoostable>();
 			_boosters.AddRange(GetComponents<IBoostable>());
-			Initialize(DataHolder.GetOpponentData(), DataHolder.GetLevelData());
 			RegisterPausable();
 		}
 
@@ -99,8 +99,11 @@ namespace Enemy.Opponents
 					changeRight = false;
 				}
 			}
-
+			var p       = _follower.result.percent;
+			var surface = levelHolder.intervals[currentRoadId].GetSurface(p);
+			_animator.SetSurfaceAnimation(surface == TrackGenerator.TrackSurface.Normal ? 0 : 1);
 		}
+
 
 		private void Accelerate()
 		{
@@ -114,7 +117,6 @@ namespace Enemy.Opponents
 			}
 			ChangeSpeed();
 		}
-
 		private void Damping()
 		{
 			if (_isPaused) return;
@@ -126,15 +128,27 @@ namespace Enemy.Opponents
 			}
 			ChangeSpeed();
 		}
+		private void ChangeSpeed()
+		{
+			if (_isPaused) return;
+			if (_actualSpeed < _desiredSpeed)
+			{
+				_isAccelerating = true;
+			}
+			else if (_actualSpeed > _desiredSpeed)
+			{
+				_isDamping = true;
+			}
+			_follower.followSpeed = _actualSpeed;
+			_animator.SetAnimatorSpeed(_actualSpeed / defaultSpeed);
+		}
+
+
 
 		public void Initialize(OpponentsData opponentData, LevelData levelData)
 		{
 			if (_initialized) return;
-
-			levelHolder = levelData.levelHolder;
-			_follower   = GetComponent<SplineFollower>();
-			_animator   = GetComponent<PlayerAnimator>();
-
+			levelHolder        = levelData.levelHolder;
 			defaultSpeed       = opponentData.defaultSpeed + Random.Range(-1, 1) + Time.realtimeSinceStartup % 3 * Random.Range(-1, 1);
 			changeRoadTime     = opponentData.changeRoadTime;
 			changeRoadTreshold = opponentData.changeRoadTreshold;
@@ -148,23 +162,27 @@ namespace Enemy.Opponents
 
 			slideTime = opponentData.slideTime;
 
-			_actualSpeed  = 2;
-			_desiredSpeed = defaultSpeed;
-
-			_follower.autoFollow   = true;
-			_follower.followSpeed  = defaultSpeed;
-			_follower.physicsMode  = SplineTracer.PhysicsMode.Transform;
-			_follower.updateMethod = SplineUser.UpdateMethod.LateUpdate;
+			_actualSpeed          = defaultSpeed - 2f;
+			_desiredSpeed         = defaultSpeed;
+			_follower.computer    = levelHolder._lines[currentRoadId];
+			_follower.followSpeed = defaultSpeed;
 			SetupOffset();
 			ChangeSpeed();
 			_initialized = true;
 		}
+
 
 		public void AddSpeed(float speed)
 		{
 			_desiredSpeed = Mathf.Clamp(_desiredSpeed + speed, defaultSpeed, maxSpeed);
 			ChangeSpeed();
 		}
+		public void ReduceSpeed(float speed)
+		{
+			_desiredSpeed = Mathf.Clamp(_desiredSpeed - speed, defaultSpeed, maxSpeed);
+			ChangeSpeed();
+		}
+
 
 		public void BarrierHit(float value, float time)
 		{
@@ -173,6 +191,7 @@ namespace Enemy.Opponents
 				_boosters.ForEach(b => b.StopShield());
 				return;
 			}
+
 			//_desiredSpeed = defaultSpeed;
 			//_actualSpeed  = 0;
 			_boosters.ForEach(b => b.StopAllBoosters());
@@ -180,23 +199,20 @@ namespace Enemy.Opponents
 			ChangeSpeed();
 		}
 
+
 		public void Pause()
 		{
+			Debug.Log($"[OpponentMover] ({gameObject.name}) paused");
 			_follower.followSpeed = 0;
 			_isPaused             = true;
 		}
-
-		public void ReduceSpeed(float speed)
-		{
-			_desiredSpeed = Mathf.Clamp(_desiredSpeed - speed, defaultSpeed, maxSpeed);
-			ChangeSpeed();
-		}
-
 		public void Resume()
 		{
+			Debug.Log($"[OpponentMover] ({gameObject.name}) resumed");
 			_follower.followSpeed = _actualSpeed;
 			_isPaused             = false;
 		}
+
 
 		private void SetupOffset()
 		{
@@ -204,20 +220,6 @@ namespace Enemy.Opponents
 			_follower.motion.offset = new Vector2(_follower.motion.offset.x, _jumpY);
 		}
 
-		private void ChangeSpeed()
-		{
-			if (_isPaused) return;
-			if (_actualSpeed < _desiredSpeed)
-			{
-				_isAccelerating = true;
-			}
-			else if (_actualSpeed > _desiredSpeed)
-			{
-				_isDamping = true;
-			}
-			_follower.followSpeed = _actualSpeed;
-			_animator.SetAnimatorSpeed(_actualSpeed/defaultSpeed);
-		}
 
 		private void StartSlide()
 		{
@@ -342,10 +344,13 @@ namespace Enemy.Opponents
 		}
 		private IEnumerator SwitchLine(Vector3 baseOffset)
 		{
+			var dir             = -Mathf.Sign(baseOffset.x);
 			var changeRoadTimer = 0f;
 			while (changeRoadTimer < changeRoadTime)
 			{
-				_follower.motion.offset = Vector3.Lerp(baseOffset, Vector3.zero, changeRoadTimer / changeRoadTime);
+				var t = changeRoadTimer / changeRoadTime;
+				_follower.motion.offset = Vector3.Lerp(baseOffset, Vector3.zero, t * t);
+				_animator.SetAnimatorRotationSpeed(dir * Mathf.PingPong(t, 0.5f) * 2f);
 				yield return null;
 				changeRoadTimer += Time.deltaTime;
 			}
@@ -353,15 +358,12 @@ namespace Enemy.Opponents
 			_changeRoadCoroutine    = null;
 		}
 
-		
-		private void SetMovementType(MovementType newMovementType) => _opponent.SetMovementType(newMovementType);
 
-		void IOpponentMover.ChangePath(SwipeInput.SwipeType swipeType) => ChangePath2(swipeType);
+		private void        SetMovementType(MovementType    newMovementType) => _opponent.SetMovementType(newMovementType);
+		void IOpponentMover.ChangePath(SwipeInput.SwipeType swipeType)       => ChangePath2(swipeType);
 
-		public void DoJump() => StartJump();
-
+		public void DoJump()  => StartJump();
 		public void DoSlide() => StartSlide();
-
 		public void SetRoad(int roadId)
 		{
 			Initialize(DataHolder.GetOpponentData(), DataHolder.GetLevelData());
@@ -369,12 +371,9 @@ namespace Enemy.Opponents
 			_follower.computer = levelHolder._lines[currentRoadId];
 			SetupOffset();
 		}
-
-		public void SetStartRoad(int roadId) => SetRoad(roadId);
-
-		public float GetPercent() => (float)_follower.clampedPercent;
-
-		public void RegisterPausable()         => PauseController.RegisterPausable(this);
-		public void SetDefend(bool isDefended) => _defended = isDefended;
+		public void  SetStartRoad(int roadId)   => SetRoad(roadId);
+		public float GetPercent()               => (float)_follower.clampedPercent;
+		public void  RegisterPausable()         => PauseController.RegisterPausable(this);
+		public void  SetDefend(bool isDefended) => _defended = isDefended;
 	}
 }

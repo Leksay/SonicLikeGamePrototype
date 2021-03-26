@@ -33,10 +33,8 @@ public class Finish : MonoBehaviour
 
 	private void OnTriggerEnter(Collider other)
 	{
-		Debug.Log($"[Finish] ({other.gameObject.name})");
 		if (other.TryGetComponent<Player>(out var player))
 		{
-			Debug.Log($"[Finish] Player");
 			playerFinished = true;
 			ControllManager.Instance.RemoveControl();
 			var racer = other.GetComponent<RacerStatus>();
@@ -45,15 +43,11 @@ public class Finish : MonoBehaviour
 				racer.finished = true;
 				OnPlayerCrossFinish?.Invoke(racer.GetRacerValues());
 			}
-			else
-				Debug.Log($"[Finish] No racer!");
-
 			PlayerDataHolder.AddGameCount();
 			OnCrossFinishLine?.Invoke();
 		}
 		else if (other.TryGetComponent<OpponentBarin>(out var enemy))
 		{
-			Debug.Log($"[Finish] Enemy");
 			if (playerFinished == false)
 			{
 				playerPlace++;
