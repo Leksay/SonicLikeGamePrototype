@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
+using Data.DataScripts;
 using Dreamteck.Splines;
 #if UNITY_EDITOR
 using EasyEditorGUI;
@@ -94,54 +95,87 @@ left turn	right turn	up turn	down turn
 			public override string       ToString() => $"{start:F3}-{end:F3} ({segments}):{type}";
 		}
 
-		public TextAsset    _inputFile;
+		[Tooltip("Таблица с треком")]
+		public TextAsset _inputFile;
+		[Tooltip("Настройки генерации")]
 		public TrackPrefabs _prefabs;
-		public float        _stepLength           = 3f;
-		public float        _stepHorizontalRotate = 5f;
-		public float        _stepVerticalRotate   = 5f;
-		public float        _stepHorizontalShift  = 0.2f;
-		public float        _stepVerticalShift    = 0.2f;
-		public int          _lines                = 4;
-		public float        _linesInterval        = 1f;
-		public bool         _simplifyTrackMeshes  = true;
+		[Tooltip("Длина сегмента")]
+		public float _stepLength = 3f;
+		[Tooltip("Шаг поворота горизонтально")]
+		public float _stepHorizontalRotate = 5f;
+		[Tooltip("Шаг поворота вертикально")]
+		public float _stepVerticalRotate = 5f;
+		[Tooltip("Шаг смещения горизонтально")]
+		public float _stepHorizontalShift = 0.2f;
+		[Tooltip("Шаг смещения вертикально")]
+		public float _stepVerticalShift = 0.2f;
+		[Tooltip("Количество линий на треке")]
+		public int _lines = 4;
+		[Tooltip("Расстояние между линиями")]
+		public float _linesInterval = 1f;
+		[Tooltip("Упрощать сегменты на сплайне (рекомендуется)")]
+		public bool _simplifyTrackMeshes = true;
 
 		[Serializable] public class TrackPrefabs
 		{
 			[Serializable] public class MeshData
 			{
+				[Tooltip("Меш сегмента")]
 				public Mesh    mesh;
+				[Tooltip("Масштаб меша")]
 				public Vector3 scale = Vector3.one;
 			}
 			[Serializable] public class TrackObject
 			{
+				[Tooltip("Префаб объекта")]
 				public GameObject prefab;
+				[Tooltip("Смещение от линии")]
 				public Vector3    offset;
 			}
 			[Header("Line")]
+			[Tooltip("Обычная дорога")]
 			public MeshData Normal;
+			[Tooltip("Рельсы")]
 			public MeshData   Rails;
+			[Tooltip("Материал дороги (один для обоих видов)")]
 			public Material   RoadMaterial;
+			[Tooltip("Префаб начала петли")]
 			public GameObject DeathLoopStart;
+			[Tooltip("Префаб конца петли")]
 			public GameObject DeathLoopEnd;
 			[Header("On track objects")]
+			[Tooltip("Префаб стратовой линии")]
 			public TrackObject StartLine;
+			[Tooltip("Индекс стартовой линии от начала трека")]
 			public int         startPointIndex = 3;
+			[Tooltip("Префаб финиша")]
 			public TrackObject FinishLine;
+			[Tooltip("Количество сегментов после финиша (прямая)")]
 			public int         finishAdd = 10;
+			[Tooltip("Объект \"магнит\"")]
 			public TrackObject Magnet;
+			[Tooltip("Объект \"блок\"")]
 			public TrackObject Obstacle;
+			[Tooltip("Объект \"большой блок\"")]
 			public TrackObject ObstacleBlock;
+			[Tooltip("Объект \"враг на земле\"")]
 			public TrackObject EnemyGround;
+			[Tooltip("Объект \"враг в воздухе\"")]
 			public TrackObject EnemyAir;
+			[Tooltip("Объект \"бонус щит\"")]
 			public TrackObject Shield;
+			[Tooltip("Объект \"ускоритель\"")]
 			public TrackObject Accelerator;
+			[Tooltip("Объект \"монета внизу\"")]
 			public TrackObject CoinLow;
+			[Tooltip("Объект \"монета в середине\"")]
 			public TrackObject CoinMiddle;
+			[Tooltip("Объект \"монета высоко\"")]
 			public TrackObject CoinHigh;
 		}
 
-		public  TrackStep[] _track;
-		private Vector3[]   _directions2;
+		[HideInInspector] public TrackStep[] _track;
+		private                  Vector3[]   _directions2;
 
 #if UNITY_EDITOR
 		private void CreateRotations()
@@ -170,7 +204,7 @@ left turn	right turn	up turn	down turn
 			t.Rotate(t.forward, -a, Space.World);
 		}
 
-		
+
 		private void ParseTrack()
 		{
 			if (_inputFile == null) return;
@@ -241,7 +275,7 @@ left turn	right turn	up turn	down turn
 						case TrackDir.DeathloopStart:
 						{
 							var rot = Quaternion.LookRotation(p.position - points[points.Count - 1].position, p.normal);
-							var dl  =  (GameObject)PrefabUtility.InstantiatePrefab(_prefabs.DeathLoopStart);
+							var dl  = (GameObject)PrefabUtility.InstantiatePrefab(_prefabs.DeathLoopStart);
 							var dlt = dl.transform;
 							dlt.position   = p.position;
 							dlt.rotation   = rot;
@@ -252,7 +286,7 @@ left turn	right turn	up turn	down turn
 						case TrackDir.DeathloopEnd:
 						{
 							var rot = Quaternion.LookRotation(p.position - points[points.Count - 1].position, p.normal);
-							var dl  =  (GameObject)PrefabUtility.InstantiatePrefab(_prefabs.DeathLoopEnd);
+							var dl  = (GameObject)PrefabUtility.InstantiatePrefab(_prefabs.DeathLoopEnd);
 							var dlt = dl.transform;
 							dlt.position   = p.position;
 							dlt.rotation   = rot;
