@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Data.DataScripts;
 using Enemy;
 using Enemy.Opponents;
 using Players;

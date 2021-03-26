@@ -18,7 +18,7 @@ MonoBehaviour:
       mesh: {fileID: 4300000, guid: ba58d8b252659514195801a1d1fae338, type: 3}
       scale: {x: 0.0167, y: 0.01, z: 1}
     Rails:
-      mesh: {fileID: 4300000, guid: 311d320ec6aded547bd1987f55ebf614, type: 3}
+      mesh: {fileID: 4300000, guid: de126a86b89ed8349ad224c2e931ec9e, type: 3}
       scale: {x: 0.012, y: 0.01, z: 1}
     RoadMaterial: {fileID: 2100000, guid: 87d2215b0b73e85429deecaafc3c57d0, type: 2}
     DeathLoopStart: {fileID: 303497185935006804, guid: 95591e99f1d23724b944b9f2ffeb9252,
@@ -2123,7 +2123,7 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 
+    dir: 09000000
   - fold: 0
     Lines:
     - values: 
@@ -3728,7 +3728,7 @@ MonoBehaviour:
     - values: 
       dirs: 
       surface: 0
-    dir: 
+    dir: 0a000000
   - fold: 0
     Lines:
     - values: 

@@ -28,16 +28,16 @@ AnimatorOverrideController:
   - m_OriginalClip: {fileID: 7400000, guid: 537424f35c16fac4ca3a0e3a5dbcf529, type: 2}
     m_OverrideClip: {fileID: 7400000, guid: 19fe18f56fb40494baff2aa069b28b61, type: 3}
   - m_OriginalClip: {fileID: 7400000, guid: 74c7eb9700a9b684392c6fff2d7b527e, type: 2}
-    m_OverrideClip: {fileID: 7400000, guid: 839d1f7033faf204cb7c1da125e7ec7c, type: 3}
+    m_OverrideClip: {fileID: 7400000, guid: b4432d12d8082fd4d9255b4b3ab39193, type: 3}
   - m_OriginalClip: {fileID: 7400000, guid: 0abe297a5be417049bc5bdb2ef4353b6, type: 2}
-    m_OverrideClip: {fileID: 7400000, guid: c58fa9510aa8d3446a02844c9fda8b39, type: 3}
+    m_OverrideClip: {fileID: 7400000, guid: b4432d12d8082fd4d9255b4b3ab39193, type: 3}
   - m_OriginalClip: {fileID: 7400000, guid: 79f83e9977bc5a64a9a171b2f2b0350c, type: 2}
-    m_OverrideClip: {fileID: 7400000, guid: e0783ca6f03a386449d0bae9b3be3d43, type: 3}
+    m_OverrideClip: {fileID: 7400000, guid: b4432d12d8082fd4d9255b4b3ab39193, type: 3}
   - m_OriginalClip: {fileID: 7400000, guid: 1e48efdbfc4f75840bbf8545f06bb484, type: 2}
-    m_OverrideClip: {fileID: 7400000, guid: bd5cb798e384e364eb42461b2a6f3404, type: 3}
+    m_OverrideClip: {fileID: 7400000, guid: b4432d12d8082fd4d9255b4b3ab39193, type: 3}
   - m_OriginalClip: {fileID: 7400000, guid: 57ff229d23464c3498d0845208d939d5, type: 2}
-    m_OverrideClip: {fileID: 7400000, guid: c58fa9510aa8d3446a02844c9fda8b39, type: 3}
+    m_OverrideClip: {fileID: 7400000, guid: b4432d12d8082fd4d9255b4b3ab39193, type: 3}
   - m_OriginalClip: {fileID: 7400000, guid: 9c901df7f1a2d0e42aee65624dd1f18f, type: 2}
-    m_OverrideClip: {fileID: 7400000, guid: 27483cc673ac97a4baf29ea8c4ce011c, type: 3}
+    m_OverrideClip: {fileID: 7400000, guid: b4432d12d8082fd4d9255b4b3ab39193, type: 3}
   - m_OriginalClip: {fileID: 7400000, guid: 9a76593e7b7854141b0277fe5d6cc472, type: 2}
-    m_OverrideClip: {fileID: 7400000, guid: 19fe18f56fb40494baff2aa069b28b61, type: 3}
+    m_OverrideClip: {fileID: 7400000, guid: b4432d12d8082fd4d9255b4b3ab39193, type: 3}

@@ -1,8 +1,6 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 namespace Data.DataScripts
 {
 	[CreateAssetMenu(fileName = "Scenes", menuName = "Scenes", order = 0)]

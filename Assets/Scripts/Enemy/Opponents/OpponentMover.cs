@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Data.DataScripts;
 using Dreamteck.Splines;
 using Helpers;
 using Level;
@@ -20,23 +21,23 @@ namespace Enemy.Opponents
 
 		private OpponentMovement _opponent;
 
+
 		[Header("Move")]
+		[SerializeField] private OpponentsData data;
+		/*
 		public float defaultSpeed;
 		public float changeRoadTime;
 		public float changeRoadTreshold;
 		public float accelerationSpeed;
+		public float minSpeed;
 		public float maxSpeed;
+		/**/
 
 		[Header("Jump")]
-		[SerializeField] private float jumpHeigh;
-		[SerializeField] private float upJumpTime;
-		[SerializeField] private float downJumpTime;
-		[SerializeField] private float inAirTime;
-		private                  float _jumpY;
-		private                  bool  _isJump;
+		private float _jumpY;
+		private bool _isJump;
 
 		[Header("Slide")]
-		[SerializeField] private float slideTime;
 		private float _slideOffset = 0.5f;
 		private int   _currenOffsetId;
 		private bool  _isSliding;
@@ -102,35 +103,25 @@ namespace Enemy.Opponents
 			var p       = _follower.result.percent;
 			var surface = levelHolder.intervals[currentRoadId].GetSurface(p);
 			_animator.SetSurfaceAnimation(surface == TrackGenerator.TrackSurface.Normal ? 0 : 1);
+			ChangeSpeed();
 		}
 
 
 		private void Accelerate()
 		{
 			if (_isPaused) return;
-			_actualSpeed += accelerationSpeed * Time.deltaTime;
-			if (_actualSpeed >= _desiredSpeed)
-			{
-				_actualSpeed    = _desiredSpeed;
-				_isAccelerating = false;
-				_isDamping      = false;
-			}
-			ChangeSpeed();
 		}
 		private void Damping()
 		{
 			if (_isPaused) return;
-			_actualSpeed -= accelerationSpeed * Time.deltaTime;
-			if (_actualSpeed <= _desiredSpeed)
-			{
-				_actualSpeed = _desiredSpeed;
-				_isDamping   = false;
-			}
-			ChangeSpeed();
 		}
 		private void ChangeSpeed()
 		{
-			if (_isPaused) return;
+			if (_isPaused)
+			{
+				_follower.followSpeed = 0;
+				return;
+			}
 			if (_actualSpeed < _desiredSpeed)
 			{
 				_isAccelerating = true;
@@ -139,33 +130,23 @@ namespace Enemy.Opponents
 			{
 				_isDamping = true;
 			}
+			_actualSpeed          = Mathf.Clamp(Mathf.MoveTowards(_actualSpeed, _desiredSpeed, data.accelerationSpeed * Time.deltaTime), data.minSpeed, data.maxSpeed);
 			_follower.followSpeed = _actualSpeed;
-			_animator.SetAnimatorSpeed(_actualSpeed / defaultSpeed);
+			_animator.SetAnimatorSpeed(_actualSpeed / data.defaultSpeed);
 		}
-
 
 
 		public void Initialize(OpponentsData opponentData, LevelData levelData)
 		{
 			if (_initialized) return;
-			levelHolder        = levelData.levelHolder;
-			defaultSpeed       = opponentData.defaultSpeed + Random.Range(-1, 1) + Time.realtimeSinceStartup % 3 * Random.Range(-1, 1);
-			changeRoadTime     = opponentData.changeRoadTime;
-			changeRoadTreshold = opponentData.changeRoadTreshold;
-			accelerationSpeed  = opponentData.accelerationSpeed;
-			maxSpeed           = opponentData.maxSpeed;
+			data              = opponentData.Clone();
+			levelHolder       = levelData.levelHolder;
+			data.defaultSpeed = opponentData.defaultSpeed + Random.Range(-1, 1) + Time.realtimeSinceStartup % 3 * Random.Range(-1, 1);
 
-			jumpHeigh    = opponentData.jumpHeigh;
-			upJumpTime   = opponentData.upJumpTime;
-			downJumpTime = opponentData.downJumpTime;
-			inAirTime    = opponentData.inAirTime;
-
-			slideTime = opponentData.slideTime;
-
-			_actualSpeed          = defaultSpeed - 2f;
-			_desiredSpeed         = defaultSpeed;
+			_actualSpeed          = data.defaultSpeed - 2f;
+			_desiredSpeed         = data.defaultSpeed;
 			_follower.computer    = levelHolder._lines[currentRoadId];
-			_follower.followSpeed = defaultSpeed;
+			_follower.followSpeed = data.defaultSpeed;
 			SetupOffset();
 			ChangeSpeed();
 			_initialized = true;
@@ -174,12 +155,12 @@ namespace Enemy.Opponents
 
 		public void AddSpeed(float speed)
 		{
-			_desiredSpeed = Mathf.Clamp(_desiredSpeed + speed, defaultSpeed, maxSpeed);
+			_desiredSpeed = Mathf.Clamp(_desiredSpeed + speed, data.defaultSpeed, data.maxSpeed);
 			ChangeSpeed();
 		}
 		public void ReduceSpeed(float speed)
 		{
-			_desiredSpeed = Mathf.Clamp(_desiredSpeed - speed, defaultSpeed, maxSpeed);
+			_desiredSpeed = Mathf.Clamp(_desiredSpeed - speed, data.defaultSpeed, data.maxSpeed);
 			ChangeSpeed();
 		}
 
@@ -191,9 +172,6 @@ namespace Enemy.Opponents
 				_boosters.ForEach(b => b.StopShield());
 				return;
 			}
-
-			//_desiredSpeed = defaultSpeed;
-			//_actualSpeed  = 0;
 			_boosters.ForEach(b => b.StopAllBoosters());
 			_boosters[0]?.BoostSpeed(time, value);
 			ChangeSpeed();
@@ -238,17 +216,17 @@ namespace Enemy.Opponents
 			while (_isPaused)
 				yield return null;
 			var timer = 0f;
-			while (timer < slideTime)
+			while (timer < data.slideTime)
 			{
-				_jumpY =  Mathf.Lerp(0, -slideOffset, (timer) / slideTime);
+				_jumpY =  Mathf.Lerp(0, -slideOffset, (timer) / data.slideTime);
 				timer  += Time.deltaTime;
 				SetupOffset();
 				yield return null;
 			}
 			timer = 0;
-			while (timer < slideTime / 3)
+			while (timer < data.slideTime / 3)
 			{
-				_jumpY =  Mathf.Lerp(-slideOffset, 0, (timer * 3) / slideTime);
+				_jumpY =  Mathf.Lerp(-slideOffset, 0, (timer * 3) / data.slideTime);
 				timer  += Time.deltaTime;
 				SetupOffset();
 				yield return null;
@@ -282,16 +260,16 @@ namespace Enemy.Opponents
 		private IEnumerator HandleJump()
 		{
 			float upJumpTimer = 0;
-			while (upJumpTimer < upJumpTime)
+			while (upJumpTimer < data.upJumpTime)
 			{
 				SetupOffset();
-				_jumpY      =  Mathf.Lerp(0, jumpHeigh, upJumpTimer / upJumpTime);
+				_jumpY      =  Mathf.Lerp(0, data.jumpHeigh, upJumpTimer / data.upJumpTime);
 				upJumpTimer += Time.deltaTime;
 				yield return null;
 			}
 
 			float inAirTimer = 0;
-			while (inAirTimer < inAirTime)
+			while (inAirTimer < data.inAirTime)
 			{
 				inAirTimer += Time.deltaTime;
 				yield return null;
@@ -299,10 +277,10 @@ namespace Enemy.Opponents
 			_animator.SetJumpAnimation(false);
 
 			float downJumpTimer = 0;
-			while (downJumpTimer < downJumpTime)
+			while (downJumpTimer < data.downJumpTime)
 			{
 				SetupOffset();
-				_jumpY        =  Mathf.Lerp(jumpHeigh, 0, downJumpTimer / downJumpTime);
+				_jumpY        =  Mathf.Lerp(data.jumpHeigh, 0, downJumpTimer / data.downJumpTime);
 				downJumpTimer += Time.deltaTime;
 				yield return null;
 			}
@@ -346,9 +324,9 @@ namespace Enemy.Opponents
 		{
 			var dir             = -Mathf.Sign(baseOffset.x);
 			var changeRoadTimer = 0f;
-			while (changeRoadTimer < changeRoadTime)
+			while (changeRoadTimer < data.changeRoadTime)
 			{
-				var t = changeRoadTimer / changeRoadTime;
+				var t = changeRoadTimer / data.changeRoadTime;
 				_follower.motion.offset = Vector3.Lerp(baseOffset, Vector3.zero, t * t);
 				_animator.SetAnimatorRotationSpeed(dir * Mathf.PingPong(t, 0.5f) * 2f);
 				yield return null;

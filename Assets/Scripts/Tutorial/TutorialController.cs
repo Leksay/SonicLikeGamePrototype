@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Data.DataScripts;
 public class TutorialController : MonoBehaviour
 {
     public static event Action<SwipeInput.SwipeType> OnTutorialFakeInput;

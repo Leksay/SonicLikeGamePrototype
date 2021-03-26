@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Data.DataScripts;
 public class SkinnController : MonoBehaviour
 {
     public static event Action<bool> OnChangeActive;

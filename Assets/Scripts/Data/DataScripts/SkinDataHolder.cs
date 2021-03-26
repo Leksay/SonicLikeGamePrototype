@@ -1,21 +1,23 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class SkinDataHolder : MonoBehaviour
+﻿using UnityEngine;
+namespace Data.DataScripts
 {
-    private static SkinDataHolder instance;
-    private void Awake()
+    public class SkinDataHolder : MonoBehaviour
     {
-        if (instance == null)
-            instance = this;
-    }
+        private static SkinDataHolder instance;
+        private void Awake()
+        {
+            if (instance == null)
+                instance = this;
+            else
+                Destroy(this);
+        }
 
-    public static void UnlockPlayer(int id)
-    {
-        instance.playerSkinData.players[id].aviable = true;
-    }
-    [SerializeField] private SkindData playerSkinData;
+        public static void UnlockPlayer(int id)
+        {
+            instance.playerSkinData.players[id].aviable = true;
+        }
+        [SerializeField] private SkindData playerSkinData;
 
-    public static SkindData GetPlayerSkinData() => instance.playerSkinData;
+        public static SkindData GetPlayerSkinData() => instance.playerSkinData;
+    }
 }

@@ -1,12 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class PreviousLevelData : MonoBehaviour
+﻿using UnityEngine;
+namespace Data.DataScripts
 {
-    public static int previousLevel;
-    private void Start()
+    public class PreviousLevelData : MonoBehaviour
     {
-        previousLevel = 1;
+        public static int previousLevel;
+        private void Start()
+        {
+            previousLevel = 1;
+        }
     }
 }

@@ -14,6 +14,7 @@ public class PlayerAnimator : MonoBehaviour, IPausable
     [SerializeField] private float animatorRotationK;
     private static readonly int WalkType  = Animator.StringToHash("walkType");
     private static readonly int TurnSpeed = Animator.StringToHash("turnSpeed");
+    private static readonly int Speed     = Animator.StringToHash("speed");
     private void Awake()
     {
 
@@ -30,7 +31,7 @@ public class PlayerAnimator : MonoBehaviour, IPausable
     public void SetAnimatorSpeed(float speed)
     {
         if (isPaused) return;
-        animator.SetFloat("speed", speed);
+        animator.SetFloat(Speed, speed);
     }
 
     public void SetAnimatorRotationSpeed(float speed)

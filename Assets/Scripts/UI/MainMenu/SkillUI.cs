@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Data.DataScripts;
+using UnityEngine;
 using UnityEngine.EventSystems;
 using TMPro;
 using UnityEngine.UI;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using System;
+using Data.DataScripts;
 using Internal;
 public class FinishTab : MonoBehaviour, IRegistrable
 {

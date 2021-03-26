@@ -1,85 +1,95 @@
 ﻿using System.Collections;
+using Data.DataScripts;
+using Internal;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using Data.DataScripts;
-using UI.MainMenu;
 using Random = UnityEngine.Random;
-public class LoadingUI : MonoBehaviour
+namespace UI.MainMenu
 {
-	[SerializeField] private GameObject      LoadImage;
-	[SerializeField] private Animator        loadAnimator;
-	[SerializeField] private Slider          loadSlider;
-	[SerializeField] private ScenesContainer _scenesContainer;
-	AsyncOperation                           asyncOperation;
-	private bool                             loading;
-
-	private string open  = "open";
-	private string close = "close";
-
-	private void Start()
+	public class LoadingUI : MonoBehaviour, IRegistrable
 	{
-		loading                     =  false;
-		StartButton.OnButtonPressed += LoadLevel;
-	}
+		[SerializeField] private GameObject      LoadImage;
+		[SerializeField] private Animator        loadAnimator;
+		[SerializeField] private Slider          loadSlider;
+		[SerializeField] private ScenesContainer _scenesContainer;
+		AsyncOperation                           _asyncOperation;
 
-	private void OnDestroy()
-	{
-		StartButton.OnButtonPressed -= LoadLevel;
-	}
-	private void LoadLevel()
-	{
-		if (PlayerDataHolder.GetTutorial() == 0)
+		private string open  = "open";
+		private string close = "close";
+
+		private void Awake()
 		{
-			StartCoroutine(WaitAndLoad(.2f, _scenesContainer.scenes[0]));
+			var lui = Locator.GetObject<LoadingUI>();
+			if (lui != null)
+			{
+				Destroy(gameObject);
+				return;
+			}
+			Register();
+			StartButton.OnButtonPressed += LoadLevel;
 		}
-		else
+		private void OnDestroy()
 		{
-			var levelToLoad = Random.Range(0, _scenesContainer.scenes.Length);
-			var levelId     = _scenesContainer.scenes[levelToLoad];
-			if (_scenesContainer.scenes.Length > 1)
-				for (var i = 0; i < 10; i++)
-					if (levelToLoad == PreviousLevelData.previousLevel)
-					{
-						levelToLoad = Random.Range(0, _scenesContainer.scenes.Length);
-						levelId     = _scenesContainer.scenes[levelToLoad];
-					}
-					else break;
-			LoadImage.SetActive(true);
-			loadAnimator.SetTrigger("open");
-			PreviousLevelData.previousLevel = levelToLoad;
-			StartCoroutine(WaitAndLoad(.5f, levelId));
+			Unregister();
+			StartButton.OnButtonPressed -= LoadLevel;
 		}
-	}
-	
-	private IEnumerator WaitAndLoad(float time, string sceneId)
-	{
-		yield return new WaitForSeconds(time);
-		asyncOperation           =  SceneManager.LoadSceneAsync(sceneId, LoadSceneMode.Single);
-		asyncOperation.completed += SceneLoaded;
-		loading                  =  true;
-		yield return null;
-	}
 
-	private void SceneLoaded(AsyncOperation operation)
-	{
-		asyncOperation.completed -= SceneLoaded;
-		loading                  =  false;
-		loadSlider.value         =  1;
-		StartCoroutine(WaitAndAction(1.1f));
-	}
+		private void LoadLevel()
+		{
+			if (PlayerDataHolder.GetTutorial() == 0)
+			{
+				StartCoroutine(WaitAndLoad(.2f, _scenesContainer.scenes[0]));
+			}
+			else
+			{
+				var levelToLoad = Random.Range(0, _scenesContainer.scenes.Length);
+				var levelId     = _scenesContainer.scenes[levelToLoad];
+				if (_scenesContainer.scenes.Length > 1)
+					for (var i = 0; i < 10; i++)
+						if (levelToLoad == PreviousLevelData.previousLevel)
+						{
+							levelToLoad = Random.Range(0, _scenesContainer.scenes.Length);
+							levelId     = _scenesContainer.scenes[levelToLoad];
+						}
+						else break;
+				LoadImage.SetActive(true);
+				loadAnimator.SetTrigger("open");
+				PreviousLevelData.previousLevel = levelToLoad;
+				StartCoroutine(WaitAndLoad(.5f, levelId));
+			}
+		}
 
-	private IEnumerator WaitAndAction(float time)
-	{
-		yield return new WaitForSeconds(time);
-		loadAnimator.SetTrigger("close");
-		yield return new WaitForSeconds(time);
-		PauseController.Resume();
-	}
-	
-	private void Update()
-	{
-		if (loading)
-			loadSlider.value = asyncOperation.progress;
+		private IEnumerator WaitAndLoad(float time, string sceneId)
+		{
+			yield return new WaitForSeconds(time);
+			_asyncOperation           =  SceneManager.LoadSceneAsync(sceneId, LoadSceneMode.Single);
+			_asyncOperation.completed += SceneLoaded;
+			yield return null;
+		}
+
+		private void SceneLoaded(AsyncOperation operation)
+		{
+			_asyncOperation.completed -= SceneLoaded;
+			_asyncOperation           =  null;
+			loadSlider.value         =  1;
+			StartCoroutine(WaitAndAction(1.1f));
+		}
+
+		private IEnumerator WaitAndAction(float time)
+		{
+			yield return new WaitForSeconds(time);
+			loadAnimator.SetTrigger("close");
+			yield return new WaitForSeconds(time);
+			PauseController.Resume();
+		}
+
+		private void Update()
+		{
+			if (_asyncOperation != null)
+				loadSlider.value = _asyncOperation.progress;
+		}
+		public void Register()   => Locator.Register(typeof(LoadingUI), this);
+		public void Unregister() => Locator.Unregister(typeof(LoadingUI));
 	}
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Data.DataScripts;
 using UnityEngine;
 
 [RequireComponent(typeof(IMover))]

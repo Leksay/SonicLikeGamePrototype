@@ -1,13 +1,15 @@
 ﻿using Players;
 using UnityEngine;
-
-[System.Serializable]
-public class PlayerCameraData
+namespace Data.DataScripts
 {
-    public Transform playerT;
-    public Transform cameraPositionT;
-    public Transform slidePositionT;
-    public Transform cameraStartT;
-    public Transform deathLoopPositionT;
-    public PlayerMover mover;
+    [System.Serializable]
+    public class PlayerCameraData
+    {
+        public Transform   playerT;
+        public Transform   cameraPositionT;
+        public Transform   slidePositionT;
+        public Transform   cameraStartT;
+        public Transform   deathLoopPositionT;
+        public PlayerMover mover;
+    }
 }

@@ -54,11 +54,6 @@ namespace UI.MainMenu
 			SceneManager.LoadSceneAsync(scene);
 		}
 
-		private void OnDestroy()
-		{
-			OnButtonPressed = null;
-		}
-
 		private void SetActive(bool active)
 		{
 			_isActive    = active;

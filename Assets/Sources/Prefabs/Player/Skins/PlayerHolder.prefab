@@ -13421,16 +13421,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 238741848576855415}
-  defaultSpeed: 20
+  defaultSpeed: 10
   changeRoadTime: 0.3
-  accelerationSpeed: 20
-  minSpeed: 10
-  maxSpeed: 50
+  accelerationSpeed: 10
+  minSpeed: 5
+  maxSpeed: 20
   isAccelerating: 0
-  jumpHeigh: 2
+  jumpHeigh: 1
   upJumpTime: 0.3
   downJumpTime: 0.3
-  inAirTime: 0.35
+  inAirTime: 0.3
   slideTime: 0.6
   levelHolder: {fileID: 0}
   currentRoadId: 0

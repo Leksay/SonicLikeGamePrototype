@@ -50,6 +50,17 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7725209896655450086, guid: c5a9c3e96e9efd14b9942beec452bad7,
         type: 3}
+      propertyPath: type
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7725209896655450086, guid: c5a9c3e96e9efd14b9942beec452bad7,
+        type: 3}
+      propertyPath: _data
+      value: 
+      objectReference: {fileID: 11400000, guid: 1dbe1dcd9a2210541b8d8a0e5c20141e,
+        type: 2}
+    - target: {fileID: 7725209896655450086, guid: c5a9c3e96e9efd14b9942beec452bad7,
+        type: 3}
       propertyPath: speedSlow
       value: -10
       objectReference: {fileID: 0}

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Data.DataScripts;
 public class SkillCalculator : MonoBehaviour
 {
     public static event Action<SkillType, float> OnSkillUpgraded;

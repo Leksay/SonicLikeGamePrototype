@@ -1,22 +1,27 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using UI.MainMenu;
 using UnityEngine;
-
-[RequireComponent(typeof(AudioSource))]
-public class MenuAudio : MonoBehaviour
+namespace Sounds.MainMenu
 {
-    private AudioSource source;
-    [SerializeField] private AudioClip buttonSound;
-    private void Start()
+    [RequireComponent(typeof(AudioSource))]
+    public class MenuAudio : MonoBehaviour
     {
-        source = GetComponent<AudioSource>();
-        StartButton.OnButtonPressed += PlayButtonSound;
-    }
+        private                  AudioSource _source;
+        [SerializeField] private AudioClip   buttonSound;
+        private void Start()
+        {
+            _source                      =  GetComponent<AudioSource>();
+            StartButton.OnButtonPressed += PlayButtonSound;
+        }
 
-    private void PlayButtonSound()
-    {
-        source.clip = buttonSound;
-        source.Play();
+        private void PlayButtonSound()
+        {
+            _source.clip = buttonSound;
+            _source.Play();
+        }
+        private void OnDestroy()
+        {
+            StartButton.OnButtonPressed -= PlayButtonSound;
+        }
     }
 }

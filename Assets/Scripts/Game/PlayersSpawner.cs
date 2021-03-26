@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using System;
+using Data.DataScripts;
 
 public class PlayersSpawner : MonoBehaviour
 {
@@ -15,10 +16,8 @@ public class PlayersSpawner : MonoBehaviour
     {
         _playerPrefab = SkinDataHolder.GetPlayerSkinData().players[SkinnController.currentSkin].PlayerHolder;
         _opponents = new List<GameObject>();
-        for (int i = 0; i < SkinDataHolder.GetPlayerSkinData().opponents.Count; i++)
-        {
-            _opponents.Add(SkinDataHolder.GetPlayerSkinData().opponents[i].PlayerHolder);
-        }
+        //for (var i = 0; i < SkinDataHolder.GetPlayerSkinData().opponents.Count; i++) _opponents.Add(SkinDataHolder.GetPlayerSkinData().opponents[i].PlayerHolder);
+        _opponents.AddRange( SkinDataHolder.GetPlayerSkinData().opponents.Select(t=>t.PlayerHolder) );
         yield return null;
         _roadCount = DataHolder.GetRoadCount();
         GeneratePlayerAndOpponents();

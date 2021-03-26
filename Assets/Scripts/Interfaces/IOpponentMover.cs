@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Data.DataScripts;
+using UnityEngine;
 
 public interface IOpponentMover 
 {

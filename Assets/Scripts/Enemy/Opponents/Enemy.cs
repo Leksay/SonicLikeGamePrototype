@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using Data.DataScripts;
 using UnityEngine;
 namespace Enemy.Opponents
 {
@@ -6,12 +8,15 @@ namespace Enemy.Opponents
 	{
 		public static event Action OnAnyEnemyDying;
 
-		public                   EnemyType  enemyType;
-		[SerializeField] private GameObject dieEffect;
-		[SerializeField] private float      dieEffectTime;
-		public                   float      time      = 1f;
-		public                   float      speedSlow = -20f;
-		private                  Transform  _effectPoint;
+		[SerializeField] private TrackObjectsData            _data;
+		[SerializeField] private TrackObjectsData.ObjectType type;
+		[Space]
+		public                   EnemyType                   enemyType;
+		[SerializeField] private GameObject                  dieEffect;
+		[SerializeField] private float                       dieEffectTime;
+		public                   float                       time =>_data.data.FirstOrDefault(t => t.type == type).time;
+		public                   float                       speedSlow => _data.data.FirstOrDefault(t => t.type == type).value;
+		private                  Transform                   _effectPoint;
 
 		private void Awake()
 		{
@@ -35,10 +40,7 @@ namespace Enemy.Opponents
 				var effect = GameObject.Instantiate(dieEffect, _effectPoint.position, Quaternion.identity);
 				Destroy(effect, dieEffectTime);
 			}
-			if (transform.parent != null)
-				Destroy(transform.parent.gameObject);
-			else
-				Destroy(gameObject);
+			Destroy(transform.parent != null ? transform.parent.gameObject : gameObject);
 		}
 	}
 }

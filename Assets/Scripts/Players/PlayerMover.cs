@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Data.DataScripts;
 using Dreamteck.Splines;
 using Game;
 using Helpers;
 using Internal;
 using Level;
+using Level.DeathLoop;
 using Players.Camera;
 using UnityEngine;
 namespace Players
@@ -127,6 +129,7 @@ namespace Players
 			var p       = _follower.result.percent;
 			var surface = levelHolder.intervals[currentRoadId].GetSurface(p);
 			_animator.SetSurfaceAnimation(surface == TrackGenerator.TrackSurface.Normal ? 0 : 1);
+			ChangeSpeed();
 		}
 
 		private void OnEnable()
@@ -195,27 +198,14 @@ namespace Players
 		private void Accelerate()
 		{
 			if (_isPaused) return;
-			_actualSpeed += accelerationSpeed * Time.deltaTime;
-			if (_actualSpeed >= _desiredSpeed)
-			{
-				_actualSpeed   = Mathf.Clamp(_actualSpeed, minSpeed, maxSpeed);
-				isAccelerating = false;
-				_isDamping     = false;
 				_followCamera.SetSpeedType(PlayerFollowCamera.SpeedType.None);
-			}
 			ChangeSpeed();
 		}
 		private void Damping()
 		{
 			if (_isPaused) return;
-			_actualSpeed -= accelerationSpeed * Time.deltaTime;
 			if (_actualSpeed <= _desiredSpeed)
-			{
-				_actualSpeed = Mathf.Clamp(_actualSpeed, minSpeed, maxSpeed);
-				_isDamping   = false;
 				_followCamera.SetSpeedType(PlayerFollowCamera.SpeedType.None);
-			}
-			ChangeSpeed();
 		}
 		private void ChangeSpeed()
 		{
@@ -232,6 +222,7 @@ namespace Players
 			{
 				_isDamping = true;
 			}
+			_actualSpeed          = Mathf.Clamp(Mathf.MoveTowards(_actualSpeed, _desiredSpeed, accelerationSpeed * Time.deltaTime), minSpeed, maxSpeed);
 			_follower.followSpeed = _actualSpeed;
 			_animator.SetAnimatorSpeed(_actualSpeed/defaultSpeed);
 		}
