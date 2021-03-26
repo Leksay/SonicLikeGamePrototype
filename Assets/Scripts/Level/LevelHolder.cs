@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Dreamteck.Splines;
+using Helpers;
 using Internal;
 using Players;
 using UnityEngine;
@@ -8,6 +9,19 @@ namespace Level
 {
 	public class LevelHolder : MonoBehaviour, IRegistrable
 	{
+		[Serializable]
+		public class TrackSurface
+		{
+			public List<TrackGenerator.TrackInterval> surfaces;
+			public TrackSurface(List<TrackGenerator.TrackInterval> surfaces) => this.surfaces = surfaces;
+			public TrackGenerator.TrackSurface GetSurface(double percent)
+			{
+				foreach (var interval in surfaces)
+					if (interval.start <= percent && interval.end >= percent)
+						return interval.type;
+				return TrackGenerator.TrackSurface.Normal;
+			}
+		}
 		[Header("Computer")]
 		[SerializeField] private SplineComputer computer;
 
@@ -17,6 +31,7 @@ namespace Level
 		public List<GameObject>     boosters;
 		public List<GameObject>     money;
 		public List<RoadEntityData> allEntities = new List<RoadEntityData>();
+		public TrackSurface[]       intervals;
 
 		[Header("Debug")]
 		[SerializeField] private bool enableOffsetDebug;
@@ -28,8 +43,8 @@ namespace Level
 		public enum ObjectType
 		{
 			Barrier = 0,
-			Enemy = 1,
-			Coin = 2,
+			Enemy   = 1,
+			Coin    = 2,
 			Booster = 3,
 			Unknown = 255
 		}
@@ -42,7 +57,7 @@ namespace Level
 			if (boosters.Contains(go)) return ObjectType.Booster;
 			return ObjectType.Unknown;
 		}
-		
+
 		public SplineComputer GetComputer() => computer;
 
 		public void Init(SplineComputer spline) => computer = spline;
@@ -131,14 +146,14 @@ namespace Level
 				var points = _lines[i].GetPoints();
 				for (var j = 0; j < points.Length; j++)
 				{
-					var p    = _lines[i].Evaluate(j);
-					var pL   = _lines[i - 1].EvaluatePosition(_lines[i - 1].Project(p.position));
+					var p  = _lines[i].Evaluate(j);
+					var pL = _lines[i - 1].EvaluatePosition(_lines[i - 1].Project(p.position));
 					Gizmos.color = PlayerMover.CheckLineSwap(_lines[i - 1], p, _lineWidth) ? Color.green : Color.red;
 					Gizmos.DrawLine(p.position, pL);
 					if (i + 1 < _lines.Length)
 					{
 						pL           = _lines[i + 1].EvaluatePosition(_lines[i + 1].Project(p.position));
-						Gizmos.color = PlayerMover.CheckLineSwap(_lines[i + 1], p, _lineWidth) ? Color.green : Color.red;
+						Gizmos.color = PlayerMover.CheckLineSwap(_lines[i      + 1], p, _lineWidth) ? Color.green : Color.red;
 						Gizmos.DrawLine(p.position, pL);
 					}
 				}

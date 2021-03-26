@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Dreamteck.Splines;
 using Game;
+using Helpers;
 using Internal;
 using Level;
 using Players.Camera;
@@ -123,6 +124,9 @@ namespace Players
 			if (_isPaused) return;
 			if (isAccelerating) Accelerate();
 			if (_isDamping) Damping();
+			var p       = _follower.result.percent;
+			var surface = levelHolder.intervals[currentRoadId].GetSurface(p);
+			_animator.SetSurfaceAnimation(surface == TrackGenerator.TrackSurface.Normal ? 0 : 1);
 		}
 
 		private void OnEnable()
@@ -229,7 +233,7 @@ namespace Players
 				_isDamping = true;
 			}
 			_follower.followSpeed = _actualSpeed;
-			_animator.SetAnimatorSpeed(_actualSpeed);
+			_animator.SetAnimatorSpeed(_actualSpeed/defaultSpeed);
 		}
 
 
@@ -400,9 +404,9 @@ namespace Players
 				var p1 = levelHolder._lines[targetLine].Evaluate(levelHolder._lines[targetLine].Project(p0.position)); // closest point on side line
 				var d  = p0.position - p1.position;
 				d.Normalize();
-				currentRoadId           = targetLine;
-				_follower.enabled       = false;
-				_follower.computer      = levelHolder._lines[currentRoadId];
+				currentRoadId      = targetLine;
+				_follower.enabled  = false;
+				_follower.computer = levelHolder._lines[currentRoadId];
 				var d2 = new Vector2(Vector3.Dot(d, p1.right), Vector3.Dot(d, p1.normal)); // offset is [X * point.right + Y * point.normal]
 				_follower.motion.offset = d2;
 				_changeRoadCoroutine    = StartCoroutine(SwitchLine(d2));
@@ -412,11 +416,13 @@ namespace Players
 		{
 			_follower.motion.offset = baseOffset;
 			_follower.enabled       = true;
+			var dir             = -Mathf.Sign(baseOffset.x);
 			var changeRoadTimer = 0f;
 			while (changeRoadTimer < changeRoadTime)
 			{
 				var t = changeRoadTimer / changeRoadTime;
 				_follower.motion.offset = Vector3.Lerp(baseOffset, Vector3.zero, t * t);
+				_animator.SetAnimatorRotationSpeed(dir * Mathf.PingPong(t, 0.5f) * 2f);
 				yield return null;
 				_followCamera._isActive =  true;
 				changeRoadTimer         += Time.deltaTime;

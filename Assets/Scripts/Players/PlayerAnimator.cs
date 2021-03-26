@@ -5,12 +5,15 @@ using UnityEngine;
 public class PlayerAnimator : MonoBehaviour, IPausable
 {
     [SerializeField] private Animator animator;
-    [SerializeField]private float rotationTime;
+    [SerializeField] private float    rotationTime;
+    private                  float    _walkType = 0f;
 
     private bool isPaused;
 
     [Tooltip("Максимальное значение turnSpeed в blend tree")]
     [SerializeField] private float animatorRotationK;
+    private static readonly int WalkType  = Animator.StringToHash("walkType");
+    private static readonly int TurnSpeed = Animator.StringToHash("turnSpeed");
     private void Awake()
     {
 
@@ -33,13 +36,20 @@ public class PlayerAnimator : MonoBehaviour, IPausable
     public void SetAnimatorRotationSpeed(float speed)
     {
         if (isPaused) return;
-        animator.SetFloat("turnSpeed", speed);
+        animator.SetFloat(TurnSpeed, speed);
     }
 
     public void SetJumpAnimation(bool value)
     {
         if (isPaused) return;
         animator.SetBool("jump", value);
+    }
+
+    public void SetSurfaceAnimation(int type)
+    {
+        //this.InvokeDelegate((t) => animator.SetFloat(WalkType, Mathf.Lerp(_walkType, type, t)), 0.3f, () => _walkType = type);
+        animator.SetFloat(WalkType,  type);
+        _walkType = type;
     }
 
     public void SetRotation(SwipeInput.SwipeType swipeType)

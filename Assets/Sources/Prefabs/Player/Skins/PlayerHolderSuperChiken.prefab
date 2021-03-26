@@ -2378,7 +2378,7 @@ Animator:
   m_GameObject: {fileID: 3346245898979766046}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: f9475348dd19a0341a9cf0e150d47ffc, type: 3}
-  m_Controller: {fileID: 9100000, guid: 9ba8237a426632b438fa76f761f4219b, type: 2}
+  m_Controller: {fileID: 22100000, guid: 3c706813860638941be9e719dcf62c17, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 1
@@ -20916,13 +20916,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   racerName: Player
   movementType: 0
-  cameraData:
-    playerT: {fileID: 5474253543698582369}
-    cameraPositionT: {fileID: 5474253544741263301}
-    slidePositionT: {fileID: 5474253543996037483}
-    cameraStartT: {fileID: 3597903771978916695}
-    deathLoopPositionT: {fileID: 1516563137602172809}
-    mover: {fileID: 5474253543698582371}
 --- !u!114 &5474253543698582378
 MonoBehaviour:
   m_ObjectHideFlags: 0

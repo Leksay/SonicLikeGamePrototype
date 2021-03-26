@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using Dreamteck.Splines;
-
 #if UNITY_EDITOR
 using EasyEditorGUI;
 using UnityEditor;
@@ -162,7 +161,7 @@ left turn	right turn	up turn	down turn
 			r2.y = 0f;
 
 			//var a = Vector3.SignedAngle(r2, r, f);
-			var a = Mathf.Asin(r.y) * Mathf.Rad2Deg; 
+			var a = Mathf.Asin(r.y) * Mathf.Rad2Deg;
 			t.Rotate(t.forward, -a, Space.World);
 		}
 
@@ -384,7 +383,7 @@ left turn	right turn	up turn	down turn
 				EditorUtility.DisplayProgressBar("Create lines & road bake", $"Line #{i + 1} of {_lines} :: Build mesh", 0);
 				sm.RebuildImmediate(true);
 				sm.Rebuild(true);
-				var mr = sm.gameObject.GetComponent<MeshRenderer>(); 
+				var mr = sm.gameObject.GetComponent<MeshRenderer>();
 				mr.sharedMaterial       = _prefabs.RoadMaterial;
 				mr.shadowCastingMode    = ShadowCastingMode.Off;
 				mr.receiveShadows       = false;
@@ -394,10 +393,13 @@ left turn	right turn	up turn	down turn
 			levelHolder.Init(spline);
 			levelHolder.Init(splines.ToArray(), _linesInterval);
 
-			levelHolder.barriers = new List<GameObject>();
-			levelHolder.boosters = new List<GameObject>();
-			levelHolder.enemies  = new List<GameObject>();
-			levelHolder.money    = new List<GameObject>();
+			levelHolder.barriers  = new List<GameObject>();
+			levelHolder.boosters  = new List<GameObject>();
+			levelHolder.enemies   = new List<GameObject>();
+			levelHolder.money     = new List<GameObject>();
+			levelHolder.intervals = new LevelHolder.TrackSurface[trackSurfaces.Length];
+			for (var i = 0; i < trackSurfaces.Length; i++)
+				levelHolder.intervals[i] = new LevelHolder.TrackSurface(trackSurfaces[i]);
 			CreateObjects(levelHolder);
 		}
 

@@ -218,7 +218,7 @@ namespace Players.Camera
 			_currOffsetLook = Vector3.Lerp(_currOffsetLook, _currOffsetLookNeed, time);
 
 			var tp = targetPos + targetRot * _currOffset;
-			var d  = Mathf.Clamp(Vector3.Distance(tp, currPos) / 10f, .1f, 100f);
+			var d  = Mathf.Clamp(Vector3.Distance(tp, currPos) / 10f, 1f, 100f);
 			_transform.position = Vector3.Slerp(currPos, tp, _smoothOffset * time * d);
 
 			var q = Quaternion.LookRotation(targetPos + targetRot * _currOffsetLook - currPos, _target.up);

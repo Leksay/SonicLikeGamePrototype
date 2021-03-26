@@ -13687,13 +13687,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   racerName: Player
   movementType: 0
-  cameraData:
-    playerT: {fileID: 2244394137056112472}
-    cameraPositionT: {fileID: 2244394138094597116}
-    slidePositionT: {fileID: 2244394137907346770}
-    cameraStartT: {fileID: 7292337563278657390}
-    deathLoopPositionT: {fileID: 4744030010734252976}
-    mover: {fileID: 2244394137056112474}
 --- !u!114 &2244394137056112467
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19129,6 +19122,12 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 2272fc8b3f3d8274982ea5698ce88fa9, type: 2}
+    - target: {fileID: 7295608692327967360, guid: befc20a907c7a8445bfdfb0b1a0b07e3,
+        type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 22100000, guid: 3c706813860638941be9e719dcf62c17,
+        type: 2}
     - target: {fileID: 7295608692335117588, guid: befc20a907c7a8445bfdfb0b1a0b07e3,
         type: 3}
       propertyPath: m_RootOrder

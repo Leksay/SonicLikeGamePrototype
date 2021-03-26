@@ -216,7 +216,7 @@ namespace Enemy.Opponents
 				_isDamping = true;
 			}
 			_follower.followSpeed = _actualSpeed;
-			_animator.SetAnimatorSpeed(_actualSpeed);
+			_animator.SetAnimatorSpeed(_actualSpeed/defaultSpeed);
 		}
 
 		private void StartSlide()
