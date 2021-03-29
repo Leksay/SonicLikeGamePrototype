@@ -30114,11 +30114,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 5991259849460688672}
-  defaultSpeed: 15
+  defaultSpeed: 10
   changeRoadTime: 0.3
   accelerationSpeed: 10
-  minSpeed: 7
-  maxSpeed: 30
+  minSpeed: 5
+  maxSpeed: 20
   isAccelerating: 0
   jumpHeigh: 1
   upJumpTime: 0.3
