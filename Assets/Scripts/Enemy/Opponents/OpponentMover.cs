@@ -136,7 +136,6 @@ namespace Enemy.Opponents
 			_animator.SetAnimatorSpeed(_actualSpeed / data.defaultSpeed);
 		}
 
-
 		public void Initialize(OpponentsData opponentData, LevelData levelData)
 		{
 			if (_initialized) return;
@@ -345,14 +344,15 @@ namespace Enemy.Opponents
 
 		public void DoJump()  => StartJump();
 		public void DoSlide() => StartSlide();
-		public void SetRoad(int roadId)
+		public void SetRoad(int roadId, double position)
 		{
 			Initialize(DataHolder.GetOpponentData(), DataHolder.GetLevelData());
 			currentRoadId      = roadId;
 			_follower.computer = levelHolder._lines[currentRoadId];
+			_follower.SetPercent(position);
 			SetupOffset();
 		}
-		public void  SetStartRoad(int roadId)   => SetRoad(roadId);
+		public void  SetStartRoad(int roadId, double position) => SetRoad(roadId, position);
 		public float GetPercent()               => (float)_follower.clampedPercent;
 		public void  RegisterPausable()         => PauseController.RegisterPausable(this);
 		public void  SetDefend(bool isDefended) => _defended = isDefended;

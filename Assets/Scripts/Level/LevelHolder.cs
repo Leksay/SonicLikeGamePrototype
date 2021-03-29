@@ -32,6 +32,7 @@ namespace Level
 		public List<GameObject>     money;
 		public List<RoadEntityData> allEntities = new List<RoadEntityData>();
 		public TrackSurface[]       intervals;
+		public double               _startPercent = 0d;
 
 		[Header("Debug")]
 		[SerializeField] private bool enableOffsetDebug;

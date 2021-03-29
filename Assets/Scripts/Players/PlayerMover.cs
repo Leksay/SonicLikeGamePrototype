@@ -476,10 +476,11 @@ namespace Players
 			_followCamera.SetSpeedType(speed > 0 ? PlayerFollowCamera.SpeedType.Accel : PlayerFollowCamera.SpeedType.Deaccel);
 			ChangeSpeed();
 		}
-		public void SetStartRoad(int roadId)
+		public void SetStartRoad(int roadId, double position)
 		{
 			currentRoadId      = roadId;
 			_follower.computer = levelHolder._lines[currentRoadId];
+			_follower.SetPercent(position);
 			SetupOffset();
 		}
 		public float GetPercent() => (float)_follower.clampedPercent;

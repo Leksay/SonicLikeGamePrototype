@@ -99,13 +99,15 @@ namespace Helpers
 		public float _linesInterval = 1f;
 		[Tooltip("Упрощать сегменты на сплайне (рекомендуется)")]
 		public bool _simplifyTrackMeshes = true;
+		[Tooltip("Сегмент старта игроков")]
+		public int _playerStartIndex = 0;
 
 		[Serializable] public class TrackPrefabs
 		{
 			[Serializable] public class MeshData
 			{
 				[Tooltip("Меш сегмента")]
-				public Mesh    mesh;
+				public Mesh mesh;
 				[Tooltip("Масштаб меша")]
 				public Vector3 scale = Vector3.one;
 				[Tooltip("Смещение меша")]
@@ -116,29 +118,38 @@ namespace Helpers
 				[Tooltip("Префаб объекта")]
 				public GameObject prefab;
 				[Tooltip("Смещение от линии")]
-				public Vector3    offset;
+				public Vector3 offset;
 			}
 			[Header("Line")]
 			[Tooltip("Обычная дорога")]
 			public MeshData Normal;
 			[Tooltip("Рельсы")]
-			public MeshData   Rails;
+			public MeshData Rails;
 			[Tooltip("Материал дороги (один для обоих видов)")]
-			public Material   RoadMaterial;
+			public Material RoadMaterial;
 			[Tooltip("Префаб начала петли")]
 			public GameObject DeathLoopStart;
 			[Tooltip("Префаб конца петли")]
 			public GameObject DeathLoopEnd;
 			[Header("On track objects")]
+			[Tooltip("Префаб начала трека (опционально)")]
+			public TrackObject TrackHeader;
+			[Tooltip("Префаб конца трека (опционально)")]
+			public TrackObject TrackFooter;
+			[Space]
 			[Tooltip("Префаб стратовой линии")]
 			public TrackObject StartLine;
-			[Tooltip("Индекс стартовой линии от начала трека")]
-			public int         startPointIndex = 3;
+			[Tooltip("Количество сегментов перед стартом (прямая)")]
+			public int startPointOffset = 10;
+			[Tooltip("Индекс стартовой линии от начала трека (с учётом пред пункта)")]
+			public int startPointIndex = 3;
+			[Space]
 			[Tooltip("Префаб финиша")]
 			public TrackObject FinishLine;
 			[Tooltip("Количество сегментов после финиша (прямая)")]
-			public int         finishAdd = 10;
+			public int finishAdd = 10;
 			[Tooltip("Объект \"магнит\"")]
+			[Space]
 			public TrackObject Magnet;
 			[Tooltip("Объект \"блок\"")]
 			public TrackObject Obstacle;
@@ -152,6 +163,7 @@ namespace Helpers
 			public TrackObject Shield;
 			[Tooltip("Объект \"ускоритель\"")]
 			public TrackObject Accelerator;
+			[Space]
 			[Tooltip("Объект \"монета внизу\"")]
 			public TrackObject CoinLow;
 			[Tooltip("Объект \"монета в середине\"")]
@@ -180,7 +192,7 @@ namespace Helpers
 		}
 		private void PatchRotation(Transform t)
 		{
-			var r  = t.right;
+			var r = t.right;
 			var a = Mathf.Asin(r.y) * Mathf.Rad2Deg;
 			t.Rotate(t.forward, -a, Space.World);
 		}
@@ -197,12 +209,14 @@ namespace Helpers
 					steps = i;
 					break;
 				}
-			steps  += _prefabs.finishAdd;
+			steps  += _prefabs.finishAdd + _prefabs.startPointOffset;
 			_track =  new TrackStep[steps];
 			for (var i = 0; i < steps; i++)
 			{
 				_track[i] = new TrackStep(_lines);
-				var line = i < steps - 1 - _prefabs.finishAdd ? input1[i].Split(';') : new[] { "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", };
+				var line = (i < steps - 1 - _prefabs.finishAdd - _prefabs.startPointOffset && i > _prefabs.startPointOffset) ?
+					input1[i - _prefabs.startPointOffset].Split(';') :
+					new[] { "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", };
 				for (var j = 0; j <= 3; j++)
 				{
 					_track[i].Lines[j]         = ParseSlotItem(line[j]);
@@ -218,13 +232,15 @@ namespace Helpers
 			CreateRotations();
 			var holder      = new GameObject("LevelHolder");
 			var levelHolder = holder.AddComponent<LevelHolder>();
-			var go          = new GameObject("Track", typeof(SplineComputer));
+			levelHolder._startPercent = (_playerStartIndex + _prefabs.startPointOffset) / (double)(_track.Length);
+			var go = new GameObject("Track", typeof(SplineComputer));
 			go.transform.parent = holder.transform;
 			var spline = go.GetComponent<SplineComputer>();
 			levelHolder.Init(spline);
 
 			var points = new List<SplinePoint>(_track.Length);
 			var point  = new GameObject().transform;
+			point.position += point.forward * (_stepLength * _prefabs.startPointOffset);
 			for (var i = 0; i < _track.Length; i++)
 			{
 				var t = _track[i];
@@ -286,16 +302,36 @@ namespace Helpers
 			spline.type = Spline.Type.BSpline;
 
 			DestroyImmediate(point.gameObject);
-			var start = (GameObject)PrefabUtility.InstantiatePrefab(_prefabs.StartLine.prefab);
-			var pos   = spline.Evaluate(spline.Project(points[_prefabs.startPointIndex].position));
-			start.transform.rotation = pos.rotation;
-			start.transform.position = pos.position + pos.rotation * _prefabs.StartLine.offset;
-			start.transform.parent   = spline.transform.parent;
-			var finish = (GameObject)PrefabUtility.InstantiatePrefab(_prefabs.FinishLine.prefab);
-			pos                       = spline.Evaluate(spline.Project(points[points.Count - 1 - _prefabs.finishAdd].position));
-			finish.transform.rotation = pos.rotation;
-			finish.transform.position = pos.position + pos.rotation * _prefabs.FinishLine.offset;
-			finish.transform.parent   = spline.transform.parent;
+			{
+				var start = (GameObject)PrefabUtility.InstantiatePrefab(_prefabs.StartLine.prefab);
+				var pos   = spline.Evaluate(spline.Project(points[_prefabs.startPointIndex + _prefabs.startPointOffset].position));
+				start.transform.rotation = pos.rotation;
+				start.transform.position = pos.position + pos.rotation * _prefabs.StartLine.offset;
+				start.transform.parent   = spline.transform.parent;
+			}
+			{
+				var finish = (GameObject)PrefabUtility.InstantiatePrefab(_prefabs.FinishLine.prefab);
+				var pos    = spline.Evaluate(spline.Project(points[points.Count - 1 - _prefabs.finishAdd + _prefabs.startPointOffset].position));
+				finish.transform.rotation = pos.rotation;
+				finish.transform.position = pos.position + pos.rotation * _prefabs.FinishLine.offset;
+				finish.transform.parent   = spline.transform.parent;
+			}
+			if (_prefabs.TrackHeader.prefab != null)
+			{
+				var trackHeader = (GameObject)PrefabUtility.InstantiatePrefab(_prefabs.TrackHeader.prefab);
+				var pos   = spline.Evaluate(spline.Project(points[0].position));
+				trackHeader.transform.rotation = pos.rotation;
+				trackHeader.transform.position = pos.position + pos.rotation * _prefabs.TrackHeader.offset;
+				trackHeader.transform.parent   = spline.transform.parent;
+			}
+			if (_prefabs.TrackFooter.prefab != null)
+			{
+				var trackFooter = (GameObject)PrefabUtility.InstantiatePrefab(_prefabs.TrackFooter.prefab);
+				var pos    = spline.Evaluate(spline.Project(points[points.Count - 1].position));
+				trackFooter.transform.rotation = pos.rotation;
+				trackFooter.transform.position = pos.position + pos.rotation * _prefabs.TrackFooter.offset;
+				trackFooter.transform.parent   = spline.transform.parent;
+			}
 			var dataHolder = FindObjectOfType<DataHolder>();
 			dataHolder.SetInternals(spline, levelHolder);
 			eGUI.SetDirty(dataHolder);
