@@ -13,10 +13,10 @@ namespace UI.MainMenu
 		[SerializeField] private Animator        loadAnimator;
 		[SerializeField] private Slider          loadSlider;
 		[SerializeField] private ScenesContainer _scenesContainer;
-		AsyncOperation                           _asyncOperation;
+		private                  AsyncOperation  _asyncOperation;
 
-		private string open  = "open";
-		private string close = "close";
+		private static readonly int Open  = Animator.StringToHash("open");
+		private static readonly int Close = Animator.StringToHash("close");
 
 		private void Awake()
 		{
@@ -31,6 +31,7 @@ namespace UI.MainMenu
 		}
 		private void OnDestroy()
 		{
+			StopAllCoroutines();
 			Unregister();
 			StartButton.OnButtonPressed -= LoadLevel;
 		}
@@ -54,7 +55,7 @@ namespace UI.MainMenu
 						}
 						else break;
 				LoadImage.SetActive(true);
-				loadAnimator.SetTrigger("open");
+				loadAnimator.SetTrigger(Open);
 				PreviousLevelData.previousLevel = levelToLoad;
 				StartCoroutine(WaitAndLoad(.5f, levelId));
 			}
@@ -70,16 +71,16 @@ namespace UI.MainMenu
 
 		private void SceneLoaded(AsyncOperation operation)
 		{
-			_asyncOperation.completed -= SceneLoaded;
-			_asyncOperation           =  null;
-			loadSlider.value         =  1;
+			//_asyncOperation.completed -= SceneLoaded;
+			_asyncOperation  = null;
+			loadSlider.value = 1;
 			StartCoroutine(WaitAndAction(1.1f));
 		}
 
 		private IEnumerator WaitAndAction(float time)
 		{
 			yield return new WaitForSeconds(time);
-			loadAnimator.SetTrigger("close");
+			loadAnimator.SetTrigger(Close);
 			yield return new WaitForSeconds(time);
 			PauseController.Resume();
 		}

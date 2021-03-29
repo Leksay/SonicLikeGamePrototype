@@ -147,21 +147,13 @@ namespace Players
 		private void OnTriggerEnter(Collider other)
 		{
 			if (other.TryGetComponent<StartLine>(out var startLine))
-			{
 				_followCamera.SetFollowType(PlayerFollowCamera.FollowType.Normal);
-			}
 			else if (other.TryGetComponent<Finish>(out var finishLine))
-			{
 				_followCamera.SetFollowType(PlayerFollowCamera.FollowType.FinishTrack);
-			}
 			else if (other.TryGetComponent<DeathLoopStart>(out var deathloopstart))
-			{
 				_followCamera.SetFollowType(PlayerFollowCamera.FollowType.DeathLoop);
-			}
 			else if (other.TryGetComponent<DeathLoopEnd>(out var deathloopend))
-			{
 				_followCamera.SetFollowType(PlayerFollowCamera.FollowType.Normal);
-			}
 		}
 
 		private void OnDrawGizmos()
@@ -269,7 +261,8 @@ namespace Players
 				SetPlayerMovementType(MovementType.Slide);
 				OnSlide?.Invoke();
 				StartCoroutine(Slide());
-				_followCamera.SetFollowType(PlayerFollowCamera.FollowType.Slide);
+				if (_followCamera.followType != PlayerFollowCamera.FollowType.DeathLoop)
+					_followCamera.SetFollowType(PlayerFollowCamera.FollowType.Slide);
 			}
 		}
 		private IEnumerator Slide()
@@ -322,7 +315,8 @@ namespace Players
 				_animator.SetJumpAnimation(true);
 				SetPlayerMovementType(MovementType.Jump);
 				StartCoroutine(HandleJump());
-				_followCamera.SetFollowType(PlayerFollowCamera.FollowType.Jump);
+				if (_followCamera.followType != PlayerFollowCamera.FollowType.DeathLoop)
+					_followCamera.SetFollowType(PlayerFollowCamera.FollowType.Jump);
 			}
 		}
 		private IEnumerator HandleJump()

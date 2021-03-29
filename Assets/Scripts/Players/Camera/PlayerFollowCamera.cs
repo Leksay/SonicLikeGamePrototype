@@ -63,7 +63,8 @@ namespace Players.Camera
 
 		[Header("---")]
 		[SerializeField] private FollowType _followType;
-		[SerializeField] private SpeedType _speedType;
+		public                   FollowType followType => _followType;
+		[SerializeField] private SpeedType  _speedType;
 
 		private                  UnityEngine.Camera _camera;
 		private                  float              _currentFOV;
