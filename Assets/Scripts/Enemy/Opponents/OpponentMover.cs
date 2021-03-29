@@ -120,6 +120,7 @@ namespace Enemy.Opponents
 			if (_isPaused)
 			{
 				_follower.followSpeed = 0;
+				_animator.SetAnimatorSpeed(0);
 				return;
 			}
 			if (_actualSpeed < _desiredSpeed)
@@ -173,7 +174,7 @@ namespace Enemy.Opponents
 				return;
 			}
 			_boosters?.ForEach(b => b.StopAllBoosters());
-			_boosters?.ForEach(t=>t.BoostSpeed(time, value));
+			_boosters?.ForEach(t => t.BoostSpeed(time, value));
 			ChangeSpeed();
 		}
 
@@ -183,12 +184,14 @@ namespace Enemy.Opponents
 			Debug.Log($"[OpponentMover] ({gameObject.name}) paused");
 			_follower.followSpeed = 0;
 			_isPaused             = true;
+			ChangeSpeed();
 		}
 		public void Resume()
 		{
 			Debug.Log($"[OpponentMover] ({gameObject.name}) resumed");
 			_follower.followSpeed = _actualSpeed;
 			_isPaused             = false;
+			ChangeSpeed();
 		}
 
 

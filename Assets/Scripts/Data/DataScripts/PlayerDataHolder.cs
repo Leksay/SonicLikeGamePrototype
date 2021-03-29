@@ -25,11 +25,8 @@ namespace Data.DataScripts
 			}
 		}
 
-		private void Start()
-		{
-			NotifyMoneyChanged(playerData.Money.value);
-		}
-
+		private       void   Start()           => NotifyMoneyChanged(playerData.Money.value);
+		public static void   UpdateMoney()     => NotifyMoneyChanged(_instance.playerData.Money.value);
 		public static string GetSavedName()    => _instance.playerData.Name.Name;
 		public static int    GetPlayerMoney()  => _instance.playerData.Money.value;
 		public static float  GetSpeed()        => _instance.playerData.SpeedSkill.value;

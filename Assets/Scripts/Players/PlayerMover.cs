@@ -198,7 +198,7 @@ namespace Players
 		private void Accelerate()
 		{
 			if (_isPaused) return;
-				_followCamera.SetSpeedType(PlayerFollowCamera.SpeedType.None);
+			_followCamera.SetSpeedType(PlayerFollowCamera.SpeedType.None);
 			ChangeSpeed();
 		}
 		private void Damping()
@@ -212,6 +212,7 @@ namespace Players
 			if (_isPaused)
 			{
 				_follower.followSpeed = 0;
+				_animator.SetAnimatorSpeed(0);
 				return;
 			}
 			if (_actualSpeed < _desiredSpeed)
@@ -224,7 +225,7 @@ namespace Players
 			}
 			_actualSpeed          = Mathf.Clamp(Mathf.MoveTowards(_actualSpeed, _desiredSpeed, accelerationSpeed * Time.deltaTime), minSpeed, maxSpeed);
 			_follower.followSpeed = _actualSpeed;
-			_animator.SetAnimatorSpeed(_actualSpeed/defaultSpeed);
+			_animator.SetAnimatorSpeed(_actualSpeed / defaultSpeed);
 		}
 
 
@@ -438,12 +439,14 @@ namespace Players
 			Debug.Log($"[OpponentMover] ({gameObject.name}) paused");
 			_follower.followSpeed = 0;
 			_isPaused             = true;
+			ChangeSpeed();
 		}
 		public void Resume()
 		{
 			Debug.Log($"[OpponentMover] ({gameObject.name}) resumed");
 			_follower.followSpeed = _actualSpeed;
 			_isPaused             = false;
+			ChangeSpeed();
 		}
 		public void RegisterPausable() => PauseController.RegisterPausable(this);
   #endregion

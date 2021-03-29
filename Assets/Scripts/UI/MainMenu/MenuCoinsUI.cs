@@ -1,24 +1,26 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Data.DataScripts;
-using UnityEngine;
+﻿using Data.DataScripts;
 using TMPro;
-public class MenuCoinsUI : MonoBehaviour
+using UnityEngine;
+namespace UI.MainMenu
 {
-    [SerializeField] TMP_Text moneyText;
-
-    private void Start()
+    public class MenuCoinsUI : MonoBehaviour
     {
-        PlayerDataHolder.OnMoneyChanged += MoneyChange;
-    }
+        [SerializeField] TMP_Text moneyText;
 
-    private void OnDestroy()
-    {
-        PlayerDataHolder.OnMoneyChanged -= MoneyChange;
-    }
+        private void Start()
+        {
+            PlayerDataHolder.OnMoneyChanged += MoneyChange;
+            PlayerDataHolder.UpdateMoney();
+        }
 
-    private void MoneyChange(int currentBalance)
-    {
-        moneyText.text = currentBalance.ToString();
+        private void OnDestroy()
+        {
+            PlayerDataHolder.OnMoneyChanged -= MoneyChange;
+        }
+
+        private void MoneyChange(int currentBalance)
+        {
+            moneyText.text = currentBalance.ToString();
+        }
     }
 }
