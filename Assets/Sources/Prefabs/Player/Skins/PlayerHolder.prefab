@@ -13421,11 +13421,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 238741848576855415}
-  defaultSpeed: 10
+  defaultSpeed: 15
   changeRoadTime: 0.3
   accelerationSpeed: 10
-  minSpeed: 5
-  maxSpeed: 20
+  minSpeed: 7
+  maxSpeed: 30
   isAccelerating: 0
   jumpHeigh: 1
   upJumpTime: 0.3
@@ -13530,7 +13530,6 @@ MonoBehaviour:
   _booster:
     value: 0
     time: 0
-    stopped: 0
 --- !u!114 &238741848576855413
 MonoBehaviour:
   m_ObjectHideFlags: 0

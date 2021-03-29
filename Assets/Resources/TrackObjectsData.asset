@@ -15,16 +15,16 @@ MonoBehaviour:
   data:
   - type: 0
     time: 3
-    value: 10
+    value: 15
   - type: 1
     time: 1
-    value: -5
+    value: -8
   - type: 2
     time: 2
-    value: -5
+    value: -8
   - type: 3
     time: 1
-    value: -5
+    value: -8
   - type: 4
     time: 1
-    value: -5
+    value: -8

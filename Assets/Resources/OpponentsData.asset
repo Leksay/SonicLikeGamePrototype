@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12b56744a0d0e0543b5df05120db216a, type: 3}
   m_Name: OpponentsData
   m_EditorClassIdentifier: 
-  defaultSpeed: 10
+  defaultSpeed: 15
   changeRoadTime: 0.4
   changeRoadTreshold: 0.1
   accelerationSpeed: 10
-  minSpeed: 5
-  maxSpeed: 20
+  minSpeed: 7
+  maxSpeed: 30
   jumpHeigh: 1
   upJumpTime: 0.3
   downJumpTime: 0.3
