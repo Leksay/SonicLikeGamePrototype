@@ -78,9 +78,18 @@ namespace Helpers
 			public          int          segments = 1;
 			public override string       ToString() => $"{start:F3}-{end:F3} ({segments}):{type}";
 		}
-
+		public enum FileDivider
+		{
+			Comma = 0,
+			Semicolon = 1
+		}
+		
 		[Tooltip("Таблица с треком")]
 		public TextAsset _inputFile;
+		[Tooltip("Разделитель в файле")]
+		public FileDivider _divider = FileDivider.Semicolon;
+		public char _inputFileDivider => _divider==FileDivider.Comma ? ',' : _inputFileDivider;
+		
 		[Tooltip("Настройки генерации")]
 		public TrackPrefabs _prefabs;
 		[Tooltip("Длина сегмента")]
@@ -215,7 +224,7 @@ namespace Helpers
 			{
 				_track[i] = new TrackStep(_lines);
 				var line = (i < steps - 1 - _prefabs.finishAdd - _prefabs.startPointOffset && i > _prefabs.startPointOffset) ?
-					input1[i - _prefabs.startPointOffset].Split(';') :
+					input1[i - _prefabs.startPointOffset].Split(_inputFileDivider) :
 					new[] { "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", };
 				for (var j = 0; j <= 3; j++)
 				{
