@@ -15,7 +15,7 @@ namespace Helpers
 	[CreateAssetMenu(fileName = "TrackGenerator", menuName = "Generators/Track generator", order = 0)]
 	public class TrackGenerator : ScriptableObject
 	{
-		public enum TrackItem
+		private enum TrackItem
 		{
 			None,
 			Magnet,       //M
@@ -36,22 +36,30 @@ namespace Helpers
 			Railroad, //R
 		}
 
-		public enum TrackDir
+		private enum TrackDir
 		{
-			None           = 0,
-			Left           = 1,  // L
-			Right          = 2,  // R
-			Up             = 3,  // U
-			Down           = 4,  // D
-			ShiftLeft      = 5,  // l
-			ShiftRight     = 6,  // r
-			ShiftUp        = 7,  // u
-			ShiftDown      = 8,  // d
+			None = 0,
+
+			Left  = 1, // L
+			Right = 2, // R
+			Up    = 3, // U
+			Down  = 4, // D
+
+			ShiftLeft  = 5, // l
+			ShiftRight = 6, // r
+			ShiftUp    = 7, // u
+			ShiftDown  = 8, // d
+
+			RotateLeft  = 11, // -
+			RotateRight = 12, // +
+
 			DeathloopStart = 9,  // S
 			DeathloopEnd   = 10, // E
+
+			Fence = 13, // F
 		}
 
-		[Serializable] public class TrackSlot
+		private class TrackSlot
 		{
 			public TrackItem[]  values;
 			public TrackDir[]   dirs;
@@ -63,14 +71,15 @@ namespace Helpers
 			}
 		}
 
-		[Serializable] public class TrackStep
+		private class TrackStep
 		{
 			public TrackSlot[] Lines;
 			public TrackDir[]  dir;
 			public TrackStep(int lines) => Lines = new TrackSlot[lines];
 		}
 
-		[Serializable] public class TrackInterval
+		[Serializable]
+		public class TrackInterval
 		{
 			public          double       start;
 			public          double       end;
@@ -80,18 +89,19 @@ namespace Helpers
 		}
 		public enum FileDivider
 		{
-			Comma = 0,
+			Comma     = 0,
 			Semicolon = 1
 		}
-		
+
 		[Tooltip("Таблица с треком")]
 		public TextAsset _inputFile;
-		[Tooltip("Разделитель в файле")]
+		[Tooltip("Разделитель в файле\ncolon = ','\nsemicolon = sp';'")]
 		public FileDivider _divider = FileDivider.Semicolon;
-		public char _inputFileDivider => _divider==FileDivider.Comma ? ',' : _inputFileDivider;
-		
+		public char _inputFileDivider => _divider == FileDivider.Comma ? ',' : ';';
+
 		[Tooltip("Настройки генерации")]
 		public TrackPrefabs _prefabs;
+		[Space]
 		[Tooltip("Длина сегмента")]
 		public float _stepLength = 3f;
 		[Tooltip("Шаг поворота горизонтально")]
@@ -102,6 +112,9 @@ namespace Helpers
 		public float _stepHorizontalShift = 0.2f;
 		[Tooltip("Шаг смещения вертикально")]
 		public float _stepVerticalShift = 0.2f;
+		[Tooltip("Угол вращения")]
+		public float _stepRotate = 5f;
+		[Space]
 		[Tooltip("Количество линий на треке")]
 		public int _lines = 4;
 		[Tooltip("Расстояние между линиями")]
@@ -157,8 +170,11 @@ namespace Helpers
 			public TrackObject FinishLine;
 			[Tooltip("Количество сегментов после финиша (прямая)")]
 			public int finishAdd = 10;
-			[Tooltip("Объект \"магнит\"")]
 			[Space]
+			[Tooltip("Объект \"забор\"")]
+			public TrackObject Fence;
+			[Space]
+			[Tooltip("Объект \"магнит\"")]
 			public TrackObject Magnet;
 			[Tooltip("Объект \"блок\"")]
 			public TrackObject Obstacle;
@@ -181,8 +197,8 @@ namespace Helpers
 			public TrackObject CoinHigh;
 		}
 
-		[HideInInspector] public TrackStep[] _track;
-		private                  Vector3[]   _directions2;
+		private TrackStep[] _track;
+		private Vector3[]   _directions2;
 
 #if UNITY_EDITOR
 		private void CreateRotations()
@@ -223,15 +239,15 @@ namespace Helpers
 			for (var i = 0; i < steps; i++)
 			{
 				_track[i] = new TrackStep(_lines);
-				var line = (i < steps - 1 - _prefabs.finishAdd - _prefabs.startPointOffset && i > _prefabs.startPointOffset) ?
+				var line = (i > _prefabs.startPointOffset && i < steps - 1 - _prefabs.finishAdd) ?
 					input1[i - _prefabs.startPointOffset].Split(_inputFileDivider) :
 					new[] { "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", };
+				_track[i].dir = ParseSlotDir(line[_lines]);
 				for (var j = 0; j <= 3; j++)
 				{
 					_track[i].Lines[j]         = ParseSlotItem(line[j]);
 					_track[i].Lines[j].surface = ParseSlotSurface(line[j]);
 				}
-				_track[i].dir = ParseSlotDir(line[4]);
 			}
 		}
 
@@ -239,9 +255,12 @@ namespace Helpers
 		{
 			ParseTrack();
 			CreateRotations();
+
+
 			var holder      = new GameObject("LevelHolder");
 			var levelHolder = holder.AddComponent<LevelHolder>();
 			levelHolder._startPercent = (_playerStartIndex + _prefabs.startPointOffset) / (double)(_track.Length);
+
 			var go = new GameObject("Track", typeof(SplineComputer));
 			go.transform.parent = holder.transform;
 			var spline = go.GetComponent<SplineComputer>();
@@ -249,16 +268,16 @@ namespace Helpers
 
 			var points = new List<SplinePoint>(_track.Length);
 			var point  = new GameObject().transform;
-			point.position += point.forward * (_stepLength * _prefabs.startPointOffset);
 			for (var i = 0; i < _track.Length; i++)
 			{
-				var t = _track[i];
-				var p = new SplinePoint(point.position);
-				p.normal = point.up;
+				var t     = _track[i];
+				var p     = new SplinePoint(point.position);
+				var angle = 0f;
 				foreach (var dir in t.dir)
 					switch (dir)
 					{
 						case TrackDir.None:
+						case TrackDir.Fence:
 							break;
 						case TrackDir.Left:
 						case TrackDir.Right:
@@ -300,9 +319,18 @@ namespace Helpers
 							dlt.localScale = new Vector3(_lines * _linesInterval, dlt.localScale.y, dlt.localScale.z);
 							break;
 						}
+						case TrackDir.RotateLeft:
+							angle += _stepRotate;
+							break;
+						case TrackDir.RotateRight:
+							angle -= _stepRotate;
+							break;
 						default:
 							throw new ArgumentOutOfRangeException();
 					}
+				var r = point.rotation;
+				point.Rotate(0f, 0f, angle * _stepRotate);
+				p.normal = point.up;
 				PatchRotation(point);
 				point.position += point.forward * _stepLength;
 				points.Add(p);
@@ -320,7 +348,7 @@ namespace Helpers
 			}
 			{
 				var finish = (GameObject)PrefabUtility.InstantiatePrefab(_prefabs.FinishLine.prefab);
-				var pos    = spline.Evaluate(spline.Project(points[points.Count - 1 - _prefabs.finishAdd + _prefabs.startPointOffset].position));
+				var pos    = spline.Evaluate(spline.Project(points[points.Count - 1 - _prefabs.finishAdd].position));
 				finish.transform.rotation = pos.rotation;
 				finish.transform.position = pos.position + pos.rotation * _prefabs.FinishLine.offset;
 				finish.transform.parent   = spline.transform.parent;
@@ -328,7 +356,7 @@ namespace Helpers
 			if (_prefabs.TrackHeader.prefab != null)
 			{
 				var trackHeader = (GameObject)PrefabUtility.InstantiatePrefab(_prefabs.TrackHeader.prefab);
-				var pos   = spline.Evaluate(spline.Project(points[0].position));
+				var pos         = spline.Evaluate(spline.Project(points[0].position));
 				trackHeader.transform.rotation = pos.rotation;
 				trackHeader.transform.position = pos.position + pos.rotation * _prefabs.TrackHeader.offset;
 				trackHeader.transform.parent   = spline.transform.parent;
@@ -336,7 +364,7 @@ namespace Helpers
 			if (_prefabs.TrackFooter.prefab != null)
 			{
 				var trackFooter = (GameObject)PrefabUtility.InstantiatePrefab(_prefabs.TrackFooter.prefab);
-				var pos    = spline.Evaluate(spline.Project(points[points.Count - 1].position));
+				var pos         = spline.Evaluate(spline.Project(points[points.Count - 1].position));
 				trackFooter.transform.rotation = pos.rotation;
 				trackFooter.transform.position = pos.position + pos.rotation * _prefabs.TrackFooter.offset;
 				trackFooter.transform.parent   = spline.transform.parent;
@@ -425,9 +453,21 @@ namespace Helpers
 							default:
 								throw new ArgumentOutOfRangeException();
 						}
-					tracks[line][i].position = points[i].position + p.right * deviance[line] + (Quaternion.LookRotation(p.direction, p.normal) * offset[line]);
+					var p2 = points[i].position + p.right * deviance[line] + (Quaternion.LookRotation(p.direction, p.normal) * offset[line]);
+					tracks[line][i].position = p2;
 					tracks[line][i].size     = _linesInterval;
 					tracks[line][i].normal   = points[i].normal;
+				}
+				{
+					var p    = spline.Evaluate(spline.Project(points[i].position)).position;
+					var pos0 = tracks[0][i].position          - p;
+					var pos1 = tracks[_lines - 1][i].position - p;
+					if (_track[i].dir.Any(t => t == TrackDir.RotateLeft || t == TrackDir.RotateRight))
+					{
+						var dy = Mathf.Max(pos0.y, pos1.y);
+						foreach (var track in tracks)
+							track[i].position.y += dy;
+					}
 				}
 			}
 
@@ -485,6 +525,26 @@ namespace Helpers
 			}
 			levelHolder.Init(spline);
 			levelHolder.Init(splines.ToArray(), _linesInterval);
+
+			{
+				for (var i = 0; i < points.Length; i++)
+					if (_track[i].dir.Any(t => t == TrackDir.Fence))
+					{
+						var p  = splines[0].Evaluate(i);
+						var go = Instantiate(_prefabs.Fence.prefab).transform;
+						go.position   = p.position - p.right * _linesInterval * 0.5f;
+						go.rotation   = p.rotation;
+						go.localScale = Vector3.one * _stepLength;
+						go.parent     = splines[0].transform;
+
+						p             = splines[_lines - 1].Evaluate(i);
+						go            = Instantiate(_prefabs.Fence.prefab).transform;
+						go.position   = p.position + p.right * _linesInterval * 0.5f;
+						go.rotation   = p.rotation;
+						go.localScale = Vector3.one * _stepLength;
+						go.parent     = splines[_lines - 1].transform;
+					}
+			}
 
 			levelHolder.barriers  = new List<GameObject>();
 			levelHolder.boosters  = new List<GameObject>();
@@ -712,6 +772,15 @@ namespace Helpers
 						break;
 					case 'E':
 						res[i] = TrackDir.DeathloopEnd;
+						break;
+					case '-':
+						res[i] = TrackDir.RotateLeft;
+						break;
+					case '+':
+						res[i] = TrackDir.RotateRight;
+						break;
+					case 'F':
+						res[i] = TrackDir.Fence;
 						break;
 					default:
 						res[i] = TrackDir.None;

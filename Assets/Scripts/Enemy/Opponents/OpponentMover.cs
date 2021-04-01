@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Data.DataScripts;
 using Dreamteck.Splines;
@@ -6,6 +7,7 @@ using Helpers;
 using Level;
 using Players;
 using UnityEngine;
+using Random = UnityEngine.Random;
 namespace Enemy.Opponents
 {
 	[RequireComponent(typeof(SplineFollower))]
@@ -24,14 +26,6 @@ namespace Enemy.Opponents
 
 		[Header("Move")]
 		[SerializeField] private OpponentsData data;
-		/*
-		public float defaultSpeed;
-		public float changeRoadTime;
-		public float changeRoadTreshold;
-		public float accelerationSpeed;
-		public float minSpeed;
-		public float maxSpeed;
-		/**/
 
 		[Header("Jump")]
 		private float _jumpY;
@@ -66,6 +60,7 @@ namespace Enemy.Opponents
 		private Coroutine _changeRoadCoroutine;
 		private bool      _initialized;
 		private bool      _defended;
+		public  Action<int, int>    OnTrackChange;
 
 		void Awake()
 		{
@@ -180,17 +175,16 @@ namespace Enemy.Opponents
 
 		public void Pause()
 		{
-			Debug.Log($"[OpponentMover] ({gameObject.name}) paused");
 			_follower.followSpeed = 0;
 			_isPaused             = true;
 			ChangeSpeed();
 		}
 		public void Resume()
 		{
-			Debug.Log($"[OpponentMover] ({gameObject.name}) resumed");
 			_follower.followSpeed = _actualSpeed;
 			_isPaused             = false;
 			ChangeSpeed();
+			OnTrackChange?.Invoke(currentRoadId, currentRoadId);
 		}
 
 
@@ -316,6 +310,7 @@ namespace Enemy.Opponents
 			var p1 = levelHolder._lines[targetLine].Evaluate(levelHolder._lines[targetLine].Project(p0.position)); // closest point on side line
 			var d  = p0.position - p1.position;
 			if (!PlayerMover.CheckLineSwap(levelHolder._lines[targetLine], p0, levelHolder._lineWidth)) return;
+			OnTrackChange?.Invoke(currentRoadId, targetLine);
 			currentRoadId = targetLine;
 			d.Normalize();
 			var d2 = new Vector2(Vector3.Dot(d, p1.right), Vector3.Dot(d, p1.normal)); // offset is [X * point.right + Y * point.normal]

@@ -29,11 +29,20 @@ namespace Enemy.Opponents
 		private                  BehaviourType        _behaviour;
 		private                  int                  _currentFollowRoad;
 		[SerializeField] private List<RoadEntityData> entitiesData;
+		private                  int                  _currentRoad;
 
-		public void Pause() => _isPaused = true;
+		public void Pause()  => _isPaused = true;
 		public void Resume() => _isPaused = false;
 
-		private void Awake() => _mover = GetComponent<IOpponentMover>();
+		private void Awake()
+		{
+			_mover = GetComponent<IOpponentMover>();
+			var _m = GetComponent<OpponentMover>();
+			_m.OnTrackChange += (old, @new) => {
+				_currentRoad = @new;
+				GetNextEntityData();
+			};
+		}
 
 		private void Start()
 		{
@@ -67,7 +76,6 @@ namespace Enemy.Opponents
 				MakeDecision();
 				ChooseCurrentBehaviour();
 			}
-
 		}
 
 		private void ChooseCurrentBehaviour()
@@ -194,13 +202,9 @@ namespace Enemy.Opponents
 
 		private RoadEntityData GetNextEntityData()
 		{
-			for (int i = 0; i < entitiesData.Count; i++)
-			{
-				if (entitiesData[i].percentAtRoad > GetCurrentPercent())
-				{
-					return entitiesData[i];
-				}
-			}
+			foreach (var entity in entitiesData)
+				if (entity.percentAtRoad > GetCurrentPercent() && entity.roadCount == _currentRoad)
+					return entity;
 			return null;
 		}
 
