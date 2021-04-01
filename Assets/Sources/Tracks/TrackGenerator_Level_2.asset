@@ -46,6 +46,10 @@ MonoBehaviour:
         type: 3}
       offset: {x: 0, y: 3.3, z: 0}
     finishAdd: 50
+    Fence:
+      prefab: {fileID: 3266092981167391113, guid: 7b52a5fedbc334249a7fb90a070f5d34,
+        type: 3}
+      offset: {x: 0, y: 0, z: 0}
     Magnet:
       prefab: {fileID: 542659991630719771, guid: db220430852f80f448275d4b14a63a1e,
         type: 3}
@@ -91,7 +95,7 @@ MonoBehaviour:
   _stepVerticalRotate: 3.33333
   _stepHorizontalShift: 0.1
   _stepVerticalShift: 0.2
-  _stepRotate: 2.5
+  _stepRotate: 2
   _lines: 4
   _linesInterval: 2
   _simplifyTrackMeshes: 0
